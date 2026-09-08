@@ -17,8 +17,8 @@ The Product Backlog contains the product features and user stories required to s
 | PB-01 | Appointment Management | As an organizer, I want to create an appointment with basic details so that I can start the scheduling process. | High | 3 |
 | PB-02 | Appointment Management | As an organizer, I want to specify a scheduling period so that participants can provide their available dates within the relevant period. | High | 2 |
 | PB-03 | Participant Access | As a participant, I want to access an appointment through a shared link so that I can join the scheduling process easily. | High | 2 |
-| PB-04 | Availability Collection | As a participant, I want to select my available dates so that the system can compare my availability with other participants. | High | 5 |
-| PB-05 | Availability Collection | As an organizer, I want to view participants' submitted availability so that I can see the group's scheduling information in one place. | High | 3 |
+| PB-04 | Availability Collection | As an organizer and participant, I want to select my available dates so that the system can compare my availability with other participants. | High | 5 |
+| PB-05 | Availability Collection | As an organizer, I want to view my and participants' submitted availability so that I can see the group's scheduling information in one place. | High | 3 |
 | PB-06 | Availability Analysis | As a user, I want the system to automatically compare everyone's availability so that common available dates can be identified without manually checking each participant. | **High (Core)** | 5 |
 | PB-07 | Date Suggestion | As an organizer, I want the system to suggest suitable dates based on participants' availability so that I can make a scheduling decision more efficiently. | High | 5 |
 | PB-08 | Availability Summary | As a user, I want to see a clear summary of everyone's availability so that I can easily understand the available dates. | High | 3 |
@@ -106,27 +106,30 @@ PB-06 directly addresses this pain by automatically comparing submitted availabi
 
 ### PB-04 — Submit Availability
 
+- Organizer can select their available dates
 - Participants can select their available dates.
 - Participants can submit their availability successfully.
 - Submitted availability is stored and associated with the correct appointment and participant.
 
 ### PB-05 — View Availability
 
-- Organizer can view participants' submitted availability.
+- Organizer and participants can view all other participants' submitted availability.
 - Availability information is presented in a clear and understandable format.
 - The system identifies which participants have submitted their availability.
 
 ### PB-06 — Analyze Availability
 
-- The system compares the availability of multiple participants.
-- The system identifies dates that are available for the group.
-- The analysis is based on the availability submitted by participants.
-- The result does not require the organizer to manually compare each participant's availability.
+- The system compares the availability of all members (organizer and participants).
+- The system identifies whether at least one date exists where every member is available.
+- If no date has full availability, the system identifies the date(s) with the highest number of available members.
+- The analysis is based on the availability submitted by all members.
+- The result does not require the organizer to manually compare each member's availability.
 
 ### PB-07 — Suggest Suitable Dates
 
-- The system generates suitable date options based on the availability analysis.
-- Suggested dates are presented clearly.
+- If a date exists where all members are available, the system suggests that date.
+- If no date works for everyone, the system suggests the date(s) with the highest availability from PB-06's analysis.
+- Suggested dates are presented clearly, distinguishing full-availability dates from partial-availability dates.
 - The organizer can review the suggested dates before confirming an appointment.
 
 ### PB-08 — Availability Summary
