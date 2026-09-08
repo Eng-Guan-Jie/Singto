@@ -387,3 +387,5 @@ The prototype follows the project's main design principles:
 - **Consistent** — use consistent calendar interactions and visual indicators throughout the scheduling process.
 
 The prototype prioritizes the core problem of helping groups identify a suitable date without requiring participants or organizers to manually compare everyone's availability.
+
+fixing
