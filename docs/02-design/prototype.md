@@ -41,7 +41,7 @@ The organizer can select the option to create a new appointment.
 - Singto opens the event creation interface.
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen01.png" height="400" </p>
+  <img src="../../assets/prototypes/Screen01.png" height="400" > </p>
 
 **Next:** 
 
@@ -70,7 +70,7 @@ After creation, the system generates the appointment and prepares a shared sched
 `Enter Details → Select Scheduling Period → Create`
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen02.png" height="400" </p>
+  <img src="../../assets/prototypes/Screen02.png" height="400" > </p>
 
 **Next:**
 
@@ -87,7 +87,7 @@ The message contains information about the appointment and provides a link for p
 Participants can select the link to join the scheduling process and choose the dates they are available.
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen03.png" height="400 </p>
+  <img src="../../assets/prototypes/Screen03.png" height="400"> </p>
 
 **Main interaction:**
 
@@ -148,7 +148,7 @@ When the organizer selects a specific date on the calendar, the result section c
 A fixed **Set Date** button is displayed at the bottom of the screen.
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen04.1.2.png" height="400 </p>
+  <img src="../../assets/prototypes/Screen04.1.2.png" height="400" > </p>
 
 ---
 
@@ -180,7 +180,7 @@ Example quick-select options:
 The organizer can save or update their availability after making changes.
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen04.1.3.png" height="400 </p>
+  <img src="../../assets/prototypes/Screen04.1.3.png" height="400" ></p>
 
 ---
 
@@ -205,7 +205,7 @@ At the top of the page, participants can view the appointment details.
 The participant can also indicate whether they want to participate in the appointment.
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen04.2.3.png" height="400 </p>
+  <img src="../../assets/prototypes/Screen04.2.3.png" height="400"> </p>
 
 ---
 
@@ -225,7 +225,7 @@ Participants can:
 Participants cannot modify the group's availability information or set the final appointment date.
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen04.2.2.png" height="400 </p>
+  <img src="../../assets/prototypes/Screen04.2.2.png" height="400"> </p>
 
 ---
 
@@ -253,7 +253,7 @@ Quick-select options are also provided:
 Participants can save or update their availability after making changes.
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen04.2.3.png" height="400 </p>
+  <img src="../../assets/prototypes/Screen04.2.3.png" height="400"> </p>
 
 ---
 
@@ -329,7 +329,7 @@ The organizer can also:
 The organizer then selects **Confirm Date** to finalize the appointment.
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen05.3.png" height="400 </p>
+  <img src="../../assets/prototypes/Screen05.3.png" height="400"> </p>
 
 **Main interaction:**
 
@@ -356,7 +356,7 @@ The confirmation message contains the confirmed appointment information, includi
 If the reminder option was enabled, Singto also schedules the reminder for the confirmed appointment.
 
 <p align="left">
-  <img src="../../assets/prototypes/Screen06.png" height="400 </p>
+  <img src="../../assets/prototypes/Screen06.png" height="400"> </p>
 
 **End of main scheduling flow.**
 
