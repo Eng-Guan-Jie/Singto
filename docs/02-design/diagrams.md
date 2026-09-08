@@ -45,7 +45,8 @@ The Use Case Diagram describes the main interactions between users and the Singt
 
 The Architecture Diagram shows the major components of Singto and how they communicate.
 
-(รูป)
+<p align="left">
+  <img src="../../assets/diagrams/D3-architecture.png" width="500"> </p>
 
 ### Architecture Components
 
@@ -64,7 +65,8 @@ The Architecture Diagram shows the major components of Singto and how they commu
 
 The Activity Diagram describes the main workflow from creating an appointment to confirming the final date.
 
-(รูป)
+<p align="left">
+  <img src="../../assets/diagrams/D4-activity.png" width="500"> </p>
 
 ### Core Workflow
 
