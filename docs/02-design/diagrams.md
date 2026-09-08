@@ -25,7 +25,8 @@ The Context Diagram shows Singto as the central system and its interactions with
 
 The Use Case Diagram describes the main interactions between users and the Singto system.
 
-(รูป)
+<p align="left">
+  <img src="../../assets/diagrams/D2-usecase.png" width="500"> </p>
 
 ### Main Use Cases
 
