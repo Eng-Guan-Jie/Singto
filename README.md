@@ -9,7 +9,7 @@ application.
 Instead of manually collecting and comparing everyone's availability
 through group chats, Singto allows participants to submit their available
 dates and times through a shared scheduling link. The system summarizes
-the group's availability and suggests suitable dates and times for the
+the group's availability and suggests suitable dates and times for the  
 organizer to review and confirm.
 
 ## Problem Statement
