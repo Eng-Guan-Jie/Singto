@@ -26,8 +26,7 @@ function CreateEvent() {
 
     console.log("Created Event:", eventData);
 
-    // TODO: navigate to next page
-    navigate("/Overview");
+    navigate("/overview", { state: { eventData } });
   };
 
   return (

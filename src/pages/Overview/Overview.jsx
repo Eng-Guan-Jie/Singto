@@ -1,14 +1,16 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Bell,
   Pencil,
-  CalendarDays,
 } from "lucide-react";
 import "./Overview.css";
 
-const eventData = {
-  name: "DINNER CAFE",
+const defaultEventData = {
+  eventName: "DINNER CAFE",
   description: "Dinner at Greyhound Café, CentralWorld 7:00 PM",
+  startDate: "2026-09-07",
+  endDate: "2026-09-20",
   responded: 5,
   total: 6,
 };
@@ -84,9 +86,32 @@ const weeks = [
   ],
 ];
 
+const formatDate = (dateValue) => {
+  if (!dateValue) return "";
+
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${dateValue}T00:00:00`));
+};
+
 function Overview() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedDate, setSelectedDate] = useState(20);
+  const [selectedAvailabilityDates, setSelectedAvailabilityDates] = useState([
+    8,
+    12,
+    14,
+  ]);
+  const eventData = {
+    ...defaultEventData,
+    ...location.state?.eventData,
+  };
+  const dateRange = `${formatDate(eventData.startDate)} - ${formatDate(
+    eventData.endDate
+  )}`;
 
   const handleNotify = () => {
     alert("Notification sent again!");
@@ -98,6 +123,31 @@ function Overview() {
 
   const handleFinalize = () => {
     alert(`Date ${selectedDate} selected!`);
+  };
+
+  const toggleAvailabilityDate = (day) => {
+    setSelectedAvailabilityDates((currentDates) => {
+      if (currentDates.includes(day)) {
+        return currentDates.filter((date) => date !== day);
+      }
+
+      return [...currentDates, day].sort((a, b) => a - b);
+    });
+  };
+
+  const handleQuickSelect = () => {
+    const availableDays = weeks
+      .flat()
+      .filter((date) => !date.muted)
+      .map((date) => date.day);
+
+    setSelectedAvailabilityDates(availableDays);
+  };
+
+  const handleSaveAvailability = () => {
+    alert(
+      `Saved availability for ${selectedAvailabilityDates.join(", ")}`
+    );
   };
 
   return (
@@ -112,10 +162,14 @@ function Overview() {
       <section className="event-card">
 
         <div className="event-info">
-          <h2>{eventData.name}</h2>
+          <h2>{eventData.eventName}</h2>
 
           <p className="event-description">
             {eventData.description}
+          </p>
+
+          <p className="event-date-range">
+            {dateRange}
           </p>
 
           <p className="response-count">
@@ -145,7 +199,7 @@ function Overview() {
             className="notify-button"
             onClick={handleNotify}
           >
-            <Bell size={32} strokeWidth={2.5} />
+            <Bell size={30} strokeWidth={1.5} />
             <span>Notify Again</span>
           </button>
 
@@ -154,7 +208,7 @@ function Overview() {
             onClick={handleEdit}
             aria-label="Edit event"
           >
-            <Pencil size={34} strokeWidth={2.5} />
+            <Pencil size={32} strokeWidth={1.5} />
           </button>
 
         </div>
@@ -307,18 +361,93 @@ function Overview() {
       {activeTab === "availability" && (
         <main className="availability-content">
 
-          <h2>MY AVAILABILITY</h2>
+          <section className="availability-calendar-section">
 
-          <p>
-            Select the dates when you are available.
-          </p>
+            <div className="availability-heading">
+              <div>
+                <h2>CALENDAR</h2>
 
-          <div className="availability-placeholder">
-            <CalendarDays size={48} />
-            <span>
-              My availability calendar
-            </span>
-          </div>
+                <p>
+                  Tap your available days
+                </p>
+              </div>
+
+              <button
+                className="quick-select-button"
+                onClick={handleQuickSelect}
+              >
+                Quick Select
+              </button>
+            </div>
+
+            <div className="availability-calendar">
+
+              <div className="availability-weekday-row">
+                {[
+                  "SUN",
+                  "MON",
+                  "TUE",
+                  "WED",
+                  "THU",
+                  "FRI",
+                  "SAT",
+                ].map((day) => (
+                  <div
+                    className="availability-weekday"
+                    key={day}
+                  >
+                    {day}
+                  </div>
+                ))}
+              </div>
+
+              <div className="availability-calendar-body">
+                {weeks.map((week, weekIndex) => (
+                  <div
+                    className="availability-calendar-week"
+                    key={weekIndex}
+                  >
+                    {week.map((date, index) => {
+                      const isSelected =
+                        selectedAvailabilityDates.includes(date.day) &&
+                        !date.muted;
+
+                      return (
+                        <button
+                          key={`${weekIndex}-${index}`}
+                          className={`
+                            availability-date
+                            ${date.muted ? "muted" : ""}
+                            ${isSelected ? "selected" : ""}
+                          `}
+                          onClick={() => {
+                            if (!date.muted) {
+                              toggleAvailabilityDate(date.day);
+                            }
+                          }}
+                          disabled={date.muted}
+                          aria-label={`${
+                            isSelected ? "Remove" : "Add"
+                          } availability for day ${date.day}`}
+                          aria-pressed={isSelected}
+                        >
+                          {date.day}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </section>
+
+          <button
+            className="save-availability-button"
+            onClick={handleSaveAvailability}
+          >
+            SAVE
+          </button>
 
         </main>
       )}
