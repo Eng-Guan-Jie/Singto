@@ -1,0 +1,211 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f7fa;
+}
+
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+  height: 148px;
+  background: #2b211b;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #d5d5d5;
+}
+
+.header h1 {
+  margin: 0;
+  color: white;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-container {
+  width: 100%;
+  padding: 25px 21px 44px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  width: 100%;
+}
+
+.form-group label,
+.scheduling-section h2 {
+  display: block;
+  color: #080808;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.form-group label {
+  margin-bottom: 10px;
+}
+
+.form-group input {
+  width: 100%;
+  height: 65px;
+  border: 1px solid #d5d5d5;
+  border-radius: 11px;
+  background: #ffffff;
+  padding: 0 22px;
+  font-size: 21px;
+  font-family: inherit;
+  outline: none;
+}
+
+.form-group input::placeholder {
+  color: #707070;
+  opacity: 1;
+}
+
+.form-group input:focus {
+  border-color: #2b211b;
+}
+
+/* =========================
+   DESCRIPTION
+========================= */
+
+.description-group {
+  margin-top: 14px;
+}
+
+/* =========================
+   SCHEDULING PERIODS
+========================= */
+
+.scheduling-section {
+  margin-top: 30px;
+}
+
+.scheduling-section h2 {
+  font-size: 29px;
+  margin: 0 0 31px;
+}
+
+.scheduling-section .form-group + .form-group {
+  margin-top: 14px;
+}
+
+/* =========================
+   DATE INPUT
+========================= */
+
+.date-input {
+  position: relative;
+  width: 100%;
+}
+
+.date-input input {
+  padding-right: 60px;
+}
+
+/* Hide browser calendar icon */
+.date-input input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.date-input svg {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  pointer-events: none;
+}
+
+/* =========================
+   CREATE BUTTON
+========================= */
+
+.create-button {
+  width: 100%;
+  height: 70px;
+  margin-top: auto;
+  padding: 0;
+  border: none;
+  border-radius: 22px;
+  background: #2b211b;
+  color: white;
+
+  font-family: inherit;
+  font-size: 21px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.create-button:hover {
+  opacity: 0.92;
+}
+
+.create-button:active {
+  opacity: 0.8;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+  .header {
+    height: 148px;
+  }
+
+  .header h1 {
+    font-size: 34px;
+  }
+
+  .form-container {
+    padding: 25px 21px 44px;
+  }
+
+  .form-group label {
+    font-size: 22px;
+  }
+
+  .scheduling-section h2 {
+    font-size: 29px;
+  }
+
+  .form-group input {
+    height: 65px;
+    font-size: 21px;
+  }
+
+  .create-button {
+    height: 70px;
+    border-radius: 22px;
+  }
+}
