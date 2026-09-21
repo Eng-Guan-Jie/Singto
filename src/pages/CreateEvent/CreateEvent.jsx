@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CalendarDays } from "lucide-react";
 import "./CreateEvent.css";
 
@@ -7,6 +8,8 @@ function CreateEvent() {
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
+  const navigate = useNavigate();
 
   const handleCreateEvent = () => {
     if (!eventName || !startDate || !endDate) {
@@ -24,6 +27,7 @@ function CreateEvent() {
     console.log("Created Event:", eventData);
 
     // TODO: navigate to next page
+    navigate("/Overview");
   };
 
   return (
