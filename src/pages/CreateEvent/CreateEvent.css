@@ -10,7 +10,7 @@
 ========================= */
 
 .header {
-  width: min(calc(100% - 36px), 920px);
+  width: 100%;
   min-height: 72px;
   height: 12vh;
   background: #2b211b;

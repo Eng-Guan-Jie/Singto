@@ -28,7 +28,7 @@ button {
 ================================= */
 
 .overview-header {
-  width: min(calc(100% - 36px), 920px);
+  width: 100%;
   min-height: 72px;
   margin: 0 auto;
   display: flex;
@@ -49,7 +49,6 @@ button {
 
 .event-card {
   width: 100%;
-  margin: 16px 0 0;
   padding: clamp(18px, 3vw, 24px);
 
   border: 1.5px solid #b4b4b4;
@@ -608,7 +607,7 @@ button {
   }
 
   .event-card {
-    width: calc(100% - 32px);
+    width: 100%;
     margin: 0 auto;
     padding: 18px;
     display: block;
