@@ -22,67 +22,67 @@ const participants = [
 ];
 
 const availability = {
-  7: "free",
-  8: "partial",
-  9: "busy",
-  10: "busy",
-  11: "busy",
-  12: "free",
-  13: "free",
-  14: "free",
-  15: "busy",
-  16: "busy",
-  17: "busy",
-  18: "partial",
-  19: "partial",
-  20: "free",
+  "2026-09-07": "free",
+  "2026-09-08": "partial",
+  "2026-09-09": "busy",
+  "2026-09-10": "busy",
+  "2026-09-11": "busy",
+  "2026-09-12": "free",
+  "2026-09-13": "free",
+  "2026-09-14": "free",
+  "2026-09-15": "busy",
+  "2026-09-16": "busy",
+  "2026-09-17": "busy",
+  "2026-09-18": "partial",
+  "2026-09-19": "partial",
+  "2026-09-20": "free",
 };
 
 const weeks = [
   [
-    { day: 31, muted: true },
-    { day: 1, muted: true },
-    { day: 2, muted: true },
-    { day: 3, muted: true },
-    { day: 4, muted: true },
-    { day: 5, muted: true },
-    { day: 6, muted: true },
+    { day: 30, date: "2026-08-30", muted: true },
+    { day: 31, date: "2026-08-31", muted: true },
+    { day: 1, date: "2026-09-01" },
+    { day: 2, date: "2026-09-02" },
+    { day: 3, date: "2026-09-03" },
+    { day: 4, date: "2026-09-04" },
+    { day: 5, date: "2026-09-05" },
   ],
   [
-    { day: 7 },
-    { day: 8 },
-    { day: 9 },
-    { day: 10 },
-    { day: 11 },
-    { day: 12 },
-    { day: 13 },
+    { day: 6, date: "2026-09-06" },
+    { day: 7, date: "2026-09-07" },
+    { day: 8, date: "2026-09-08" },
+    { day: 9, date: "2026-09-09" },
+    { day: 10, date: "2026-09-10" },
+    { day: 11, date: "2026-09-11" },
+    { day: 12, date: "2026-09-12" },
   ],
   [
-    { day: 14 },
-    { day: 15 },
-    { day: 16 },
-    { day: 17 },
-    { day: 18 },
-    { day: 19 },
-    { day: 20, selected: true },
+    { day: 13, date: "2026-09-13" },
+    { day: 14, date: "2026-09-14" },
+    { day: 15, date: "2026-09-15" },
+    { day: 16, date: "2026-09-16" },
+    { day: 17, date: "2026-09-17" },
+    { day: 18, date: "2026-09-18" },
+    { day: 19, date: "2026-09-19" },
   ],
   [
-    { day: 21, muted: true },
-    { day: 22, muted: true },
-    { day: 23, muted: true },
-    { day: 24, muted: true },
-    { day: 25, muted: true },
-    { day: 26, muted: true },
-    { day: 27, muted: true },
+    { day: 20, date: "2026-09-20" },
+    { day: 21, date: "2026-09-21" },
+    { day: 22, date: "2026-09-22" },
+    { day: 23, date: "2026-09-23" },
+    { day: 24, date: "2026-09-24" },
+    { day: 25, date: "2026-09-25" },
+    { day: 26, date: "2026-09-26" },
   ],
   [
-    { day: 28, muted: true },
-    { day: 29, muted: true },
-    { day: 30, muted: true },
-    { day: 1, muted: true },
-    { day: 2, muted: true },
-    { day: 3, muted: true },
-    { day: 4, muted: true },
+    { day: 27, date: "2026-09-27" },
+    { day: 28, date: "2026-09-28" },
+    { day: 29, date: "2026-09-29" },
+    { day: 30, date: "2026-09-30" },
+    { day: 1, date: "2026-10-01", muted: true },
+    { day: 2, date: "2026-10-02", muted: true },
+    { day: 3, date: "2026-10-03", muted: true },
   ],
 ];
 
@@ -99,11 +99,11 @@ const formatDate = (dateValue) => {
 function Overview() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
-  const [selectedDate, setSelectedDate] = useState(20);
+  const [selectedDate, setSelectedDate] = useState("2026-09-20");
   const [selectedAvailabilityDates, setSelectedAvailabilityDates] = useState([
-    8,
-    12,
-    14,
+    "2026-09-08",
+    "2026-09-12",
+    "2026-09-14",
   ]);
   const eventData = {
     ...defaultEventData,
@@ -125,15 +125,17 @@ function Overview() {
     alert(`Date ${selectedDate} selected!`);
   };
 
-  const toggleAvailabilityDate = (day) => {
-    setSelectedAvailabilityDates((currentDates) => {
-      if (currentDates.includes(day)) {
-        return currentDates.filter((date) => date !== day);
-      }
+  const toggleAvailabilityDate = (date) => {
+  setSelectedAvailabilityDates((currentDates) => {
+    if (currentDates.includes(date)) {
+      return currentDates.filter(
+        (selectedDate) => selectedDate !== date
+      );
+    }
 
-      return [...currentDates, day].sort((a, b) => a - b);
-    });
-  };
+    return [...currentDates, date].sort();
+  });
+};
 
   const handleQuickSelect = () => {
     const availableDays = weeks
@@ -284,11 +286,9 @@ function Overview() {
                     {week.map((date, index) => {
 
                       const status =
-                        availability[date.day];
+                        availability[date.date];
 
-                      const isSelected =
-                        date.day === selectedDate &&
-                        !date.muted;
+                      const isSelected = date.date === selectedDate;
 
                       return (
                         <button
@@ -300,11 +300,8 @@ function Overview() {
                             ${isSelected ? "selected" : ""}
                           `}
                           onClick={() => {
-                            if (!date.muted) {
-                              setSelectedDate(date.day);
-                            }
+                              setSelectedDate(date.date);
                           }}
-                          disabled={date.muted}
                         >
                           <span>{date.day}</span>
                         </button>
@@ -409,9 +406,7 @@ function Overview() {
                   >
                     {week.map((date, index) => {
                       const isSelected =
-                        selectedAvailabilityDates.includes(date.day) &&
-                        !date.muted;
-
+                        selectedAvailabilityDates.includes(date.date);
                       return (
                         <button
                           key={`${weekIndex}-${index}`}
@@ -420,12 +415,9 @@ function Overview() {
                             ${date.muted ? "muted" : ""}
                             ${isSelected ? "selected" : ""}
                           `}
-                          onClick={() => {
-                            if (!date.muted) {
-                              toggleAvailabilityDate(date.day);
-                            }
+                          onClick={() => {                  
+                              toggleAvailabilityDate(date.date);                       
                           }}
-                          disabled={date.muted}
                           aria-label={`${
                             isSelected ? "Remove" : "Add"
                           } availability for day ${date.day}`}
