@@ -237,11 +237,11 @@ function Overview() {
     <div className="overview-page">
 
       {/* ================= HEADER ================= */}
-      <header className="overview-header">
-        <h1>Singto</h1>
-      </header>
+      <div className="overview-header">
+          <h1>Singto</h1>
+        </div>
 
-      <main className="overview-container">
+     <main className="overview-container">
 
       {/* ================= EVENT CARD ================= */}
       <section className="event-card">
