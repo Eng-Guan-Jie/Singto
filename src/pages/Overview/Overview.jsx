@@ -96,6 +96,41 @@ const formatDate = (dateValue) => {
   }).format(new Date(`${dateValue}T00:00:00`));
 };
 
+const bestDates = [
+  {
+    date: "2026-09-07",
+    label: "7 SEP 2026",
+    day: "Sunday",
+    available: 5,
+    total: 5,
+    status: "free",
+  },
+  {
+    date: "2026-09-12",
+    label: "12 SEP 2026",
+    day: "Friday",
+    available: 5,
+    total: 5,
+    status: "free",
+  },
+  {
+    date: "2026-09-13",
+    label: "13 SEP 2026",
+    day: "Saturday",
+    available: 5,
+    total: 5,
+    status: "free",
+  },
+  {
+    date: "2026-09-14",
+    label: "14 SEP 2026",
+    day: "Sunday",
+    available: 5,
+    total: 5,
+    status: "free",
+  },
+];
+
 function Overview() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
@@ -122,7 +157,7 @@ function Overview() {
   };
 
   const handleFinalize = () => {
-    alert(`Date ${selectedDate} selected!`);
+    alert(`Date ${formatDate(selectedDate)} selected!`);
   };
 
   const toggleAvailabilityDate = (date) => {
@@ -341,16 +376,57 @@ function Overview() {
 
             </div>
 
-          </section>
+            </section>
 
-          {/* ================= FINALIZE ================= */}
-          <button
-            className="finalize-button"
-            onClick={handleFinalize}
-          >
-            FINALIZE DATE
-          </button>
+            {/* ================= BEST DATE ================= */}
+            <section className="best-date-section">
 
+              <div className="best-date-header">
+                <div>
+                  <h2>BEST DATE</h2>
+                  <p>Single Day</p>
+                </div>
+
+                <button
+                  className="filter-button"
+                  onClick={() => alert("Filter options")}
+                >
+                  Filter
+                </button>
+              </div>
+        
+              <div className="best-date-list">
+
+                {bestDates.map((item) => (
+                  <button
+                    key={item.date}
+                    className={`best-date-card ${item.status}`}
+                    onClick={() => {
+                      setSelectedDate(item.date);
+                    }}
+                  >
+                    <div className="best-date-info">
+                      <strong>{item.label}</strong>
+                      <span>{item.day}</span>
+                    </div>
+
+                    <strong className="best-date-count">
+                      {item.available}/{item.total}
+                    </strong>
+                  </button>
+                ))}
+
+              </div>
+
+            </section>
+
+            {/* ================= FINALIZE ================= */}
+            <button
+              className="finalize-button"
+              onClick={handleFinalize}
+            >
+              FINALIZE DATE
+            </button>
         </main>
       )}
 

@@ -619,3 +619,134 @@ button {
     margin-top: 24px;
   }
 }
+/* ================= BEST DATE ================= */
+
+.best-date-section {
+  margin-top: 28px;
+  padding: 0 12px 110px;
+}
+
+.best-date-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.best-date-header h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.best-date-header p {
+  margin: 2px 0 0;
+  font-size: 21px;
+  color: #777;
+}
+
+.filter-button {
+  border: none;
+  background: #2b211a;
+  color: white;
+  padding: 15px 32px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.best-date-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.best-date-card {
+  position: relative;
+  width: 100%;
+  min-height: 82px;
+  padding: 12px 16px 12px 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: white;
+  border: 1.5px solid #b5b5b5;
+  border-radius: 13px;
+
+  cursor: pointer;
+  text-align: left;
+
+  box-sizing: border-box;
+}
+
+.best-date-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  border-radius: 13px 0 0 13px;
+}
+
+.best-date-card.free::before {
+  background: #16e000;
+}
+
+.best-date-card.partial::before {
+  background: #f2b900;
+}
+
+.best-date-card.busy::before {
+  background: #ff3b30;
+}
+
+.best-date-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.best-date-info strong {
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #111;
+}
+
+.best-date-info span {
+  font-size: 22px;
+  line-height: 1.1;
+  color: #111;
+}
+
+.best-date-count {
+  font-size: 24px;
+  color: #111;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* ================= FINALIZE BUTTON ================= */
+
+.finalize-button {
+  width: calc(100% - 24px);
+  margin: 0 12px 14px;
+
+  min-height: 78px;
+
+  border: none;
+  border-radius: 24px;
+
+  background: #2b211a;
+  color: white;
+
+  font-size: 24px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
