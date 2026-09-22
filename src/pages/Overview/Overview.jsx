@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Bell,
   Pencil,
@@ -133,6 +133,7 @@ const bestDates = [
 
 function Overview() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedDate, setSelectedDate] = useState("2026-09-20");
   const [selectedAvailabilityDates, setSelectedAvailabilityDates] = useState([
@@ -140,6 +141,20 @@ function Overview() {
     "2026-09-12",
     "2026-09-14",
   ]);
+
+  const [showQuickSelect, setShowQuickSelect] = useState(false);
+  const quickSelectOptions = [
+  { label: "All Day", type: "all" },
+  { label: "Weekends", type: "weekends" },
+  { label: "Every Monday", type: 1 },
+  { label: "Every Tuesday", type: 2 },
+  { label: "Every Wednesday", type: 3 },
+  { label: "Every Thursday", type: 4 },
+  { label: "Every Friday", type: 5 },
+  { label: "Every Saturday", type: 6 },
+  { label: "Every Sunday", type: 0 },
+];
+
   const eventData = {
     ...defaultEventData,
     ...location.state?.eventData,
@@ -153,7 +168,12 @@ function Overview() {
   };
 
   const handleEdit = () => {
-    alert("Edit event");
+    navigate("/create-event", {
+      state: {
+        eventData,
+        editMode: true,
+      },
+    });
   };
 
   const handleFinalize = () => {
@@ -172,13 +192,39 @@ function Overview() {
   });
 };
 
-  const handleQuickSelect = () => {
-    const availableDays = weeks
-      .flat()
-      .filter((date) => !date.muted)
-      .map((date) => date.day);
+  const handleQuickSelect = (type) => {
+    const start = new Date(`${eventData.startDate}T00:00:00`);
+    const end = new Date(`${eventData.endDate}T00:00:00`);
 
-    setSelectedAvailabilityDates(availableDays);
+    const selectedDates = weeks
+      .flat()
+      .filter((date) => {
+        if (date.muted) return false;
+
+        const current = new Date(`${date.date}T00:00:00`);
+
+        // Only select dates inside the event scheduling period
+        if (current < start || current > end) {
+          return false;
+        }
+
+        // All Day
+        if (type === "all") {
+          return true;
+        }
+
+        // Weekends
+        if (type === "weekends") {
+          return current.getDay() === 0 || current.getDay() === 6;
+        }
+
+        // Specific weekday
+        return current.getDay() === type;
+      })
+      .map((date) => date.date);
+
+    setSelectedAvailabilityDates(selectedDates);
+    setShowQuickSelect(false);
   };
 
   const handleSaveAvailability = () => {
@@ -194,6 +240,8 @@ function Overview() {
       <header className="overview-header">
         <h1>Singto</h1>
       </header>
+
+      <main className="overview-container">
 
       {/* ================= EVENT CARD ================= */}
       <section className="event-card">
@@ -277,7 +325,7 @@ function Overview() {
 
       {/* ================= OVERVIEW ================= */}
       {activeTab === "overview" && (
-        <main className="overview-content">
+        <section className="overview-content">
 
           <section className="calendar-section">
 
@@ -427,30 +475,43 @@ function Overview() {
             >
               FINALIZE DATE
             </button>
-        </main>
+        </section>
       )}
 
       {/* ================= MY AVAILABILITY ================= */}
       {activeTab === "availability" && (
-        <main className="availability-content">
+        <section className="availability-content">
 
           <section className="availability-calendar-section">
 
             <div className="availability-heading">
               <div>
                 <h2>CALENDAR</h2>
-
-                <p>
-                  Tap your available days
-                </p>
+                <p>Tap your available days</p>
               </div>
 
-              <button
-                className="quick-select-button"
-                onClick={handleQuickSelect}
-              >
-                Quick Select
-              </button>
+              <div className="quick-select-wrapper">
+                <button
+                  className="quick-select-button"
+                  onClick={() => setShowQuickSelect((current) => !current)}
+                >
+                  Quick Select
+                </button>
+
+                {showQuickSelect && (
+                  <div className="quick-select-menu">
+                    {quickSelectOptions.map((option) => (
+                      <button
+                        key={option.label}
+                        className="quick-select-option"
+                        onClick={() => handleQuickSelect(option.type)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="availability-calendar">
@@ -516,10 +577,10 @@ function Overview() {
           >
             SAVE
           </button>
-
-        </main>
+          
+        </section>
       )}
-
+        </main>
     </div>
   );
 }

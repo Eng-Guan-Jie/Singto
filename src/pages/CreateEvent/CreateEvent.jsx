@@ -1,33 +1,49 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CalendarDays } from "lucide-react";
 import "./CreateEvent.css";
 
 function CreateEvent() {
-  const [eventName, setEventName] = useState("");
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-
+  const location = useLocation();
   const navigate = useNavigate();
 
-  const handleCreateEvent = () => {
-    if (!eventName || !startDate || !endDate) {
-      alert("Please fill in the required fields.");
-      return;
-    }
+  const existingEvent = location.state?.eventData;
+  const isEditMode = location.state?.editMode === true;
 
-    const eventData = {
-      eventName,
-      description,
-      startDate,
-      endDate,
-    };
+  const [eventName, setEventName] = useState(
+    existingEvent?.eventName || ""
+  );
+  const [description, setDescription] = useState(
+    existingEvent?.description || ""
+  );
+  const [startDate, setStartDate] = useState(
+    existingEvent?.startDate || ""
+  );
+  const [endDate, setEndDate] = useState(
+    existingEvent?.endDate || ""
+  );
 
-    console.log("Created Event:", eventData);
+  const handleSaveEvent = () => {
+  if (!eventName || !startDate || !endDate) {
+    alert("Please fill in the required fields.");
+    return;
+  }
 
-    navigate("/overview", { state: { eventData } });
+  const eventData = {
+    eventName,
+    description,
+    startDate,
+    endDate,
   };
+
+  console.log(isEditMode ? "Updated Event:" : "Created Event:", eventData);
+
+  navigate("/overview", {
+    state: {
+      eventData,
+    },
+  });
+};
 
   return (
     <div className="page">
@@ -105,9 +121,9 @@ function CreateEvent() {
         {/* Create Event Button */}
         <button
           className="create-button"
-          onClick={handleCreateEvent}
+          onClick={handleSaveEvent}
         >
-          CREATE EVENT
+          {isEditMode ? "UPDATE EVENT" : "CREATE EVENT"}
         </button>
 
       </main>

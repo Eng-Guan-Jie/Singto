@@ -14,6 +14,16 @@ button {
 }
 
 /* =================================
+   MAIN CONTAINER
+================================= */
+
+.overview-container {
+  width: min(calc(100% - 36px), 920px);
+  margin: 0 auto;
+  background: #ffffff;
+}
+
+/* =================================
    HEADER
 ================================= */
 
@@ -40,8 +50,8 @@ button {
 ================================= */
 
 .event-card {
-  width: min(calc(100% - 36px), 920px);
-  margin: 16px auto 0;
+  width: 100%;
+  margin: 16px 0 0;
   padding: clamp(18px, 3vw, 24px);
 
   border: 1.5px solid #b4b4b4;
@@ -198,23 +208,17 @@ button {
 .tabs {
   margin-top: 22px;
   min-height: 58px;
-
   display: flex;
-
   background: #eeeeee;
 }
 
 .tab {
   flex: 1;
-
   border: none;
   background: transparent;
-
   color: #aaaaaa;
-
   min-height: 58px;
   padding: 0 12px;
-
   font-size: clamp(0.82rem, 2vw, 1rem);
   font-weight: 700;
 
@@ -224,11 +228,18 @@ button {
 .tab.active {
   background: #ffffff;
   color: #080808;
-
-  border-radius: 0 24px 0 0;
-
   text-decoration: underline;
   text-underline-offset: 7px;
+}
+
+/* Overview active */
+.tab:first-child.active {
+  border-radius: 0 24px 0 0;
+}
+
+/* My Availability acitve */
+.tab:last-child.active {
+  border-radius: 24px 0 0 0;
 }
 
 /* =================================
@@ -236,19 +247,18 @@ button {
 ================================= */
 
 .overview-content {
-  width: min(calc(100% - 36px), 920px);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 24px 0 0;
   min-height: 420px;
-
   display: flex;
   flex-direction: column;
+  background: #ffffff;
 }
 
 .calendar-section h2,
 .availability-heading h2 {
   margin: 0;
-
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -411,12 +421,13 @@ button {
 ================================= */
 
 .availability-content {
-  width: min(calc(100% - 36px), 920px);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 28px 0;
   min-height: 420px;
   display: flex;
   flex-direction: column;
+  background: #ffffff;
 }
 
 .availability-heading {
@@ -544,6 +555,45 @@ button {
   cursor: pointer;
 }
 
+/* quicl select */
+.quick-select-wrapper {
+  position: relative;
+}
+
+.quick-select-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 180px;
+  background: #ffffff;
+  border: 1px solid #b4b4b4;
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.quick-select-option {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 14px;
+  border: none;
+  border-bottom: 1px solid #eeeeee;
+  background: #ffffff;
+  color: #080808;
+  text-align: left;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.quick-select-option:last-child {
+  border-bottom: none;
+}
+
+.quick-select-option:hover {
+  background: #f5f5f5;
+}
+
 /* =================================
    RESPONSIVE
 ================================= */
@@ -619,63 +669,78 @@ button {
     margin-top: 24px;
   }
 }
-/* ================= BEST DATE ================= */
+/* =================================
+   BEST DATE
+================================= */
 
 .best-date-section {
-  margin-top: 28px;
-  padding: 0 12px 110px;
+  width: 100%;
+  margin-top: 24px;
+  padding: 0 0 28px;
 }
 
 .best-date-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   margin-bottom: 14px;
 }
 
 .best-date-header h2 {
   margin: 0;
-  font-size: 30px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .best-date-header p {
   margin: 2px 0 0;
-  font-size: 21px;
-  color: #777;
+
+  color: #666666;
+
+  font-size: 0.95rem;
 }
 
 .filter-button {
+  min-height: 44px;
+  padding: 0 24px;
+
   border: none;
-  background: #2b211a;
-  color: white;
-  padding: 15px 32px;
-  border-radius: 30px;
-  font-size: 18px;
+  border-radius: 999px;
+
+  background: #2b211b;
+  color: #ffffff;
+
+  font-size: 0.95rem;
   font-weight: 700;
+
   cursor: pointer;
 }
 
 .best-date-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+
+  gap: 12px;
 }
 
 .best-date-card {
   position: relative;
+
   width: 100%;
-  min-height: 82px;
-  padding: 12px 16px 12px 28px;
+  min-height: 72px;
+
+  padding: 10px 14px 10px 24px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  background: white;
-  border: 1.5px solid #b5b5b5;
-  border-radius: 13px;
+  background: #ffffff;
+
+  border: 1.5px solid #b4b4b4;
+  border-radius: 12px;
 
   cursor: pointer;
   text-align: left;
@@ -685,68 +750,81 @@ button {
 
 .best-date-card::before {
   content: "";
+
   position: absolute;
+
   left: 0;
   top: 0;
   bottom: 0;
-  width: 12px;
-  border-radius: 13px 0 0 13px;
+
+  width: 10px;
+
+  border-radius: 12px 0 0 12px;
 }
 
 .best-date-card.free::before {
-  background: #16e000;
+  background: #20c463;
 }
 
 .best-date-card.partial::before {
-  background: #f2b900;
+  background: #f2b800;
 }
 
 .best-date-card.busy::before {
-  background: #ff3b30;
+  background: #f23f46;
 }
 
 .best-date-info {
   display: flex;
   flex-direction: column;
+
   gap: 2px;
 }
 
 .best-date-info strong {
-  font-size: 24px;
-  line-height: 1.1;
-  font-weight: 800;
-  color: #111;
+  font-size: 1rem;
+  line-height: 1.2;
+  font-weight: 700;
+
+  color: #080808;
 }
 
 .best-date-info span {
-  font-size: 22px;
-  line-height: 1.1;
-  color: #111;
+  font-size: 0.95rem;
+  line-height: 1.2;
+
+  color: #080808;
 }
 
 .best-date-count {
-  font-size: 24px;
-  color: #111;
   align-self: flex-start;
-  margin-top: 2px;
+
+  margin-top: 1px;
+
+  font-size: 1rem;
+  font-weight: 700;
+
+  color: #080808;
 }
 
-/* ================= FINALIZE BUTTON ================= */
+/* =================================
+   FINALIZE BUTTON
+================================= */
 
 .finalize-button {
-  width: calc(100% - 24px);
-  margin: 0 12px 14px;
+  width: 100%;
+  min-height: 54px;
 
-  min-height: 78px;
+  margin-top: 0;
 
   border: none;
-  border-radius: 24px;
+  border-radius: 14px;
 
-  background: #2b211a;
-  color: white;
+  background: #2b211b;
+  color: #ffffff;
 
-  font-size: 24px;
-  font-weight: 800;
+  font-size: 0.98rem;
+  font-weight: 700;
 
   cursor: pointer;
 }
