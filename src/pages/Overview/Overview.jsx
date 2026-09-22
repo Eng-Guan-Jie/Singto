@@ -177,8 +177,13 @@ function Overview() {
   };
 
   const handleFinalize = () => {
-    alert(`Date ${formatDate(selectedDate)} selected!`);
-  };
+  navigate("/confirm-date", {
+    state: {
+      eventData,
+      selectedDate,
+    },
+  });
+};
 
   const toggleAvailabilityDate = (date) => {
   setSelectedAvailabilityDates((currentDates) => {

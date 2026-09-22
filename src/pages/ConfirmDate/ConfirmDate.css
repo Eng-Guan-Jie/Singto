@@ -1,0 +1,317 @@
+.confirm-page {
+  min-height: 100vh;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.confirm-header {
+  width: 100%;
+  min-height: 72px;
+  height: 12vh;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2b211b;
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+.confirm-header h1 {
+  margin: 0;
+  color: #ffffff;
+}
+
+.confirm-container {
+  width: min(calc(100% - 36px), 920px);
+  margin: 24px auto 0;
+  padding-bottom: 24px;
+  box-sizing: border-box;
+}
+
+.confirm-container h2 {
+  margin: 0;
+  color: #080808;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+/* CONFIRM DATE */
+
+.confirm-selection {
+  margin: 0;
+}
+
+.selection-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.selection-option {
+  width: fit-content;
+  min-height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  background: transparent;
+  color: #666666;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.radio-circle {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #666666;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background: #ffffff;
+  position: relative;
+}
+
+.selection-option.active .radio-circle::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 4px;
+  left: 4px;
+  border-radius: 50%;
+  background: #2b211b;
+}
+
+/* CALENDAR */
+
+.confirm-calendar-section {
+  margin-top: 18px;
+}
+
+.confirm-calendar-section > p {
+  margin: 4px 0 10px;
+  color: #666666;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.confirm-calendar {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #d6d6d6;
+  border-radius: 10px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.confirm-weekdays {
+  min-height: 34px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;
+  background: #2b211b;
+  color: #ffffff;
+}
+
+.confirm-weekdays span {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.confirm-calendar-body {
+  padding: 4px 8px 8px;
+}
+
+.confirm-calendar-week {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;
+}
+
+.confirm-date {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #080808;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.confirm-date.free {
+  background: #20c463;
+}
+
+.confirm-date.partial {
+  background: #f8e4ae;
+}
+
+.confirm-date.busy {
+  background: #f7c4c7;
+}
+
+.confirm-date.muted {
+  color: #c8c8c8;
+  background: transparent;
+  cursor: default;
+}
+
+.confirm-date.selected {
+  outline: 3px solid #7b35ff;
+  outline-offset: 2px;
+}
+
+/* NOTE */
+
+.confirm-note-section {
+  margin-top: 18px;
+}
+
+.confirm-note-section input {
+  width: 100%;
+  height: 54px;
+  margin-top: 8px;
+  padding: 0 18px;
+  border: 1px solid #d6d6d6;
+  border-radius: 10px;
+  outline: none;
+  background: #ffffff;
+  color: #080808;
+  font-family: inherit;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.confirm-note-section input::placeholder {
+  color: #777777;
+}
+
+/* NOTIFICATION */
+
+.notification-section {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #080808;
+  font-size: 0.95rem;
+}
+
+/* Toggle */
+
+.toggle-switch {
+  width: 54px;
+  height: 28px;
+  padding: 2px;
+  border: none;
+  border-radius: 999px;
+  background: #aaaaaa;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 0.2s ease;
+}
+
+.toggle-switch.on {
+  background: #16d500;
+}
+
+.toggle-knob {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  transform: translateX(0);
+  transition: transform 0.2s ease;
+}
+
+.toggle-switch.on .toggle-knob {
+  transform: translateX(26px);
+}
+
+/* CONFIRM BUTTON */
+
+.confirm-date-button {
+  width: 100%;
+  min-height: 58px;
+  margin-top: 108px;
+  border: none;
+  border-radius: 16px;
+  background: #2b211b;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .confirm-header {
+    min-height: 64px;
+    height: 10vh;
+  }
+
+  .confirm-container {
+    width: calc(100% - 32px);
+    margin: 20px auto 0;
+  }
+
+  .confirm-container h2 {
+    font-size: 1.7rem;
+  }
+
+  .selection-options {
+    gap: 8px;
+  }
+
+  .selection-option {
+    font-size: 0.95rem;
+  }
+
+  .confirm-calendar-section {
+    margin-top: 18px;
+  }
+
+  .confirm-calendar-section > p {
+    font-size: 0.92rem;
+  }
+
+  .confirm-calendar-body {
+    padding: 4px 6px 8px;
+  }
+
+  .confirm-calendar-week {
+    min-height: 48px;
+  }
+
+  .confirm-date {
+    width: 42px;
+    height: 42px;
+    font-size: 0.9rem;
+  }
+
+  .notification-section {
+    font-size: 0.9rem;
+  }
+
+  .confirm-date-button {
+    margin-top: 108px;
+    min-height: 58px;
+  }
+}
