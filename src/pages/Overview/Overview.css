@@ -258,8 +258,8 @@ button {
 
 .calendar-section h2,
 .availability-heading h2 {
-  margin: 0;
-  font-size: 1.1rem;
+  margin: 2px 0 0;
+  font-size: 0.95rem;
   font-weight: 700;
 }
 
@@ -423,7 +423,7 @@ button {
 .availability-content {
   width: 100%;
   margin: 0;
-  padding: 28px 0;
+  padding: 24px 0 28px;
   min-height: 420px;
   display: flex;
   flex-direction: column;
@@ -432,10 +432,10 @@ button {
 
 .availability-heading {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .availability-heading p {
@@ -501,7 +501,7 @@ button {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 
-  min-height: clamp(48px, 12vw, 70px);
+  min-height: clamp(42px, 12vw, 68px);
 }
 
 .availability-date {
@@ -521,7 +521,7 @@ button {
   align-items: center;
   justify-content: center;
 
-  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
 
   cursor: pointer;
 }
