@@ -339,6 +339,10 @@ button {
   cursor: default;
 }
 
+.calendar-date:disabled {
+  cursor: default;
+}
+
 .calendar-date.free {
   background: #20c463;
   color: #000000;
@@ -804,6 +808,90 @@ button {
   font-weight: 700;
 
   color: #080808;
+}
+
+.selected-date-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.selected-date-detail .best-date-card {
+  cursor: default;
+}
+
+.availability-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.respondent-group h3 {
+  margin: 0 0 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 1rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 18px;
+  height: 18px;
+
+  flex: 0 0 18px;
+
+  border-radius: 50%;
+}
+
+.available-dot {
+  background: #16d500;
+}
+
+.unavailable-dot {
+  background: #f23f46;
+}
+
+.respondent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-left: 18px;
+}
+
+.respondent-row {
+  min-height: 24px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #080808;
+  font-size: 0.92rem;
+  line-height: 1.2;
+}
+
+.respondent-avatar {
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #c8c8c8;
+
+  font-size: 14px;
+}
+
+.empty-respondent-list {
+  margin: 0;
+  color: #777777;
+  font-size: 0.92rem;
 }
 
 /* =================================

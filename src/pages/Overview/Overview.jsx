@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Bell,
   Pencil,
@@ -16,10 +16,29 @@ const defaultEventData = {
 };
 
 const participants = [
-  { id: 1, name: "Participant 1", avatar: "👩🏻" },
-  { id: 2, name: "Participant 2", avatar: "👩🏻‍🦱" },
-  { id: 3, name: "Participant 3", avatar: "👩🏻‍🦰" },
+  { id: 1, name: "Mook", avatar: "👩🏻" },
+  { id: 2, name: "Sugus", avatar: "👩🏻‍🦱" },
+  { id: 3, name: "Beyum", avatar: "👩🏻‍🦰" },
+  { id: 4, name: "Wan", avatar: "👩🏻‍🦳" },
+  { id: 5, name: "Jai", avatar: "👩🏻‍🦲" },
 ];
+
+const respondentAvailability = {
+  "2026-09-07": ["Mook", "Sugus", "Beyum", "Wan", "Jai"],
+  "2026-09-08": ["Mook", "Sugus", "Beyum"],
+  "2026-09-09": [],
+  "2026-09-10": [],
+  "2026-09-11": [],
+  "2026-09-12": ["Mook", "Sugus", "Beyum", "Wan", "Jai"],
+  "2026-09-13": ["Mook", "Sugus", "Beyum", "Wan", "Jai"],
+  "2026-09-14": ["Mook", "Sugus", "Beyum", "Wan", "Jai"],
+  "2026-09-15": [],
+  "2026-09-16": [],
+  "2026-09-17": [],
+  "2026-09-18": ["Mook", "Wan", "Jai"],
+  "2026-09-19": ["Sugus", "Beyum", "Jai"],
+  "2026-09-20": ["Mook", "Sugus", "Beyum", "Wan", "Jai"],
+};
 
 const availability = {
   "2026-09-07": "free",
@@ -96,46 +115,72 @@ const formatDate = (dateValue) => {
   }).format(new Date(`${dateValue}T00:00:00`));
 };
 
-const bestDates = [
-  {
-    date: "2026-09-07",
-    label: "7 SEP 2026",
-    day: "Sunday",
-    available: 5,
-    total: 5,
-    status: "free",
-  },
-  {
-    date: "2026-09-12",
-    label: "12 SEP 2026",
-    day: "Friday",
-    available: 5,
-    total: 5,
-    status: "free",
-  },
-  {
-    date: "2026-09-13",
-    label: "13 SEP 2026",
-    day: "Saturday",
-    available: 5,
-    total: 5,
-    status: "free",
-  },
-  {
-    date: "2026-09-14",
-    label: "14 SEP 2026",
-    day: "Sunday",
-    available: 5,
-    total: 5,
-    status: "free",
-  },
-];
+const getEventDataFromSearchParams = (searchParams) => {
+  return ["eventName", "description", "startDate", "endDate"].reduce(
+    (eventData, key) => {
+      const value = searchParams.get(key);
+
+      if (value) {
+        eventData[key] = value;
+      }
+
+      return eventData;
+    },
+    {}
+  );
+};
+
+const getDateLabel = (dateValue) =>
+  new Intl.DateTimeFormat("en", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+    .format(new Date(`${dateValue}T00:00:00`))
+    .replace(",", "")
+    .toUpperCase();
+
+const getDayLabel = (dateValue) =>
+  new Intl.DateTimeFormat("en", {
+    weekday: "long",
+  }).format(new Date(`${dateValue}T00:00:00`));
+
+const getDateAvailabilitySummary = (dateValue) => {
+  const availableNames = respondentAvailability[dateValue] || [];
+  const availableParticipants = participants.filter((participant) =>
+    availableNames.includes(participant.name)
+  );
+  const unavailableParticipants = participants.filter(
+    (participant) => !availableNames.includes(participant.name)
+  );
+
+  return {
+    date: dateValue,
+    label: getDateLabel(dateValue),
+    day: getDayLabel(dateValue),
+    available: availableParticipants.length,
+    total: participants.length,
+    status:
+      availableParticipants.length === participants.length
+        ? "free"
+        : availableParticipants.length > 0
+        ? "partial"
+        : "busy",
+    availableParticipants,
+    unavailableParticipants,
+  };
+};
+
+const bestDates = Object.keys(respondentAvailability)
+  .map(getDateAvailabilitySummary)
+  .filter((item) => item.status === "free");
 
 function Overview() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("overview");
-  const [selectedDate, setSelectedDate] = useState("2026-09-20");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedAvailabilityDates, setSelectedAvailabilityDates] = useState([
     "2026-09-08",
     "2026-09-12",
@@ -157,6 +202,7 @@ function Overview() {
 
   const eventData = {
     ...defaultEventData,
+    ...getEventDataFromSearchParams(searchParams),
     ...location.state?.eventData,
   };
   const dateRange = `${formatDate(eventData.startDate)} - ${formatDate(
@@ -176,11 +222,16 @@ function Overview() {
     });
   };
 
+  const selectedDateSummary = selectedDate
+    ? getDateAvailabilitySummary(selectedDate)
+    : null;
+  const finalizeDate = selectedDate || bestDates[0]?.date || eventData.endDate;
+
   const handleFinalize = () => {
   navigate("/confirm-date", {
     state: {
       eventData,
-      selectedDate,
+      selectedDate: finalizeDate,
     },
   });
 };
@@ -267,7 +318,7 @@ function Overview() {
           </p>
 
           <div className="participants">
-            {participants.map((participant) => (
+            {participants.slice(0, 3).map((participant) => (
               <div
                 className="participant-avatar"
                 key={participant.id}
@@ -377,6 +428,7 @@ function Overview() {
                         availability[date.date];
 
                       const isSelected = date.date === selectedDate;
+                      const isSelectable = Boolean(status);
 
                       return (
                         <button
@@ -388,8 +440,11 @@ function Overview() {
                             ${isSelected ? "selected" : ""}
                           `}
                           onClick={() => {
+                            if (isSelectable) {
                               setSelectedDate(date.date);
+                            }
                           }}
+                          disabled={!isSelectable}
                         >
                           <span>{date.day}</span>
                         </button>
@@ -448,28 +503,99 @@ function Overview() {
                 </button>
               </div>
         
-              <div className="best-date-list">
-
-                {bestDates.map((item) => (
-                  <button
-                    key={item.date}
-                    className={`best-date-card ${item.status}`}
-                    onClick={() => {
-                      setSelectedDate(item.date);
-                    }}
-                  >
+              {selectedDateSummary ? (
+                <div className="selected-date-detail">
+                  <div className={`best-date-card ${selectedDateSummary.status}`}>
                     <div className="best-date-info">
-                      <strong>{item.label}</strong>
-                      <span>{item.day}</span>
+                      <strong>{selectedDateSummary.label}</strong>
+                      <span>{selectedDateSummary.day}</span>
                     </div>
 
                     <strong className="best-date-count">
-                      {item.available}/{item.total}
+                      {selectedDateSummary.available}/{selectedDateSummary.total}
                     </strong>
-                  </button>
-                ))}
+                  </div>
 
-              </div>
+                  <div className="availability-breakdown">
+                    <section className="respondent-group">
+                      <h3>
+                        <span className="status-dot available-dot"></span>
+                        AVAILABLE
+                      </h3>
+
+                      <div className="respondent-list">
+                        {selectedDateSummary.availableParticipants.length > 0 ? (
+                          selectedDateSummary.availableParticipants.map(
+                            (participant) => (
+                              <div
+                                className="respondent-row"
+                                key={participant.id}
+                              >
+                                <span className="respondent-avatar">
+                                  {participant.avatar}
+                                </span>
+                                <span>{participant.name.toUpperCase()}</span>
+                              </div>
+                            )
+                          )
+                        ) : (
+                          <p className="empty-respondent-list">No one yet</p>
+                        )}
+                      </div>
+                    </section>
+
+                    <section className="respondent-group">
+                      <h3>
+                        <span className="status-dot unavailable-dot"></span>
+                        UNAVAILABLE
+                      </h3>
+
+                      <div className="respondent-list">
+                        {selectedDateSummary.unavailableParticipants.length > 0 ? (
+                          selectedDateSummary.unavailableParticipants.map(
+                            (participant) => (
+                              <div
+                                className="respondent-row"
+                                key={participant.id}
+                              >
+                                <span className="respondent-avatar">
+                                  {participant.avatar}
+                                </span>
+                                <span>{participant.name.toUpperCase()}</span>
+                              </div>
+                            )
+                          )
+                        ) : (
+                          <p className="empty-respondent-list">No one</p>
+                        )}
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              ) : (
+                <div className="best-date-list">
+
+                  {bestDates.map((item) => (
+                    <button
+                      key={item.date}
+                      className={`best-date-card ${item.status}`}
+                      onClick={() => {
+                        setSelectedDate(item.date);
+                      }}
+                    >
+                      <div className="best-date-info">
+                        <strong>{item.label}</strong>
+                        <span>{item.day}</span>
+                      </div>
+
+                      <strong className="best-date-count">
+                        {item.available}/{item.total}
+                      </strong>
+                    </button>
+                  ))}
+
+                </div>
+              )}
 
             </section>
 

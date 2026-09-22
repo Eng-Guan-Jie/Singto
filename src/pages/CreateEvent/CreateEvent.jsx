@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { CalendarDays } from "lucide-react";
 import "./CreateEvent.css";
 
 function CreateEvent() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const existingEvent = location.state?.eventData;
   const isEditMode = location.state?.editMode === true;
+  const lineChatId = searchParams.get("lineChatId");
+  const [isSaving, setIsSaving] = useState(false);
 
   const [eventName, setEventName] = useState(
     existingEvent?.eventName || ""
@@ -23,11 +26,13 @@ function CreateEvent() {
     existingEvent?.endDate || ""
   );
 
-  const handleSaveEvent = () => {
+  const handleSaveEvent = async () => {
   if (!eventName || !startDate || !endDate) {
     alert("Please fill in the required fields.");
     return;
   }
+
+  setIsSaving(true);
 
   const eventData = {
     eventName,
@@ -38,11 +43,36 @@ function CreateEvent() {
 
   console.log(isEditMode ? "Updated Event:" : "Created Event:", eventData);
 
+  if (lineChatId && !isEditMode) {
+    try {
+      const response = await fetch("/api/line-push-event", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lineChatId,
+          eventData,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to send the event bubble to LINE.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Event created, but Singto could not send it to LINE.");
+    }
+  }
+
   navigate("/overview", {
     state: {
       eventData,
+      lineChatId,
     },
   });
+
+  setIsSaving(false);
 };
 
   return (
@@ -122,8 +152,13 @@ function CreateEvent() {
         <button
           className="create-button"
           onClick={handleSaveEvent}
+          disabled={isSaving}
         >
-          {isEditMode ? "UPDATE EVENT" : "CREATE EVENT"}
+          {isSaving
+            ? "SAVING..."
+            : isEditMode
+            ? "UPDATE EVENT"
+            : "CREATE EVENT"}
         </button>
 
       </main>
