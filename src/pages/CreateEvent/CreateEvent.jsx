@@ -79,7 +79,7 @@ function CreateEvent() {
     <div className="page">
       {/* Header */}
       <header className="header">
-        <h1>Singt</h1>
+        <h1>Singto</h1>
       </header>
 
       {/* Main Content */}
