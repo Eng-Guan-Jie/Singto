@@ -1,9 +1,28 @@
 const sql = require("./_db");
 
 module.exports = async function handler(req, res) {
+  // CORS
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "POST, OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type"
+  );
+
+  // Handle browser preflight request
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    res.status(405).json({ message: "Method not allowed" });
+    res.setHeader("Allow", "POST, OPTIONS");
+    res.status(405).json({
+      message: "Method not allowed",
+    });
     return;
   }
 
@@ -19,14 +38,16 @@ module.exports = async function handler(req, res) {
 
     if (!eventName || !startDate || !endDate) {
       res.status(400).json({
-        message: "eventName, startDate, and endDate are required",
+        message:
+          "eventName, startDate, and endDate are required",
       });
       return;
     }
 
     if (endDate < startDate) {
       res.status(400).json({
-        message: "endDate must be on or after startDate",
+        message:
+          "endDate must be on or after startDate",
       });
       return;
     }
@@ -71,3 +92,4 @@ module.exports = async function handler(req, res) {
     });
   }
 };
+
