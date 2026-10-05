@@ -1,28 +1,107 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import liff from "@line/liff";
+import "./Participant.css";
 
 const API_BASE = import.meta.env.DEV
   ? "https://singto-eight.vercel.app"
   : "";
 
+const formatDate = (dateValue) => {
+  if (!dateValue) return "";
+
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${dateValue}T00:00:00`));
+};
+
+const generateCalendarWeeks = (
+  startDate,
+  endDate
+) => {
+  if (!startDate || !endDate) return [];
+
+  const start = new Date(
+    `${startDate}T00:00:00`
+  );
+
+  const end = new Date(
+    `${endDate}T00:00:00`
+  );
+
+  const calendarStart = new Date(start);
+
+  calendarStart.setDate(
+    calendarStart.getDate() -
+      calendarStart.getDay()
+  );
+
+  const calendarEnd = new Date(end);
+
+  calendarEnd.setDate(
+    calendarEnd.getDate() +
+      (6 - calendarEnd.getDay())
+  );
+
+  const weeks = [];
+  const current = new Date(calendarStart);
+
+  while (current <= calendarEnd) {
+    const week = [];
+
+    for (let i = 0; i < 7; i += 1) {
+      const date = new Date(current);
+
+      week.push({
+        day: date.getDate(),
+        date: date
+          .toISOString()
+          .slice(0, 10),
+        muted:
+          date < start ||
+          date > end,
+      });
+
+      current.setDate(
+        current.getDate() + 1
+      );
+    }
+
+    weeks.push(week);
+  }
+
+  return weeks;
+};
+
 function Participant() {
-  const [searchParams] = useSearchParams();
+  const [searchParams] =
+    useSearchParams();
 
-  const eventId = searchParams.get("eventId");
+  const eventId =
+    searchParams.get("eventId");
 
-  const [lineUser, setLineUser] = useState(null);
-  const [idToken, setIdToken] = useState(null);
+  const [lineUser, setLineUser] =
+    useState(null);
+
+  const [idToken, setIdToken] =
+    useState(null);
 
   const [liffLoading, setLiffLoading] =
     useState(true);
 
-  const [event, setEvent] = useState(null);
+  const [event, setEvent] =
+    useState(null);
+
+  const [participants, setParticipants] =
+    useState([]);
 
   const [isLoading, setIsLoading] =
     useState(true);
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
 
   const [participantStatus, setParticipantStatus] =
     useState(null);
@@ -30,15 +109,37 @@ function Participant() {
   const [isSubmitting, setIsSubmitting] =
     useState(false);
 
+  const [activeTab, setActiveTab] =
+    useState("overview");
+
+  const [
+    selectedAvailabilityDates,
+    setSelectedAvailabilityDates,
+  ] = useState([]);
+
+  const [
+    savedAvailabilityDates,
+    setSavedAvailabilityDates,
+  ] = useState([]);
+
+  const [showQuickSelect, setShowQuickSelect] =
+    useState(false);
+
+  const [
+    isSavingAvailability,
+    setIsSavingAvailability,
+  ] = useState(false);
+
   /*
-   * ================= INITIALIZE LIFF =================
+   * ================= LIFF =================
    */
 
   useEffect(() => {
     const initializeLiff = async () => {
       try {
         await liff.init({
-          liffId: import.meta.env.VITE_LIFF_ID,
+          liffId:
+            import.meta.env.VITE_LIFF_ID,
         });
 
         if (!liff.isLoggedIn()) {
@@ -46,10 +147,8 @@ function Participant() {
           return;
         }
 
-        /*
-         * Get LINE ID token
-         */
-        const token = liff.getIDToken();
+        const token =
+          liff.getIDToken();
 
         if (!token) {
           throw new Error(
@@ -59,9 +158,6 @@ function Participant() {
 
         setIdToken(token);
 
-        /*
-         * Get LINE profile
-         */
         const profile =
           await liff.getProfile();
 
@@ -91,21 +187,24 @@ function Participant() {
   }, []);
 
   /*
-   * ================= FETCH EVENT =================
+   * ================= EVENT =================
    */
 
   useEffect(() => {
     const fetchEvent = async () => {
       if (!eventId) {
-        setError("Event ID is missing.");
+        setError(
+          "Event ID is missing."
+        );
         setIsLoading(false);
         return;
       }
 
       try {
-        const response = await fetch(
-          `${API_BASE}/api/events/${eventId}`
-        );
+        const response =
+          await fetch(
+            `${API_BASE}/api/events/${eventId}`
+          );
 
         const data =
           await response.json();
@@ -137,20 +236,21 @@ function Participant() {
   }, [eventId]);
 
   /*
-   * ================= GET MY PARTICIPANT STATUS =================
+   * ================= PARTICIPANTS =================
    */
 
   useEffect(() => {
-    const fetchMyParticipantStatus =
+    const fetchParticipants =
       async () => {
-        if (!eventId || !idToken) {
+        if (!eventId || !lineUser) {
           return;
         }
 
         try {
-          const response = await fetch(
-            `${API_BASE}/api/events/${eventId}/participants`
-          );
+          const response =
+            await fetch(
+              `${API_BASE}/api/events/${eventId}/participants`
+            );
 
           const data =
             await response.json();
@@ -158,19 +258,19 @@ function Participant() {
           if (!response.ok) {
             throw new Error(
               data.message ||
-                "Failed to load participant status."
+                "Failed to load participants."
             );
           }
 
-          /*
-           * Find the current LINE user
-           * in this event.
-           */
+          setParticipants(
+            data.participants || []
+          );
+
           const currentParticipant =
             data.participants?.find(
               (participant) =>
                 participant.line_user_id ===
-                lineUser?.userId
+                lineUser.userId
             );
 
           if (currentParticipant) {
@@ -180,18 +280,101 @@ function Participant() {
           }
         } catch (error) {
           console.error(
-            "Failed to load participant status:",
+            "Failed to load participants:",
             error
           );
         }
       };
 
-    fetchMyParticipantStatus();
-  }, [
-    eventId,
-    idToken,
-    lineUser,
-  ]);
+    fetchParticipants();
+  }, [eventId, lineUser]);
+
+  /*
+   * ================= LOAD AVAILABILITY =================
+   */
+
+  useEffect(() => {
+    const fetchAvailability =
+      async () => {
+        if (!eventId || !lineUser) {
+          return;
+        }
+
+        try {
+          const response =
+            await fetch(
+              `${API_BASE}/api/events/${eventId}/availability`
+            );
+
+          const data =
+            await response.json();
+
+          if (!response.ok) {
+            throw new Error(
+              data.message ||
+                "Failed to load availability."
+            );
+          }
+
+          const myDates = [];
+
+          Object.entries(
+            data.availability || {}
+          ).forEach(
+            ([date, userIds]) => {
+              if (
+                userIds.includes(
+                  lineUser.userId
+                )
+              ) {
+                myDates.push(date);
+              }
+            }
+          );
+
+          setSelectedAvailabilityDates(
+            myDates
+          );
+
+          setSavedAvailabilityDates(
+            myDates
+          );
+        } catch (error) {
+          console.error(
+            "Failed to load availability:",
+            error
+          );
+        }
+      };
+
+    fetchAvailability();
+  }, [eventId, lineUser]);
+
+  /*
+   * ================= CALENDAR =================
+   */
+
+  const eventStartDate =
+    event?.start_date
+      ? event.start_date.slice(0, 10)
+      : "";
+
+  const eventEndDate =
+    event?.end_date
+      ? event.end_date.slice(0, 10)
+      : "";
+
+  const weeks = useMemo(
+    () =>
+      generateCalendarWeeks(
+        eventStartDate,
+        eventEndDate
+      ),
+    [
+      eventStartDate,
+      eventEndDate,
+    ]
+  );
 
   /*
    * ================= ACCEPT / DECLINE =================
@@ -210,22 +393,21 @@ function Participant() {
       setIsSubmitting(true);
 
       try {
-        const response = await fetch(
-          `${API_BASE}/api/events/${eventId}/participants`,
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-
-            body: JSON.stringify({
-              idToken,
-              status,
-            }),
-          }
-        );
+        const response =
+          await fetch(
+            `${API_BASE}/api/events/${eventId}/participants`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify({
+                idToken,
+                status,
+              }),
+            }
+          );
 
         const data =
           await response.json();
@@ -254,7 +436,7 @@ function Participant() {
 
         alert(
           error.message ||
-            "Something went wrong. Please try again."
+            "Something went wrong."
         );
       } finally {
         setIsSubmitting(false);
@@ -262,27 +444,236 @@ function Participant() {
     };
 
   /*
+   * ================= AVAILABILITY =================
+   */
+
+  const toggleAvailabilityDate = (
+    date
+  ) => {
+    if (participantStatus !== "accepted") {
+      return;
+    }
+
+    setSelectedAvailabilityDates(
+      (currentDates) => {
+        if (
+          currentDates.includes(date)
+        ) {
+          return currentDates.filter(
+            (item) => item !== date
+          );
+        }
+
+        return [
+          ...currentDates,
+          date,
+        ].sort();
+      }
+    );
+  };
+
+  const handleQuickSelect = (
+    type
+  ) => {
+    if (
+      participantStatus !== "accepted"
+    ) {
+      return;
+    }
+
+    const start = new Date(
+      `${eventStartDate}T00:00:00`
+    );
+
+    const end = new Date(
+      `${eventEndDate}T00:00:00`
+    );
+
+    const dates = weeks
+      .flat()
+      .filter((item) => {
+        if (item.muted) {
+          return false;
+        }
+
+        const current =
+          new Date(
+            `${item.date}T00:00:00`
+          );
+
+        if (
+          current < start ||
+          current > end
+        ) {
+          return false;
+        }
+
+        if (type === "all") {
+          return true;
+        }
+
+        if (type === "weekends") {
+          return (
+            current.getDay() === 0 ||
+            current.getDay() === 6
+          );
+        }
+
+        return (
+          current.getDay() === type
+        );
+      })
+      .map(
+        (item) => item.date
+      );
+
+    setSelectedAvailabilityDates(
+      dates
+    );
+
+    setShowQuickSelect(false);
+  };
+
+  const handleSaveAvailability =
+    async () => {
+      if (
+        participantStatus !== "accepted"
+      ) {
+        alert(
+          "Please accept the event first."
+        );
+
+        return;
+      }
+
+      if (!idToken) {
+        alert(
+          "Unable to identify this participant."
+        );
+
+        return;
+      }
+
+      setIsSavingAvailability(true);
+
+      try {
+        const response =
+          await fetch(
+            `${API_BASE}/api/events/${eventId}/availability`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify({
+                idToken,
+                dates:
+                  selectedAvailabilityDates,
+              }),
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.message ||
+              "Failed to save availability."
+          );
+        }
+
+        setSavedAvailabilityDates(
+          selectedAvailabilityDates
+        );
+
+        alert(
+          "Your availability has been saved."
+        );
+      } catch (error) {
+        console.error(
+          "Save availability failed:",
+          error
+        );
+
+        alert(
+          error.message ||
+            "Failed to save availability."
+        );
+      } finally {
+        setIsSavingAvailability(false);
+      }
+    };
+
+  /*
+   * ================= OVERVIEW DATA =================
+   */
+
+  const availabilitySummary =
+    useMemo(() => {
+      const summary = {};
+
+      participants.forEach(
+        (participant) => {
+          summary[
+            participant.line_user_id
+          ] = [];
+        }
+      );
+
+      return summary;
+    }, [participants]);
+
+  /*
    * ================= LOADING =================
    */
 
-  if (isLoading || liffLoading) {
-    return <div>Loading...</div>;
-  }
+  if (
+    isLoading ||
+    liffLoading
+  ) {
+    return (
+      <div className="participant-page">
+        <header className="participant-header">
+          <h1>Singto</h1>
+        </header>
 
-  /*
-   * ================= ERROR =================
-   */
+        <main className="participant-container">
+          <p>Loading...</p>
+        </main>
+      </div>
+    );
+  }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="participant-page">
+        <header className="participant-header">
+          <h1>Singto</h1>
+        </header>
+
+        <main className="participant-container">
+          <p>{error}</p>
+        </main>
+      </div>
+    );
   }
 
-  /*
-   * ================= NO EVENT =================
-   */
-
   if (!event) {
-    return <div>Event not found.</div>;
+    return (
+      <div className="participant-page">
+        <header className="participant-header">
+          <h1>Singto</h1>
+        </header>
+
+        <main className="participant-container">
+          <p>
+            Event not found.
+          </p>
+        </main>
+      </div>
+    );
   }
 
   /*
@@ -290,73 +681,411 @@ function Participant() {
    */
 
   return (
-    <div>
-      <h1>{event.event_name}</h1>
+    <div className="participant-page">
+      <header className="participant-header">
+        <h1>Singto</h1>
+      </header>
 
-      {event.description && (
-        <p>{event.description}</p>
-      )}
+      <main className="participant-container">
+        <section className="participant-event-card">
+          <h2>
+            {event.event_name}
+          </h2>
 
-      <p>
-        {event.start_date} —{" "}
-        {event.end_date}
-      </p>
+          {event.description && (
+            <p className="participant-description">
+              {event.description}
+            </p>
+          )}
 
-      <p>
-        Status: {event.status}
-      </p>
-
-      {lineUser ? (
-        <div>
-          <p>
-            Logged in as:{" "}
-            {lineUser.displayName}
+          <p className="participant-date">
+            {formatDate(
+              eventStartDate
+            )}{" "}
+            -{" "}
+            {formatDate(
+              eventEndDate
+            )}
           </p>
 
-          <div>
+          {lineUser && (
+            <p className="participant-created-by">
+              Logged in as{" "}
+              <strong>
+                {lineUser.displayName}
+              </strong>
+            </p>
+          )}
+
+          <p className="participant-question">
+            Do you want to join this event?
+          </p>
+
+          <div className="response-buttons">
             <button
               type="button"
+              className={`response-button decline ${
+                participantStatus ===
+                "declined"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 handleParticipantResponse(
                   "declined"
                 )
               }
-              disabled={isSubmitting}
+              disabled={
+                isSubmitting
+              }
             >
-              {participantStatus ===
-              "declined"
-                ? "DECLINED"
-                : "DECLINE"}
+              DECLINE
             </button>
 
             <button
               type="button"
+              className={`response-button accept ${
+                participantStatus ===
+                "accepted"
+                  ? "active"
+                  : ""
+              }`}
               onClick={() =>
                 handleParticipantResponse(
                   "accepted"
                 )
               }
-              disabled={isSubmitting}
+              disabled={
+                isSubmitting
+              }
             >
-              {participantStatus ===
-              "accepted"
-                ? "ACCEPTED"
-                : "ACCEPT"}
+              ACCEPT
             </button>
           </div>
+        </section>
 
-          {participantStatus && (
-            <p>
-              Your response:{" "}
-              {participantStatus}
-            </p>
-          )}
+        <div className="participant-tabs">
+          <button
+            type="button"
+            className={`participant-tab ${
+              activeTab === "overview"
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              setActiveTab(
+                "overview"
+              )
+            }
+          >
+            OVERVIEW
+          </button>
+
+          <button
+            type="button"
+            className={`participant-tab ${
+              activeTab ===
+              "availability"
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              setActiveTab(
+                "availability"
+              )
+            }
+          >
+            MY AVAILABILITY
+          </button>
         </div>
-      ) : (
-        <p>
-          Unable to connect to LINE.
-        </p>
-      )}
+
+        {activeTab === "overview" && (
+          <section className="participant-overview">
+            <h2>CALENDAR</h2>
+
+            <p className="participant-section-subtitle">
+              Overview of Everyone’s
+              Availability
+            </p>
+
+            <div className="participant-calendar">
+              <div className="participant-weekday-row">
+                {[
+                  "SUN",
+                  "MON",
+                  "TUE",
+                  "WED",
+                  "THU",
+                  "FRI",
+                  "SAT",
+                ].map(
+                  (day) => (
+                    <div
+                      className="participant-weekday"
+                      key={day}
+                    >
+                      {day}
+                    </div>
+                  )
+                )}
+              </div>
+
+              <div className="participant-calendar-body">
+                {weeks.map(
+                  (
+                    week,
+                    weekIndex
+                  ) => (
+                    <div
+                      className="participant-calendar-week"
+                      key={
+                        weekIndex
+                      }
+                    >
+                      {week.map(
+                        (
+                          date,
+                          index
+                        ) => {
+                          const isMine =
+                            savedAvailabilityDates.includes(
+                              date.date
+                            );
+
+                          return (
+                            <div
+                              key={`${weekIndex}-${index}`}
+                              className={`participant-calendar-date ${
+                                date.muted
+                                  ? "muted"
+                                  : ""
+                              } ${
+                                isMine
+                                  ? "free"
+                                  : ""
+                              }`}
+                            >
+                              {date.day}
+                            </div>
+                          );
+                        }
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+
+            <div className="participant-legend">
+              <span>Busy</span>
+              <span>🔴</span>
+              <span>🟡</span>
+              <span>🟢</span>
+              <span>Free</span>
+            </div>
+          </section>
+        )}
+
+        {activeTab ===
+          "availability" && (
+          <section className="participant-availability">
+            <div className="availability-heading">
+              <div>
+                <h2>CALENDAR</h2>
+
+                <p>
+                  Tap your available
+                  days
+                </p>
+              </div>
+
+              <div className="quick-select-wrapper">
+                <button
+                  type="button"
+                  className="quick-select-button"
+                  onClick={() =>
+                    setShowQuickSelect(
+                      (current) =>
+                        !current
+                    )
+                  }
+                >
+                  Quick Select
+                </button>
+
+                {showQuickSelect && (
+                  <div className="quick-select-menu">
+                    {[
+                      {
+                        label:
+                          "All Day",
+                        type: "all",
+                      },
+                      {
+                        label:
+                          "Weekends",
+                        type: "weekends",
+                      },
+                      {
+                        label:
+                          "Every Monday",
+                        type: 1,
+                      },
+                      {
+                        label:
+                          "Every Tuesday",
+                        type: 2,
+                      },
+                      {
+                        label:
+                          "Every Wednesday",
+                        type: 3,
+                      },
+                      {
+                        label:
+                          "Every Thursday",
+                        type: 4,
+                      },
+                      {
+                        label:
+                          "Every Friday",
+                        type: 5,
+                      },
+                      {
+                        label:
+                          "Every Saturday",
+                        type: 6,
+                      },
+                      {
+                        label:
+                          "Every Sunday",
+                        type: 0,
+                      },
+                    ].map(
+                      (option) => (
+                        <button
+                          type="button"
+                          key={
+                            option.label
+                          }
+                          className="quick-select-option"
+                          onClick={() =>
+                            handleQuickSelect(
+                              option.type
+                            )
+                          }
+                        >
+                          {
+                            option.label
+                          }
+                        </button>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="participant-availability-calendar">
+              <div className="participant-weekday-row">
+                {[
+                  "SUN",
+                  "MON",
+                  "TUE",
+                  "WED",
+                  "THU",
+                  "FRI",
+                  "SAT",
+                ].map(
+                  (day) => (
+                    <div
+                      className="participant-weekday"
+                      key={day}
+                    >
+                      {day}
+                    </div>
+                  )
+                )}
+              </div>
+
+              <div className="participant-calendar-body">
+                {weeks.map(
+                  (
+                    week,
+                    weekIndex
+                  ) => (
+                    <div
+                      className="participant-calendar-week"
+                      key={
+                        weekIndex
+                      }
+                    >
+                      {week.map(
+                        (
+                          date,
+                          index
+                        ) => {
+                          const isSelected =
+                            selectedAvailabilityDates.includes(
+                              date.date
+                            );
+
+                          return (
+                            <button
+                              type="button"
+                              key={`${weekIndex}-${index}`}
+                              className={`participant-availability-date ${
+                                date.muted
+                                  ? "muted"
+                                  : ""
+                              } ${
+                                isSelected
+                                  ? "selected"
+                                  : ""
+                              }`}
+                              disabled={
+                                date.muted ||
+                                participantStatus !==
+                                  "accepted"
+                              }
+                              onClick={() =>
+                                toggleAvailabilityDate(
+                                  date.date
+                                )
+                              }
+                            >
+                              {
+                                date.day
+                              }
+                            </button>
+                          );
+                        }
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="participant-save-button"
+              onClick={
+                handleSaveAvailability
+              }
+              disabled={
+                isSavingAvailability ||
+                participantStatus !==
+                  "accepted"
+              }
+            >
+              {isSavingAvailability
+                ? "SAVING..."
+                : "SAVE"}
+            </button>
+          </section>
+        )}
+      </main>
     </div>
   );
 }

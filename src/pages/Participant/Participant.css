@@ -1,0 +1,389 @@
+.participant-page {
+  min-height: 100vh;
+  background: #f8f5f2;
+  color: #2b211b;
+}
+
+.participant-header {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2b211b;
+  color: #ffffff;
+}
+
+.participant-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.participant-container {
+  width: min(100%, 520px);
+  margin: 0 auto;
+  padding: 24px 18px 40px;
+  box-sizing: border-box;
+}
+
+/* ================= EVENT CARD ================= */
+
+.participant-event-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px 20px;
+  box-shadow: 0 4px 18px rgba(43, 33, 27, 0.08);
+}
+
+.participant-event-card h2 {
+  margin: 0 0 10px;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.participant-description {
+  margin: 0 0 8px;
+  color: #5f5650;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.participant-date {
+  margin: 0;
+  color: #7a7069;
+  font-size: 14px;
+}
+
+.participant-created-by {
+  margin: 12px 0 0;
+  color: #7a7069;
+  font-size: 13px;
+}
+
+.participant-question {
+  margin: 24px 0 14px;
+  color: #2b211b;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.response-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.response-button {
+  height: 46px;
+  border: 1px solid #d8d0ca;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #2b211b;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.response-button:hover:not(:disabled) {
+  background: #f4efeb;
+}
+
+.response-button.active {
+  background: #2b211b;
+  border-color: #2b211b;
+  color: #ffffff;
+}
+
+.response-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ================= TABS ================= */
+
+.participant-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 24px;
+  border-bottom: 1px solid #ddd5cf;
+}
+
+.participant-tab {
+  position: relative;
+  padding: 14px 6px;
+  border: none;
+  background: transparent;
+  color: #9a918b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.participant-tab.active {
+  color: #2b211b;
+}
+
+.participant-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: -1px;
+  height: 2px;
+  background: #2b211b;
+}
+
+/* ================= COMMON SECTION ================= */
+
+.participant-overview,
+.participant-availability {
+  padding-top: 28px;
+}
+
+.participant-overview h2,
+.participant-availability h2 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+}
+
+.participant-section-subtitle {
+  margin: 5px 0 18px;
+  color: #8a817b;
+  font-size: 13px;
+}
+
+/* ================= CALENDAR ================= */
+
+.participant-calendar,
+.participant-availability-calendar {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 12px;
+  box-shadow: 0 3px 14px rgba(43, 33, 27, 0.06);
+}
+
+.participant-weekday-row,
+.participant-calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.participant-weekday {
+  text-align: center;
+  padding: 6px 0 12px;
+  color: #918780;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.participant-calendar-week {
+  min-height: 48px;
+}
+
+.participant-calendar-date,
+.participant-availability-date {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 44px;
+  margin: 2px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #332923;
+  font-size: 13px;
+}
+
+.participant-calendar-date.muted,
+.participant-availability-date.muted {
+  color: #d2cbc6;
+}
+
+/* Overview availability */
+
+.participant-calendar-date.free {
+  background: #dceedd;
+  color: #2d5d35;
+}
+
+.participant-calendar-date.partial {
+  background: #f8edc9;
+  color: #80651a;
+}
+
+.participant-calendar-date.busy {
+  background: #f4dada;
+  color: #8a3636;
+}
+
+/* ================= LEGEND ================= */
+
+.participant-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 14px;
+  color: #7c736d;
+  font-size: 11px;
+}
+
+/* ================= AVAILABILITY ================= */
+
+.availability-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.availability-heading h2 {
+  margin-bottom: 5px;
+}
+
+.availability-heading p {
+  margin: 0;
+  color: #8a817b;
+  font-size: 13px;
+}
+
+.quick-select-wrapper {
+  position: relative;
+}
+
+.quick-select-button {
+  padding: 9px 13px;
+  border: 1px solid #d8d0ca;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #514740;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quick-select-button:hover {
+  background: #f4efeb;
+}
+
+.quick-select-menu {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 7px);
+  right: 0;
+  width: 165px;
+  padding: 6px;
+  border: 1px solid #e3dcd6;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(43, 33, 27, 0.12);
+}
+
+.quick-select-option {
+  display: block;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #403731;
+  text-align: left;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.quick-select-option:hover {
+  background: #f4efeb;
+}
+
+/* Selected availability */
+
+.participant-availability-date {
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.participant-availability-date:not(.muted):hover {
+  background: #f3eeea;
+}
+
+.participant-availability-date.selected {
+  background: #2b211b;
+  color: #ffffff;
+  border-color: #2b211b;
+  font-weight: 700;
+}
+
+.participant-availability-date.muted {
+  cursor: default;
+}
+
+/* ================= SAVE ================= */
+
+.participant-save-button {
+  width: 100%;
+  height: 48px;
+  margin-top: 18px;
+  border: none;
+  border-radius: 12px;
+  background: #2b211b;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.participant-save-button:hover:not(:disabled) {
+  background: #3b2d25;
+}
+
+.participant-save-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 420px) {
+  .participant-container {
+    padding: 18px 14px 32px;
+  }
+
+  .participant-event-card {
+    padding: 20px 16px;
+  }
+
+  .participant-event-card h2 {
+    font-size: 22px;
+  }
+
+  .participant-calendar,
+  .participant-availability-calendar {
+    padding: 12px 8px;
+  }
+
+  .participant-calendar-date,
+  .participant-availability-date {
+    height: 40px;
+    margin: 1px;
+  }
+
+  .availability-heading {
+    align-items: center;
+  }
+
+  .quick-select-button {
+    padding: 8px 10px;
+  }
+}
