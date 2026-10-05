@@ -5,6 +5,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@line/liff": "^2.31.1",
     "@neondatabase/serverless": "^1.2.0",
     "@vitejs/plugin-react": "^6.1.1",
     "lucide-react": "^1.47.0",
