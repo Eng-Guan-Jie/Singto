@@ -481,3 +481,16 @@
 .participant-page .participant-availability-date.other-month {
   color: #d9d9d9;
 }
+
+/* Date(s) the organizer has confirmed */
+.participant-page .participant-confirmed {
+  align-self: flex-start;
+  margin: 0;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 22px;
+}

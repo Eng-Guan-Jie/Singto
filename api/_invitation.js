@@ -318,6 +318,47 @@ function createPickDateBubble(eventData) {
 }
 
 /*
+ * Push messages to a LINE chat. Throws with LINE's reason
+ * (e.g. an invalid Flex property or the monthly limit).
+ */
+async function pushToChat(to, messages) {
+  const response = await fetch(LINE_PUSH_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`,
+    },
+    body: JSON.stringify({ to, messages }),
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+
+    const reason = [
+      body.message,
+      ...(body.details || []).map(
+        (item) => `${item.property}: ${item.message}`
+      ),
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    console.error(
+      "LINE push message failed:",
+      response.status,
+      reason
+    );
+
+    throw new AuthError(
+      502,
+      `LINE push message failed (${response.status}): ${
+        reason || "no reason given"
+      }`
+    );
+  }
+}
+
+/*
  * Post the "Pick your date" card for an event to the LINE
  * chat it was created from, with the current responses.
  * LINE cannot edit sent messages, so every update is a
@@ -404,47 +445,185 @@ async function sendInvitation(
       .filter(Boolean),
   };
 
-  const response = await fetch(LINE_PUSH_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`,
-    },
-    body: JSON.stringify({
-      to: event.line_chat_id,
-      messages: [createPickDateBubble(eventData)],
-    }),
-  });
-
-  if (!response.ok) {
-    // LINE explains the failure, e.g. an invalid Flex
-    // property or "You have reached your monthly limit."
-    const body = await response.json().catch(() => ({}));
-
-    const reason = [
-      body.message,
-      ...(body.details || []).map(
-        (item) => `${item.property}: ${item.message}`
-      ),
-    ]
-      .filter(Boolean)
-      .join(" | ");
-
-    console.error(
-      "LINE push message failed:",
-      response.status,
-      reason
-    );
-
-    throw new AuthError(
-      502,
-      `LINE push message failed (${response.status}): ${
-        reason || "no reason given"
-      }`
-    );
-  }
+  await pushToChat(event.line_chat_id, [
+    createPickDateBubble(eventData),
+  ]);
 
   return { sent: true, respondedCount, memberCount };
 }
 
-module.exports = { sendInvitation };
+// "Friday, 12 September 2026"
+function formatLongDate(dateValue) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    })
+      .formatToParts(new Date(`${dateValue}T00:00:00Z`))
+      .map(({ type, value }) => [type, value])
+  );
+
+  return `${parts.weekday}, ${parts.day} ${parts.month} ${parts.year}`;
+}
+
+function createConfirmationBubble(data) {
+  const badgeText = data.memberCount
+    ? `${data.acceptedCount}/${data.memberCount} join this event`
+    : `${data.acceptedCount} join this event`;
+
+  const bodyContents = [
+    {
+      type: "text",
+      text: data.eventName,
+      weight: "bold",
+      size: "xl",
+      color: "#000000",
+      wrap: true,
+    },
+    ...data.dates.map((date) => ({
+      type: "text",
+      text: formatLongDate(date),
+      weight: "bold",
+      size: "md",
+      color: "#000000",
+      wrap: true,
+    })),
+  ];
+
+  if (data.description) {
+    bodyContents.push({
+      type: "text",
+      text: data.description,
+      size: "md",
+      color: "#606060",
+      wrap: true,
+    });
+  }
+
+  if (data.note) {
+    bodyContents.push({
+      type: "text",
+      text: `Note: ${data.note}`,
+      size: "sm",
+      color: "#606060",
+      wrap: true,
+    });
+  }
+
+  bodyContents.push({
+    type: "box",
+    layout: "horizontal",
+    margin: "md",
+    contents: [
+      {
+        type: "box",
+        layout: "vertical",
+        flex: 0,
+        backgroundColor: "#FDE7CC",
+        borderColor: "#F5C99B",
+        borderWidth: "1px",
+        cornerRadius: "8px",
+        paddingStart: "8px",
+        paddingEnd: "8px",
+        paddingTop: "2px",
+        paddingBottom: "2px",
+        contents: [
+          {
+            type: "text",
+            text: badgeText,
+            size: "xs",
+            color: "#222222",
+          },
+        ],
+      },
+    ],
+  });
+
+  return {
+    type: "flex",
+
+    altText: `It's a date! ${data.eventName}: ${data.dates
+      .map(formatLongDate)
+      .join(", ")}`,
+
+    contents: {
+      type: "bubble",
+      size: "mega",
+      header: {
+        type: "box",
+        layout: "vertical",
+        backgroundColor: "#2a1e16",
+        paddingAll: "10px",
+        contents: [
+          {
+            type: "text",
+            text: "IT'S A DATE!",
+            weight: "bold",
+            size: "xl",
+            color: "#ffffff",
+            align: "center",
+          },
+        ],
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        spacing: "sm",
+        paddingAll: "14px",
+        contents: bodyContents,
+      },
+    },
+  };
+}
+
+/*
+ * Post the "IT'S A DATE!" card announcing the confirmed
+ * date(s) to the event's LINE chat.
+ */
+async function sendConfirmation(eventId) {
+  const eventRows = await sql`
+    SELECT
+      event_name,
+      description,
+      line_chat_id,
+      confirmed_dates,
+      confirmation_note
+    FROM events
+    WHERE id = ${eventId}
+    LIMIT 1
+  `;
+
+  const event = eventRows[0];
+
+  if (!event?.line_chat_id) {
+    throw new AuthError(
+      400,
+      "This event was not created from a LINE chat."
+    );
+  }
+
+  const acceptedRows = await sql`
+    SELECT COUNT(*)::int AS count
+    FROM participants
+    WHERE event_id = ${eventId}
+      AND status = 'accepted'
+  `;
+
+  await pushToChat(event.line_chat_id, [
+    createConfirmationBubble({
+      eventName: event.event_name,
+      description: event.description,
+      note: event.confirmation_note,
+      dates: (event.confirmed_dates || []).map(toDateKey),
+      acceptedCount: acceptedRows[0].count,
+      memberCount: await getChatMemberCount(
+        event.line_chat_id
+      ),
+    }),
+  ]);
+}
+
+module.exports = { sendInvitation, sendConfirmation };

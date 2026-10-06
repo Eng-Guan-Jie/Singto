@@ -11,6 +11,9 @@ import liff, {
   getFreshIdToken,
   authHeaders,
 } from "../../lib/liff";
+import {
+  generateCalendarWeeks,
+} from "../../lib/calendar";
 import "./Overview.css";
 
 const API_BASE = import.meta.env.DEV
@@ -46,77 +49,6 @@ const getDayLabel = (dateValue) =>
   new Intl.DateTimeFormat("en", {
     weekday: "long",
   }).format(new Date(`${dateValue}T00:00:00`));
-
-// Build YYYY-MM-DD from local date parts.
-// toISOString() converts to UTC, which shifts dates back
-// one day in UTC+7 (Thailand).
-const toDateKey = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
-
-const generateCalendarWeeks = (startDate, endDate) => {
-  if (!startDate || !endDate) return [];
-
-  const start = new Date(`${startDate}T00:00:00`);
-  const end = new Date(`${endDate}T00:00:00`);
-
-  // Show whole months, like a wall calendar: from the
-  // Sunday before the 1st of the start month to the
-  // Saturday after the last day of the end month.
-  const monthStart = new Date(
-    start.getFullYear(),
-    start.getMonth(),
-    1
-  );
-
-  const monthEnd = new Date(
-    end.getFullYear(),
-    end.getMonth() + 1,
-    0
-  );
-
-  const calendarStart = new Date(monthStart);
-
-  calendarStart.setDate(
-    calendarStart.getDate() - calendarStart.getDay()
-  );
-
-  const calendarEnd = new Date(monthEnd);
-
-  calendarEnd.setDate(
-    calendarEnd.getDate() + (6 - calendarEnd.getDay())
-  );
-
-  const weeks = [];
-  const current = new Date(calendarStart);
-
-  while (current <= calendarEnd) {
-    const week = [];
-
-    for (let i = 0; i < 7; i += 1) {
-      const date = new Date(current);
-
-      week.push({
-        day: date.getDate(),
-        date: toDateKey(date),
-        // Outside the scheduling period.
-        muted: date < start || date > end,
-        // Days of the previous/next month.
-        otherMonth: date < monthStart || date > monthEnd,
-      });
-
-      current.setDate(current.getDate() + 1);
-    }
-
-    weeks.push(week);
-  }
-
-  return weeks;
-};
 
 // LINE profile picture, or the first letter of the
 // name when there is no picture.
@@ -340,6 +272,7 @@ function Overview() {
         : "",
       id: event.id,
       status: event.status,
+      confirmedDates: event.confirmed_dates || [],
     };
   }, [event]);
 
@@ -778,6 +711,15 @@ function Overview() {
             <p className="event-date-range">
               {dateRange}
             </p>
+
+            {eventData.confirmedDates.length > 0 && (
+              <p className="event-confirmed">
+                Confirmed:{" "}
+                {eventData.confirmedDates
+                  .map(getDateLabel)
+                  .join(", ")}
+              </p>
+            )}
 
             <p className="response-count">
               {respondedCount} of{" "}

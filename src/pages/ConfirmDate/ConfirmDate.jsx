@@ -1,94 +1,158 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import {
+  initLiff,
+  getFreshIdToken,
+  authHeaders,
+} from "../../lib/liff";
+import {
+  generateCalendarWeeks,
+  getAvailabilityStatus,
+} from "../../lib/calendar";
 import "./ConfirmDate.css";
+
+const API_BASE = import.meta.env.DEV
+  ? "https://singto-eight.vercel.app"
+  : "";
 
 function ConfirmDate() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const eventData = location.state?.eventData || {
-    eventName: "Event",
-    description: "",
-    startDate: "2026-09-07",
-    endDate: "2026-09-20",
-  };
+  const eventId = searchParams.get("eventId");
 
-  const initialDate = location.state?.selectedDate || "2026-09-20";
+  const [idToken, setIdToken] = useState(null);
+  const [event, setEvent] = useState(null);
+
+  // How many accepted members are free on each date.
+  const [counts, setCounts] = useState({});
+  const [acceptedCount, setAcceptedCount] = useState(0);
 
   const [selectionMode, setSelectionMode] = useState("single");
-  const [selectedDates, setSelectedDates] = useState([initialDate]);
+  const [selectedDates, setSelectedDates] = useState([]);
   const [note, setNote] = useState("");
   const [sendNotification, setSendNotification] = useState(true);
 
-  const availability = {
-    "2026-09-07": "free",
-    "2026-09-08": "partial",
-    "2026-09-09": "busy",
-    "2026-09-10": "busy",
-    "2026-09-11": "busy",
-    "2026-09-12": "free",
-    "2026-09-13": "free",
-    "2026-09-14": "free",
-    "2026-09-15": "busy",
-    "2026-09-16": "busy",
-    "2026-09-17": "busy",
-    "2026-09-18": "partial",
-    "2026-09-19": "partial",
-    "2026-09-20": "free",
-  };
+  const [isLoading, setIsLoading] = useState(true);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [error, setError] = useState("");
 
-  const weeks = [
-    [
-      { day: 31, date: "2026-08-31", muted: true },
-      { day: 1, date: "2026-09-01" },
-      { day: 2, date: "2026-09-02" },
-      { day: 3, date: "2026-09-03" },
-      { day: 4, date: "2026-09-04" },
-      { day: 5, date: "2026-09-05" },
-      { day: 6, date: "2026-09-06" },
-    ],
-    [
-      { day: 7, date: "2026-09-07" },
-      { day: 8, date: "2026-09-08" },
-      { day: 9, date: "2026-09-09" },
-      { day: 10, date: "2026-09-10" },
-      { day: 11, date: "2026-09-11" },
-      { day: 12, date: "2026-09-12" },
-      { day: 13, date: "2026-09-13" },
-    ],
-    [
-      { day: 14, date: "2026-09-14" },
-      { day: 15, date: "2026-09-15" },
-      { day: 16, date: "2026-09-16" },
-      { day: 17, date: "2026-09-17" },
-      { day: 18, date: "2026-09-18" },
-      { day: 19, date: "2026-09-19" },
-      { day: 20, date: "2026-09-20" },
-    ],
-    [
-      { day: 21, date: "2026-09-21", muted: true },
-      { day: 22, date: "2026-09-22", muted: true },
-      { day: 23, date: "2026-09-23", muted: true },
-      { day: 24, date: "2026-09-24", muted: true },
-      { day: 25, date: "2026-09-25", muted: true },
-      { day: 26, date: "2026-09-26", muted: true },
-      { day: 27, date: "2026-09-27", muted: true },
-    ],
-    [
-      { day: 28, date: "2026-09-28", muted: true },
-      { day: 29, date: "2026-09-29", muted: true },
-      { day: 30, date: "2026-09-30", muted: true },
-      { day: 1, date: "2026-10-01", muted: true },
-      { day: 2, date: "2026-10-02", muted: true },
-      { day: 3, date: "2026-10-03", muted: true },
-      { day: 4, date: "2026-10-04", muted: true },
-    ],
-  ];
+  /*
+   * ================= LIFF =================
+   */
+
+  useEffect(() => {
+    const initializeLiff = async () => {
+      try {
+        await initLiff();
+
+        const token = getFreshIdToken();
+
+        // Redirecting to LINE Login.
+        if (!token) return;
+
+        setIdToken(token);
+      } catch (error) {
+        console.error("LIFF initialization failed:", error);
+
+        setError(
+          error.message || "Failed to initialize LINE Login."
+        );
+      }
+    };
+
+    initializeLiff();
+  }, []);
+
+  /*
+   * ================= LOAD =================
+   */
+
+  useEffect(() => {
+    const loadEvent = async () => {
+      if (!eventId) {
+        setError("Event ID is missing.");
+        return;
+      }
+
+      if (!idToken) return;
+
+      try {
+        const [eventResponse, participantsResponse, availabilityResponse] =
+          await Promise.all([
+            fetch(`${API_BASE}/api/events/${eventId}`),
+            fetch(`${API_BASE}/api/events/${eventId}/participants`, {
+              headers: authHeaders(idToken),
+            }),
+            fetch(`${API_BASE}/api/events/${eventId}/availability`, {
+              headers: authHeaders(idToken),
+            }),
+          ]);
+
+        const eventData = await eventResponse.json();
+        const participantsData = await participantsResponse.json();
+        const availabilityData = await availabilityResponse.json();
+
+        if (!eventResponse.ok) {
+          throw new Error(eventData.message || "Failed to load event.");
+        }
+
+        if (participantsData.role !== "organizer") {
+          throw new Error(
+            "Only the organizer of this event can confirm the date."
+          );
+        }
+
+        if (!availabilityResponse.ok) {
+          throw new Error(
+            availabilityData.message || "Failed to load availability."
+          );
+        }
+
+        const loadedEvent = eventData.event;
+
+        setEvent(loadedEvent);
+        setCounts(availabilityData.counts || {});
+        setAcceptedCount(availabilityData.acceptedCount || 0);
+
+        // Start from an earlier confirmation, else the date
+        // chosen on Overview (Best Date or the tapped day).
+        const previous = loadedEvent.confirmed_dates || [];
+
+        if (previous.length > 0) {
+          setSelectedDates(previous);
+          setSelectionMode(previous.length > 1 ? "multiple" : "single");
+          setNote(loadedEvent.confirmation_note || "");
+        } else if (location.state?.selectedDate) {
+          setSelectedDates([location.state.selectedDate]);
+        }
+      } catch (error) {
+        console.error("Failed to load confirm page:", error);
+        setError(error.message || "Failed to load event.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadEvent();
+  }, [eventId, idToken, location.state]);
+
+  /*
+   * ================= CALENDAR =================
+   */
+
+  const startDate = event?.start_date?.slice(0, 10) || "";
+  const endDate = event?.end_date?.slice(0, 10) || "";
+
+  const weeks = useMemo(
+    () => generateCalendarWeeks(startDate, endDate),
+    [startDate, endDate]
+  );
 
   const handleDateClick = (date) => {
     if (selectionMode === "single") {
@@ -115,35 +179,79 @@ function ConfirmDate() {
     }
   };
 
-  const handleConfirm = () => {
+  /*
+   * ================= CONFIRM =================
+   */
+
+  const handleConfirm = async () => {
     if (selectedDates.length === 0) {
       alert("Please select at least one date.");
       return;
     }
 
-    const confirmationData = {
-      eventData,
-      selectedDates,
-      note,
-      sendNotification,
-    };
+    setIsConfirming(true);
 
-    console.log("Confirmed Date:", confirmationData);
+    try {
+      const response = await fetch(
+        `${API_BASE}/api/events/${eventId}/confirm`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idToken,
+            dates: selectedDates,
+            note,
+            notify: sendNotification,
+          }),
+        }
+      );
 
-    alert(
-      `Date ${selectedDates.join(", ")} confirmed!`
-    );
+      const data = await response.json();
 
-    // Overview loads the event by the ID in its URL.
-    const eventId =
-      searchParams.get("eventId") || eventData.id;
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to confirm the date.");
+      }
 
-    navigate(`/overview?eventId=${eventId}`, {
-      state: {
-        confirmedDates: selectedDates,
-      },
-    });
+      if (data.notifyError) {
+        alert(
+          `The date is confirmed, but Singto could not post it to the LINE group.\n\n${data.notifyError}`
+        );
+      } else {
+        alert(
+          data.notified
+            ? "The date is confirmed and posted to the LINE group."
+            : "The date is confirmed."
+        );
+      }
+
+      navigate(`/overview?eventId=${eventId}`);
+    } catch (error) {
+      console.error("Confirm date failed:", error);
+      alert(error.message || "Failed to confirm the date.");
+    } finally {
+      setIsConfirming(false);
+    }
   };
+
+  /*
+   * ================= RENDER =================
+   */
+
+  if (error || isLoading) {
+    return (
+      <div className="confirm-page">
+        <header className="confirm-header">
+          <h1>Singto</h1>
+        </header>
+
+        <main className="confirm-container">
+          <p>{error || "Loading..."}</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="confirm-page">
@@ -162,6 +270,7 @@ function ConfirmDate() {
                 selectionMode === "single" ? "active" : ""
               }`}
               onClick={() => handleModeChange("single")}
+              aria-pressed={selectionMode === "single"}
             >
               <span className="radio-circle"></span>
               <span>Single Date</span>
@@ -173,6 +282,7 @@ function ConfirmDate() {
                 selectionMode === "multiple" ? "active" : ""
               }`}
               onClick={() => handleModeChange("multiple")}
+              aria-pressed={selectionMode === "multiple"}
             >
               <span className="radio-circle"></span>
               <span>Multiple Dates</span>
@@ -197,7 +307,13 @@ function ConfirmDate() {
               {weeks.map((week, weekIndex) => (
                 <div className="confirm-calendar-week" key={weekIndex}>
                   {week.map((date) => {
-                    const status = availability[date.date];
+                    const status = date.muted
+                      ? ""
+                      : getAvailabilityStatus(
+                          counts[date.date] || 0,
+                          acceptedCount
+                        );
+
                     const isSelected = selectedDates.includes(date.date);
 
                     return (
@@ -207,17 +323,15 @@ function ConfirmDate() {
                         className={[
                           "confirm-date",
                           date.muted ? "muted" : "",
-                          status || "",
+                          date.otherMonth ? "other-month" : "",
+                          status,
                           isSelected ? "selected" : "",
                         ]
                           .filter(Boolean)
                           .join(" ")}
-                        onClick={() => {
-                          if (!date.muted) {
-                            handleDateClick(date.date);
-                          }
-                        }}
+                        onClick={() => handleDateClick(date.date)}
                         disabled={date.muted}
+                        aria-pressed={isSelected}
                       >
                         {date.day}
                       </button>
@@ -235,6 +349,7 @@ function ConfirmDate() {
           <input
             type="text"
             value={note}
+            maxLength={500}
             onChange={(event) => setNote(event.target.value)}
             placeholder="e.g. Meet in front of the restaurant."
           />
@@ -245,25 +360,25 @@ function ConfirmDate() {
 
           <button
             type="button"
-            className={`toggle-switch ${
-              sendNotification ? "on" : ""
-            }`}
-            onClick={() =>
-              setSendNotification((current) => !current)
-            }
+            className={`toggle-switch ${sendNotification ? "on" : ""}`}
+            onClick={() => setSendNotification((current) => !current)}
             aria-label="Toggle group notification"
+            aria-pressed={sendNotification}
           >
             <span className="toggle-knob"></span>
           </button>
         </section>
 
-        <button
-          type="button"
-          className="confirm-date-button"
-          onClick={handleConfirm}
-        >
-          CONFIRM DATE
-        </button>
+        <div className="confirm-bottom-bar">
+          <button
+            type="button"
+            className="confirm-date-button"
+            onClick={handleConfirm}
+            disabled={isConfirming}
+          >
+            {isConfirming ? "CONFIRMING..." : "CONFIRM DATE"}
+          </button>
+        </div>
       </main>
     </div>
   );

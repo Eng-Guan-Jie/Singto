@@ -227,19 +227,33 @@ function CreateEvent() {
 
       /*
        * EDIT MODE
-       *
-       * This will be connected to the update API separately.
-       * For now, keep the existing navigation behavior
-       * so the current Organizer edit flow is not broken.
        */
-      console.log(
-        "Updated Event:",
-        eventData
-      );
-
       // Overview loads the event by the ID in its URL.
       const eventId =
         searchParams.get("eventId") || existingEvent?.id;
+
+      const updateResponse = await fetch(
+        `${API_BASE}/api/events/${eventId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...eventData,
+            idToken: getFreshIdToken(),
+          }),
+        }
+      );
+
+      const updateData = await updateResponse.json();
+
+      if (!updateResponse.ok) {
+        throw new Error(
+          updateData.message ||
+            "Unable to update the event."
+        );
+      }
 
       navigate(`/overview?eventId=${eventId}`, {
         state: {
