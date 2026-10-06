@@ -112,6 +112,18 @@ module.exports = async function handler(req, res) {
       notifyError,
     });
   } catch (error) {
+    // 42703 = undefined_column: the confirmation columns
+    // have not been added to this database yet.
+    if (error.code === "42703") {
+      console.error("Confirm date failed:", error.message);
+
+      res.status(500).json({
+        message:
+          "The database is missing the confirmation columns. Run db/migrations/001_event_confirmation.sql in Neon.",
+      });
+      return;
+    }
+
     sendError(res, error, "Failed to confirm the date");
   }
 };
