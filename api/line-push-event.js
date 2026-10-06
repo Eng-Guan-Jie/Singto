@@ -35,10 +35,21 @@ function getBaseUrl(req) {
   return `${protocol}://${host}`;
 }
 
-function buildParticipantUrl(req, eventData) {
+/*
+ * Build the LIFF URL that participants will open.
+ *
+ * Example:
+ * https://liff.line.me/1234567890-AbCdEfGh?eventId=xxxxxxxx
+ */
+function buildParticipantUrl(eventData) {
+  const liffId = process.env.LIFF_ID;
+
+  if (!liffId) {
+    throw new Error("Missing LIFF_ID");
+  }
+
   const url = new URL(
-    "/participant",
-    getBaseUrl(req)
+    `https://liff.line.me/${liffId}`
   );
 
   if (eventData.eventId) {
@@ -51,7 +62,7 @@ function buildParticipantUrl(req, eventData) {
   return url.toString();
 }
 
-function createPickDateBubble(req, eventData) {
+function createPickDateBubble(eventData) {
   const dateRange = `${formatDate(
     eventData.startDate
   )} - ${formatDate(eventData.endDate)}`;
@@ -205,7 +216,6 @@ function createPickDateBubble(req, eventData) {
               label: "PICK YOUR DATE",
 
               uri: buildParticipantUrl(
-                req,
                 eventData
               ),
             },
@@ -221,7 +231,10 @@ module.exports = async function handler(
   res
 ) {
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
+    res.setHeader(
+      "Allow",
+      "POST"
+    );
 
     res.status(405).json({
       message: "Method not allowed",
@@ -268,7 +281,6 @@ module.exports = async function handler(
 
           messages: [
             createPickDateBubble(
-              req,
               eventData
             ),
           ],
@@ -294,10 +306,14 @@ module.exports = async function handler(
       ok: true,
     });
   } catch (error) {
-    console.error(error);
+    console.error(
+      "LINE push event failed:",
+      error
+    );
 
     res.status(500).json({
       message:
+        error.message ||
         "Unable to push LINE event bubble",
     });
   }
