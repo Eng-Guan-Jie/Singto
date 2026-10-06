@@ -8,6 +8,7 @@ const {
   setCorsHeaders,
 } = require("../../_auth");
 const { getChatMemberCount } = require("../../_line");
+const { sendInvitation } = require("../../_invitation");
 
 module.exports = async function handler(req, res) {
   setCorsHeaders(res, "GET, POST, OPTIONS");
@@ -115,7 +116,8 @@ module.exports = async function handler(req, res) {
       const lineUser = await verifyLineIdToken(idToken);
 
       // Throws 404 if the event does not exist.
-      await getEventRole(eventId, lineUser.sub);
+      const { participant: previous } =
+        await getEventRole(eventId, lineUser.sub);
 
       // Prefer the values LINE verified over values
       // the client sent.
@@ -167,6 +169,24 @@ module.exports = async function handler(req, res) {
           DELETE FROM availability
           WHERE participant_id = ${rows[0].id}
         `;
+      }
+
+      // A new response updates the count in the LINE chat
+      // with a fresh card, until everyone has responded.
+      // Changing an earlier answer does not post again.
+      if (!previous) {
+        try {
+          await sendInvitation(eventId, {
+            onlyIfIncomplete: true,
+          });
+        } catch (error) {
+          // The response is saved; a failed chat update
+          // should not fail it.
+          console.error(
+            "Auto invitation update failed:",
+            error.message
+          );
+        }
       }
 
       res.status(200).json({

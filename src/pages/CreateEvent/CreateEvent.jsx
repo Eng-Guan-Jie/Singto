@@ -184,8 +184,13 @@ function CreateEvent() {
             );
 
             if (!lineResponse.ok) {
+              const lineData = await lineResponse
+                .json()
+                .catch(() => ({}));
+
               throw new Error(
-                "Unable to send the event bubble to LINE."
+                lineData.message ||
+                  "Unable to send the event bubble to LINE."
               );
             }
           } catch (error) {
@@ -195,7 +200,7 @@ function CreateEvent() {
             );
 
             alert(
-              "Event created successfully, but Singto could not send the event to LINE."
+              `Event created successfully, but Singto could not send the event to LINE.\n\n${error.message}`
             );
           }
         }

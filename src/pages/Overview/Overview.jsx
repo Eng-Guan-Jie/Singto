@@ -566,6 +566,15 @@ function Overview() {
   // Post a fresh invitation card to the LINE chat with the
   // current response count (LINE cannot edit sent messages).
   const handleNotify = async () => {
+    // Nobody left to remind.
+    if (
+      memberCount !== null &&
+      respondedCount >= memberCount
+    ) {
+      alert("Everyone has already responded.");
+      return;
+    }
+
     setIsNotifying(true);
 
     try {
