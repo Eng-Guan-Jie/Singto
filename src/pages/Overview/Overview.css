@@ -653,3 +653,10 @@
 .overview-page img.respondent-avatar {
   object-fit: cover;
 }
+
+/* Previous/next month days are lighter than other
+   out-of-range days, as in the design */
+.overview-page .calendar-date.other-month,
+.overview-page .availability-date.other-month {
+  color: #d9d9d9;
+}

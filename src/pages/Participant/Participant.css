@@ -474,3 +474,10 @@
     font-size: 12px;
   }
 }
+
+/* Previous/next month days are lighter than other
+   out-of-range days, as in the design */
+.participant-page .participant-calendar-date.other-month,
+.participant-page .participant-availability-date.other-month {
+  color: #d9d9d9;
+}

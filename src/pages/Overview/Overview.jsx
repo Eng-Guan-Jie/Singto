@@ -64,13 +64,28 @@ const generateCalendarWeeks = (startDate, endDate) => {
   const start = new Date(`${startDate}T00:00:00`);
   const end = new Date(`${endDate}T00:00:00`);
 
-  const calendarStart = new Date(start);
+  // Show whole months, like a wall calendar: from the
+  // Sunday before the 1st of the start month to the
+  // Saturday after the last day of the end month.
+  const monthStart = new Date(
+    start.getFullYear(),
+    start.getMonth(),
+    1
+  );
+
+  const monthEnd = new Date(
+    end.getFullYear(),
+    end.getMonth() + 1,
+    0
+  );
+
+  const calendarStart = new Date(monthStart);
 
   calendarStart.setDate(
     calendarStart.getDate() - calendarStart.getDay()
   );
 
-  const calendarEnd = new Date(end);
+  const calendarEnd = new Date(monthEnd);
 
   calendarEnd.setDate(
     calendarEnd.getDate() + (6 - calendarEnd.getDay())
@@ -88,7 +103,10 @@ const generateCalendarWeeks = (startDate, endDate) => {
       week.push({
         day: date.getDate(),
         date: toDateKey(date),
+        // Outside the scheduling period.
         muted: date < start || date > end,
+        // Days of the previous/next month.
+        otherMonth: date < monthStart || date > monthEnd,
       });
 
       current.setDate(current.getDate() + 1);
@@ -910,7 +928,7 @@ function Overview() {
                                   calendar-date
                                   ${
                                     date.muted
-                                      ? "muted"
+                                      ? `muted ${date.otherMonth ? "other-month" : ""}`
                                       : ""
                                   }
                                   ${status}
@@ -1243,7 +1261,7 @@ function Overview() {
                                   availability-date
                                   ${
                                     date.muted
-                                      ? "muted"
+                                      ? `muted ${date.otherMonth ? "other-month" : ""}`
                                       : ""
                                   }
                                   ${
