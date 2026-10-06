@@ -27,7 +27,7 @@ const EXPIRY_MARGIN_MS = 5 * 60 * 1000;
 // In that case log out and in again to get a fresh one.
 export const getFreshIdToken = () => {
   if (!liff.isLoggedIn()) {
-    liff.login({ redirectUri: window.location.href });
+    liff.login();
     return null;
   }
 
@@ -39,7 +39,7 @@ export const getFreshIdToken = () => {
 
   if (isExpired && !liff.isInClient()) {
     liff.logout();
-    liff.login({ redirectUri: window.location.href });
+    liff.login();
     return null;
   }
 
