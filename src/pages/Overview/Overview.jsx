@@ -1,8 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Bell,
-  Pencil,
-} from "lucide-react";
+import { Bell, Pencil } from "lucide-react";
 import {
   useLocation,
   useNavigate,
@@ -46,14 +43,15 @@ const generateCalendarWeeks = (startDate, endDate) => {
   const end = new Date(`${endDate}T00:00:00`);
 
   const calendarStart = new Date(start);
+
   calendarStart.setDate(
     calendarStart.getDate() - calendarStart.getDay()
   );
 
   const calendarEnd = new Date(end);
+
   calendarEnd.setDate(
-    calendarEnd.getDate() +
-      (6 - calendarEnd.getDay())
+    calendarEnd.getDate() + (6 - calendarEnd.getDay())
   );
 
   const weeks = [];
@@ -68,9 +66,7 @@ const generateCalendarWeeks = (startDate, endDate) => {
       week.push({
         day: date.getDate(),
         date: date.toISOString().slice(0, 10),
-        muted:
-          date < start ||
-          date > end,
+        muted: date < start || date > end,
       });
 
       current.setDate(current.getDate() + 1);
@@ -89,35 +85,22 @@ function Overview() {
 
   const eventId = searchParams.get("eventId");
 
-  const [activeTab, setActiveTab] =
-    useState("overview");
-
-  const [selectedDate, setSelectedDate] =
-    useState(null);
-
+  const [activeTab, setActiveTab] = useState("overview");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedAvailabilityDates, setSelectedAvailabilityDates] =
     useState([]);
-
-  const [showQuickSelect, setShowQuickSelect] =
-    useState(false);
+  const [showQuickSelect, setShowQuickSelect] = useState(false);
 
   const [event, setEvent] = useState(
     location.state?.eventData || null
   );
 
-  const [participants, setParticipants] =
-    useState([]);
+  const [participants, setParticipants] = useState([]);
+  const [availability, setAvailability] = useState({});
 
-  const [availability, setAvailability] =
-    useState({});
-
-  const [isLoading, setIsLoading] =
-    useState(true);
-
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [isSavingAvailability, setIsSavingAvailability] =
-    useState(false);
+  const [isSavingAvailability, setIsSavingAvailability] = useState(false);
 
   /*
    * ================= FETCH EVENT DATA =================
@@ -141,29 +124,17 @@ function Overview() {
           availabilityResponse,
         ] = await Promise.all([
           fetch(`${API_BASE}/api/events/${eventId}`),
-
-          fetch(
-            `${API_BASE}/api/events/${eventId}/participants`
-          ),
-
-          fetch(
-            `${API_BASE}/api/events/${eventId}/availability`
-          ),
+          fetch(`${API_BASE}/api/events/${eventId}/participants`),
+          fetch(`${API_BASE}/api/events/${eventId}/availability`),
         ]);
 
-        const eventData =
-          await eventResponse.json();
-
-        const participantsData =
-          await participantsResponse.json();
-
-        const availabilityData =
-          await availabilityResponse.json();
+        const eventData = await eventResponse.json();
+        const participantsData = await participantsResponse.json();
+        const availabilityData = await availabilityResponse.json();
 
         if (!eventResponse.ok) {
           throw new Error(
-            eventData.message ||
-              "Failed to load event."
+            eventData.message || "Failed to load event."
           );
         }
 
@@ -243,8 +214,19 @@ function Overview() {
   }, [eventData]);
 
   /*
-   * ================= PARTICIPANT COUNT =================
+   * ================= PARTICIPANTS =================
    */
+
+  // Only accepted participants are used
+  // for availability calculations.
+  const acceptedParticipants = useMemo(
+    () =>
+      participants.filter(
+        (participant) =>
+          participant.status === "accepted"
+      ),
+    [participants]
+  );
 
   const respondedCount = participants.filter(
     (participant) =>
@@ -252,37 +234,24 @@ function Overview() {
       participant.status === "declined"
   ).length;
 
-  const totalParticipants =
-    participants.length;
+  const totalParticipants = participants.length;
 
   /*
    * ================= AVAILABILITY =================
-   *
-   * availability format:
-   *
-   * {
-   *   "2026-10-10": [
-   *     participant1,
-   *     participant2
-   *   ]
-   * }
    */
 
-  const getDateAvailabilitySummary = (
-    dateValue
-  ) => {
-    const availableIds =
-      availability[dateValue] || [];
+  const getDateAvailabilitySummary = (dateValue) => {
+    const availableIds = availability[dateValue] || [];
 
     const availableParticipants =
-      participants.filter((participant) =>
+      acceptedParticipants.filter((participant) =>
         availableIds.includes(
           participant.line_user_id
         )
       );
 
     const unavailableParticipants =
-      participants.filter(
+      acceptedParticipants.filter(
         (participant) =>
           !availableIds.includes(
             participant.line_user_id
@@ -292,20 +261,25 @@ function Overview() {
     const availableCount =
       availableParticipants.length;
 
-    const status =
-      availableCount === 0
-        ? "busy"
-        : availableCount ===
-          participants.length
-        ? "free"
-        : "partial";
+    const total =
+      acceptedParticipants.length;
+
+    let status = "busy";
+
+    if (total > 0) {
+      if (availableCount === total) {
+        status = "free";
+      } else if (availableCount > 0) {
+        status = "partial";
+      }
+    }
 
     return {
       date: dateValue,
       label: getDateLabel(dateValue),
       day: getDayLabel(dateValue),
       available: availableCount,
-      total: participants.length,
+      total,
       status,
       availableParticipants,
       unavailableParticipants,
@@ -330,12 +304,39 @@ function Overview() {
     weeks,
     eventData,
     availability,
-    participants,
+    acceptedParticipants,
   ]);
 
-  const bestDates = dateSummaries.filter(
-    (item) => item.status === "free"
-  );
+  /*
+   * ================= BEST DATE =================
+   */
+
+  const maxAvailableCount = useMemo(() => {
+    if (dateSummaries.length === 0) return 0;
+
+    return Math.max(
+      ...dateSummaries.map(
+        (item) => item.available
+      )
+    );
+  }, [dateSummaries]);
+
+  const bestDates = useMemo(() => {
+    if (
+      dateSummaries.length === 0 ||
+      maxAvailableCount === 0
+    ) {
+      return [];
+    }
+
+    return dateSummaries.filter(
+      (item) =>
+        item.available === maxAvailableCount
+    );
+  }, [
+    dateSummaries,
+    maxAvailableCount,
+  ]);
 
   const selectedDateSummary = selectedDate
     ? getDateAvailabilitySummary(
@@ -364,9 +365,7 @@ function Overview() {
     { label: "Every Sunday", type: 0 },
   ];
 
-  const toggleAvailabilityDate = (
-    date
-  ) => {
+  const toggleAvailabilityDate = (date) => {
     setSelectedAvailabilityDates(
       (currentDates) => {
         if (currentDates.includes(date)) {
@@ -448,6 +447,11 @@ function Overview() {
   };
 
   const handleFinalize = () => {
+    if (!finalizeDate) {
+      alert("Please select a date first.");
+      return;
+    }
+
     navigate("/confirm-date", {
       state: {
         eventData,
@@ -459,9 +463,9 @@ function Overview() {
   /*
    * ================= SAVE AVAILABILITY =================
    *
-   * Organizer availability will be connected
-   * to the availability API after LINE identity
-   * is connected to this page.
+   * Organizer availability is still local-only
+   * because this page does not have LINE identity
+   * connected yet.
    */
 
   const handleSaveAvailability = async () => {
@@ -543,8 +547,8 @@ function Overview() {
             </p>
 
             <p className="response-count">
-              {respondedCount} of {totalParticipants}{" "}
-              Responded
+              {respondedCount} of{" "}
+              {totalParticipants} Responded
             </p>
 
             <div className="participants">
@@ -584,6 +588,7 @@ function Overview() {
                 size={30}
                 strokeWidth={1.5}
               />
+
               <span>Notify Again</span>
             </button>
 
@@ -641,8 +646,6 @@ function Overview() {
                 Overview of Everyone’s Availability
               </p>
 
-              {/* Calendar */}
-
               <div className="calendar">
                 <div className="weekday-row">
                   {[
@@ -683,9 +686,6 @@ function Overview() {
                               date.date ===
                               selectedDate;
 
-                            const isSelectable =
-                              !date.muted;
-
                             return (
                               <button
                                 key={`${weekIndex}-${index}`}
@@ -705,7 +705,7 @@ function Overview() {
                                 `}
                                 onClick={() => {
                                   if (
-                                    isSelectable
+                                    !date.muted
                                   ) {
                                     setSelectedDate(
                                       date.date
@@ -713,7 +713,7 @@ function Overview() {
                                   }
                                 }}
                                 disabled={
-                                  !isSelectable
+                                  date.muted
                                 }
                               >
                                 <span>
@@ -730,7 +730,7 @@ function Overview() {
               </div>
             </section>
 
-            {/* Legend */}
+            {/* ================= LEGEND ================= */}
 
             <div className="legend">
               <span className="legend-label">
@@ -769,9 +769,7 @@ function Overview() {
                 <button
                   className="filter-button"
                   onClick={() =>
-                    alert(
-                      "Filter options"
-                    )
+                    alert("Filter options")
                   }
                 >
                   Filter
@@ -809,6 +807,8 @@ function Overview() {
                   </div>
 
                   <div className="availability-breakdown">
+                    {/* AVAILABLE */}
+
                     <section className="respondent-group">
                       <h3>
                         <span className="status-dot available-dot" />
@@ -820,9 +820,7 @@ function Overview() {
                           .availableParticipants
                           .length > 0 ? (
                           selectedDateSummary.availableParticipants.map(
-                            (
-                              participant
-                            ) => (
+                            (participant) => (
                               <div
                                 className="respondent-row"
                                 key={
@@ -856,6 +854,8 @@ function Overview() {
                       </div>
                     </section>
 
+                    {/* UNAVAILABLE */}
+
                     <section className="respondent-group">
                       <h3>
                         <span className="status-dot unavailable-dot" />
@@ -867,9 +867,7 @@ function Overview() {
                           .unavailableParticipants
                           .length > 0 ? (
                           selectedDateSummary.unavailableParticipants.map(
-                            (
-                              participant
-                            ) => (
+                            (participant) => (
                               <div
                                 className="respondent-row"
                                 key={
@@ -935,8 +933,7 @@ function Overview() {
                     ))
                   ) : (
                     <p>
-                      No date is available for
-                      everyone yet.
+                      No available date yet.
                     </p>
                   )}
                 </div>
@@ -962,6 +959,7 @@ function Overview() {
               <div className="availability-heading">
                 <div>
                   <h2>CALENDAR</h2>
+
                   <p>
                     Tap your available days
                   </p>
@@ -1082,9 +1080,7 @@ function Overview() {
               onClick={
                 handleSaveAvailability
               }
-              disabled={
-                isSavingAvailability
-              }
+              disabled={isSavingAvailability}
             >
               {isSavingAvailability
                 ? "SAVING..."
