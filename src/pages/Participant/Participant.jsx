@@ -132,8 +132,7 @@ function Participant() {
     const initializeLiff = async () => {
       try {
         await liff.init({
-          liffId:
-            import.meta.env.VITE_LIFF_ID,
+          liffId: import.meta.env.VITE_LIFF_ID,
         });
 
         // IMPORTANT:
