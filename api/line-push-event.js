@@ -37,9 +37,11 @@ function getBaseUrl(req) {
 
 /*
  * Build the LIFF URL that participants will open.
+ * The LIFF Endpoint URL is the site root, so the page
+ * goes in the path.
  *
  * Example:
- * https://liff.line.me/1234567890-AbCdEfGh?eventId=xxxxxxxx
+ * https://liff.line.me/1234567890-AbCdEfGh/participant?eventId=xxxxxxxx
  */
 function buildParticipantUrl(eventData) {
   const liffId = process.env.LIFF_ID;
@@ -52,7 +54,7 @@ function buildParticipantUrl(eventData) {
   }
 
   const url = new URL(
-    `https://liff.line.me/${liffId}`
+    `https://liff.line.me/${liffId}/participant`
   );
 
   if (eventData.eventId) {

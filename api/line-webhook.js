@@ -43,6 +43,17 @@ function getChatId(source = {}) {
 }
 
 function buildCreateEventUrl(chatId) {
+  // Open through LIFF so the page runs inside LINE, where
+  // LIFF always has a fresh ID token for the organizer.
+  if (process.env.LIFF_ID) {
+    const url = new URL(
+      `https://liff.line.me/${process.env.LIFF_ID}/create-event`
+    );
+    url.searchParams.set("lineChatId", chatId);
+
+    return url.toString();
+  }
+
   const baseUrl =
     process.env.APP_BASE_URL ||
     process.env.VERCEL_PROJECT_PRODUCTION_URL ||

@@ -25,9 +25,17 @@ const EXPIRY_MARGIN_MS = 5 * 60 * 1000;
 // last login in browser storage, so isLoggedIn() stays true
 // after the token itself has expired and LINE rejects it.
 // In that case log out and in again to get a fresh one.
+//
+// LINE Login only returns to URLs under the LIFF app's
+// Endpoint URL, so the endpoint must be the site root
+// for every page to come back to itself after login.
+const loginAndReturnHere = () => {
+  liff.login({ redirectUri: window.location.href });
+};
+
 export const getFreshIdToken = () => {
   if (!liff.isLoggedIn()) {
-    liff.login();
+    loginAndReturnHere();
     return null;
   }
 
@@ -39,7 +47,7 @@ export const getFreshIdToken = () => {
 
   if (isExpired && !liff.isInClient()) {
     liff.logout();
-    liff.login();
+    loginAndReturnHere();
     return null;
   }
 
