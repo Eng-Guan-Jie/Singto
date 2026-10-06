@@ -16,6 +16,21 @@ const formatDate = (dateValue) => {
   }).format(new Date(`${dateValue}T00:00:00`));
 };
 
+// Build YYYY-MM-DD from local date parts.
+// toISOString() converts to UTC, which shifts dates back
+// one day in UTC+7 (Thailand).
+const toDateKey = (date) => {
+  const year = date.getFullYear();
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 const generateCalendarWeeks = (
   startDate,
   endDate
@@ -55,9 +70,7 @@ const generateCalendarWeeks = (
 
       week.push({
         day: date.getDate(),
-        date: date
-          .toISOString()
-          .slice(0, 10),
+        date: toDateKey(date),
         muted:
           date < start ||
           date > end,
@@ -142,8 +155,19 @@ function Participant() {
             window.location.search
           );
 
+        // Opening https://liff.line.me/{liffId}?eventId=...
+        // first lands on ?liff.state=%3FeventId%3D...
+        // before LIFF redirects, so check liff.state too.
+        const liffState =
+          params.get("liff.state");
+
         const currentEventId =
-          params.get("eventId");
+          params.get("eventId") ||
+          (liffState
+            ? new URLSearchParams(
+                liffState.replace(/^[^?]*\?/, "")
+              ).get("eventId")
+            : null);
 
         console.log(
           "Event ID after LIFF init:",
@@ -208,11 +232,9 @@ function Participant() {
 
   useEffect(() => {
     const fetchEvent = async () => {
+      // eventId is only set after LIFF init.
+      // A missing eventId is reported by the LIFF effect.
       if (!eventId) {
-        setError(
-          "Event ID is missing."
-        );
-        setIsLoading(false);
         return;
       }
 
@@ -645,6 +667,23 @@ function Participant() {
    * ================= LOADING =================
    */
 
+  // Check error first: if LIFF init fails before
+  // eventId is set, the event fetch never runs and
+  // isLoading would stay true forever.
+  if (error) {
+    return (
+      <div className="participant-page">
+        <header className="participant-header">
+          <h1>Singto</h1>
+        </header>
+
+        <main className="participant-container">
+          <p>{error}</p>
+        </main>
+      </div>
+    );
+  }
+
   if (
     isLoading ||
     liffLoading
@@ -657,20 +696,6 @@ function Participant() {
 
         <main className="participant-container">
           <p>Loading...</p>
-        </main>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="participant-page">
-        <header className="participant-header">
-          <h1>Singto</h1>
-        </header>
-
-        <main className="participant-container">
-          <p>{error}</p>
         </main>
       </div>
     );
