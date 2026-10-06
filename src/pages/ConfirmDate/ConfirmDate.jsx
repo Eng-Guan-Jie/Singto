@@ -1,10 +1,15 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import "./ConfirmDate.css";
 
 function ConfirmDate() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const eventData = location.state?.eventData || {
     eventName: "Event",
@@ -129,9 +134,12 @@ function ConfirmDate() {
       `Date ${selectedDates.join(", ")} confirmed!`
     );
 
-    navigate("/overview", {
+    // Overview loads the event by the ID in its URL.
+    const eventId =
+      searchParams.get("eventId") || eventData.id;
+
+    navigate(`/overview?eventId=${eventId}`, {
       state: {
-        eventData,
         confirmedDates: selectedDates,
       },
     });

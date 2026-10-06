@@ -237,9 +237,12 @@ function CreateEvent() {
         eventData
       );
 
-      navigate("/overview", {
+      // Overview loads the event by the ID in its URL.
+      const eventId =
+        searchParams.get("eventId") || existingEvent?.id;
+
+      navigate(`/overview?eventId=${eventId}`, {
         state: {
-          eventData,
           lineChatId,
           organizerLineUserId,
         },

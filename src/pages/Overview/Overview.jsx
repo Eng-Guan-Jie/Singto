@@ -633,7 +633,7 @@ function Overview() {
   };
 
   const handleEdit = () => {
-    navigate("/create-event", {
+    navigate(`/create-event?eventId=${eventId}`, {
       state: {
         eventData,
         editMode: true,
@@ -647,7 +647,7 @@ function Overview() {
       return;
     }
 
-    navigate("/confirm-date", {
+    navigate(`/confirm-date?eventId=${eventId}`, {
       state: {
         eventData,
         selectedDate: finalizeDate,
