@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import liff, {
   initLiff,
   getFreshIdToken,
@@ -92,6 +93,7 @@ const generateCalendarWeeks = (
 };
 
 function Participant() {
+  const navigate = useNavigate();
   const [eventId, setEventId] = useState(null);
   const [lineUser, setLineUser] =
     useState(null);
@@ -112,6 +114,10 @@ function Participant() {
     useState("");
 
   const [participantStatus, setParticipantStatus] =
+    useState(null);
+
+  // { display_name, picture_url } of the event creator.
+  const [organizer, setOrganizer] =
     useState(null);
 
   const [isSubmitting, setIsSubmitting] =
@@ -304,6 +310,17 @@ function Participant() {
             );
           }
 
+          // The organizer manages the event from Overview.
+          if (data.role === "organizer") {
+            navigate(
+              `/overview?eventId=${eventId}`,
+              { replace: true }
+            );
+            return;
+          }
+
+          setOrganizer(data.organizer || null);
+
           const currentParticipant =
             data.participants?.find(
               (participant) =>
@@ -325,7 +342,7 @@ function Participant() {
       };
 
     fetchParticipants();
-  }, [eventId, idToken, lineUser]);
+  }, [eventId, idToken, lineUser, navigate]);
 
   /*
    * ================= LOAD AVAILABILITY =================
@@ -758,12 +775,12 @@ function Participant() {
             )}
           </p>
 
-          {lineUser && (
+          {organizer && (
             <div className="participant-created-by">
-              {lineUser.pictureUrl && (
+              {organizer.picture_url && (
                 <img
                   className="participant-avatar"
-                  src={lineUser.pictureUrl}
+                  src={organizer.picture_url}
                   alt=""
                   width="24"
                   height="24"
@@ -771,8 +788,9 @@ function Participant() {
               )}
 
               <p>
-                Logged in as{" "}
-                {lineUser.displayName}
+                Created by{" "}
+                {organizer.display_name ||
+                  "the organizer"}
               </p>
             </div>
           )}

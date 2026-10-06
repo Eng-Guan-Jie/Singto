@@ -5,6 +5,10 @@ const {
   getEventRole,
   sendError,
 } = require("./_auth");
+const { getChatMemberCount } = require("./_line");
+
+// Max responder pictures shown in the bubble.
+const MAX_RESPONDER_PICTURES = 5;
 
 const LINE_PUSH_URL =
   "https://api.line.me/v2/bot/message/push";
@@ -19,37 +23,44 @@ const toDateKey = (value) =>
  * "Created by" row: the organizer's round LINE picture
  * (when they have one) followed by their name.
  */
+// Round 24px LINE profile picture.
+function createAvatar(pictureUrl) {
+  return {
+    type: "box",
+
+    layout: "vertical",
+
+    width: "24px",
+
+    height: "24px",
+
+    cornerRadius: "12px",
+
+    flex: 0,
+
+    contents: [
+      {
+        type: "image",
+
+        url: pictureUrl,
+
+        size: "full",
+
+        aspectMode: "cover",
+
+        aspectRatio: "1:1",
+      },
+    ],
+  };
+}
+
 function createOrganizerRow(eventData) {
   const contents = [];
 
   if (eventData.organizerPictureUrl) {
-    contents.push({
-      type: "box",
-
-      layout: "vertical",
-
-      width: "24px",
-
-      height: "24px",
-
-      cornerRadius: "12px",
-
-      flex: 0,
-
-      contents: [
-        {
-          type: "image",
-
-          url: eventData.organizerPictureUrl,
-
-          size: "full",
-
-          aspectMode: "cover",
-
-          aspectRatio: "1:1",
-        },
-      ],
-    });
+    contents.push(
+      createAvatar(eventData.organizerPictureUrl)
+    );
   }
 
   contents.push({
@@ -161,6 +172,24 @@ function createPickDateBubble(eventData) {
     eventData.startDate
   )} - ${formatDate(eventData.endDate)}`;
 
+  const { respondedCount, memberCount } = eventData;
+
+  // "2/6" when LINE told us the chat size, otherwise "2".
+  const responsesLabel = memberCount
+    ? `${respondedCount}/${memberCount}`
+    : String(respondedCount);
+
+  const progressPercent = memberCount
+    ? Math.min(
+        100,
+        Math.round((respondedCount / memberCount) * 100)
+      )
+    : 100;
+
+  const responderAvatars = eventData.responderPictures
+    .slice(0, MAX_RESPONDER_PICTURES)
+    .map(createAvatar);
+
   return {
     type: "flex",
 
@@ -230,7 +259,7 @@ function createPickDateBubble(eventData) {
               {
                 type: "text",
 
-                text: "1/5",
+                text: responsesLabel,
 
                 size: "md",
 
@@ -258,7 +287,7 @@ function createPickDateBubble(eventData) {
 
                 layout: "vertical",
 
-                width: "20%",
+                width: `${progressPercent}%`,
 
                 backgroundColor: "#2dc46d",
 
@@ -274,6 +303,20 @@ function createPickDateBubble(eventData) {
               },
             ],
           },
+
+          ...(responderAvatars.length > 0
+            ? [
+                {
+                  type: "box",
+
+                  layout: "horizontal",
+
+                  spacing: "xs",
+
+                  contents: responderAvatars,
+                },
+              ]
+            : []),
 
           {
             type: "button",
@@ -371,6 +414,16 @@ module.exports = async function handler(
 
     // Name and picture come from the verified token,
     // not from the request body.
+    // Everyone who accepted or declined, including the
+    // organizer (added as accepted when the event was made).
+    const responderRows = await sql`
+      SELECT picture_url
+      FROM participants
+      WHERE event_id = ${eventId}
+        AND status IN ('accepted', 'declined')
+      ORDER BY submitted_at ASC
+    `;
+
     const eventData = {
       eventId: event.id,
       eventName: event.event_name,
@@ -378,6 +431,11 @@ module.exports = async function handler(
       endDate: toDateKey(event.end_date),
       organizerName: organizer.name || "the organizer",
       organizerPictureUrl: organizer.picture || null,
+      respondedCount: responderRows.length,
+      memberCount: await getChatMemberCount(lineChatId),
+      responderPictures: responderRows
+        .map((row) => row.picture_url)
+        .filter(Boolean),
     };
 
     const response = await fetch(

@@ -142,6 +142,11 @@ function Overview() {
   );
 
   const [participants, setParticipants] = useState([]);
+
+  // People in the LINE chat (null if LINE did not say).
+  const [memberCount, setMemberCount] = useState(null);
+
+  const [isNotifying, setIsNotifying] = useState(false);
   const [availability, setAvailability] = useState({});
 
   const [isLoading, setIsLoading] = useState(true);
@@ -274,6 +279,10 @@ function Overview() {
           participantsData.participants || []
         );
 
+        setMemberCount(
+          participantsData.memberCount ?? null
+        );
+
         setAvailability(
           availabilityData.availability || {}
         );
@@ -344,13 +353,18 @@ function Overview() {
     [participants]
   );
 
-  const respondedCount = participants.filter(
+  const responders = participants.filter(
     (participant) =>
       participant.status === "accepted" ||
       participant.status === "declined"
-  ).length;
+  );
 
-  const totalParticipants = participants.length;
+  const respondedCount = responders.length;
+
+  // Everyone in the LINE chat when known, otherwise
+  // everyone who has opened the invitation.
+  const totalParticipants =
+    memberCount ?? participants.length;
 
   /*
    * ================= AVAILABILITY =================
@@ -549,8 +563,46 @@ function Overview() {
    * ================= ACTIONS =================
    */
 
-  const handleNotify = () => {
-    alert("Notification sent again!");
+  // Post a fresh invitation card to the LINE chat with the
+  // current response count (LINE cannot edit sent messages).
+  const handleNotify = async () => {
+    setIsNotifying(true);
+
+    try {
+      const response = await fetch(
+        `${API_BASE}/api/line-push-event`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            eventId,
+            idToken,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Unable to send the reminder."
+        );
+      }
+
+      alert("Reminder sent to the LINE chat.");
+    } catch (error) {
+      console.error("Notify again failed:", error);
+
+      alert(
+        error.message ||
+          "Unable to send the reminder."
+      );
+    } finally {
+      setIsNotifying(false);
+    }
   };
 
   const handleEdit = () => {
@@ -706,7 +758,7 @@ function Overview() {
             </p>
 
             <div className="participants">
-              {participants
+              {responders
                 .slice(0, 3)
                 .map((participant) => (
                   <Avatar
@@ -716,9 +768,9 @@ function Overview() {
                   />
                 ))}
 
-              {participants.length > 3 && (
+              {responders.length > 3 && (
                 <div className="more-participants">
-                  +{participants.length - 3}
+                  +{responders.length - 3}
                 </div>
               )}
             </div>
@@ -728,6 +780,7 @@ function Overview() {
             <button
               className="notify-button"
               onClick={handleNotify}
+              disabled={isNotifying}
             >
               <img
                 src={bellRingIcon}

@@ -80,7 +80,12 @@ function getBearerToken(req) {
  */
 async function getEventRole(eventId, lineUserId) {
   const eventRows = await sql`
-    SELECT id, start_date, end_date, organizer_line_user_id
+    SELECT
+      id,
+      start_date,
+      end_date,
+      line_chat_id,
+      organizer_line_user_id
     FROM events
     WHERE id = ${eventId}
     LIMIT 1

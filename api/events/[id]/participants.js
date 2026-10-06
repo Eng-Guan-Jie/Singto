@@ -7,6 +7,7 @@ const {
   sendError,
   setCorsHeaders,
 } = require("../../_auth");
+const { getChatMemberCount } = require("../../_line");
 
 module.exports = async function handler(req, res) {
   setCorsHeaders(res, "GET, POST, OPTIONS");
@@ -36,10 +37,19 @@ module.exports = async function handler(req, res) {
         getBearerToken(req)
       );
 
-      const { role } = await getEventRole(
+      const { event, role } = await getEventRole(
         eventId,
         lineUser.sub
       );
+
+      // Shown to everyone as "Created by".
+      const organizerRows = await sql`
+        SELECT display_name, picture_url
+        FROM participants
+        WHERE event_id = ${eventId}
+          AND line_user_id = ${event.organizer_line_user_id}
+        LIMIT 1
+      `;
 
       const rows =
         role === "organizer"
@@ -72,7 +82,13 @@ module.exports = async function handler(req, res) {
 
       res.status(200).json({
         role,
+        organizer: organizerRows[0] || null,
         participants: rows,
+        // Total people in the LINE chat, for "5 of 6".
+        memberCount:
+          role === "organizer"
+            ? await getChatMemberCount(event.line_chat_id)
+            : null,
       });
       return;
     }

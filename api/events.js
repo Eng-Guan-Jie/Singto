@@ -81,6 +81,30 @@ module.exports = async function handler(req, res) {
         created_at
     `;
 
+    // The organizer takes part in the event too: they count
+    // as the first response, and their name and picture are
+    // shown as "Created by" to participants.
+    await sql`
+      INSERT INTO participants (
+        event_id,
+        line_user_id,
+        display_name,
+        picture_url,
+        status,
+        submitted_at
+      )
+      VALUES (
+        ${rows[0].id},
+        ${organizer.sub},
+        ${organizer.name || null},
+        ${organizer.picture || null},
+        'accepted',
+        NOW()
+      )
+      ON CONFLICT (event_id, line_user_id)
+      DO NOTHING
+    `;
+
     res.status(201).json({
       event: rows[0],
     });
