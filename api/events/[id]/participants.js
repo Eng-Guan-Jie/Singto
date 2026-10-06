@@ -82,7 +82,12 @@ module.exports = async function handler(req, res) {
 
     // POST participant
     if (req.method === "POST") {
-      const { idToken, status } = req.body || {};
+      const {
+        idToken,
+        status,
+        displayName,
+        pictureUrl,
+      } = req.body || {};
 
       if (!idToken) {
         res.status(400).json({
@@ -117,27 +122,31 @@ module.exports = async function handler(req, res) {
       const lineUser = await verifyLineIdToken(idToken);
 
       const lineUserId = lineUser.sub;
-      const displayName = lineUser.name || null;
+      const finalDisplayName =
+        displayName || lineUser.name || null;
 
       // Insert or update participant
       const rows = await sql`
         INSERT INTO participants (
-          event_id,
-          line_user_id,
-          display_name,
-          status,
-          submitted_at
-        )
-        VALUES (
-          ${eventId},
-          ${lineUserId},
-          ${displayName},
-          ${status},
-          NOW()
-        )
+        event_id,
+        line_user_id,
+        display_name,
+        picture_url,
+        status,
+        submitted_at
+      )
+      VALUES (
+        ${eventId},
+        ${lineUserId},
+        ${finalDisplayName},
+        ${pictureUrl || null},
+        ${status},
+        NOW()
+      )
         ON CONFLICT (event_id, line_user_id)
         DO UPDATE SET
           display_name = EXCLUDED.display_name,
+          picture_url = EXCLUDED.picture_url,
           status = EXCLUDED.status,
           submitted_at = NOW()
         RETURNING

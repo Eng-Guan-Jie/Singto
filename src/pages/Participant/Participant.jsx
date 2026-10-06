@@ -443,6 +443,8 @@ function Participant() {
               body: JSON.stringify({
                 idToken,
                 status,
+                displayName: lineUser.displayName,
+                pictureUrl: lineUser.pictureUrl,
               }),
             }
           );
