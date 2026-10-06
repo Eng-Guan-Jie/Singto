@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import liff from "@line/liff";
 import "./Participant.css";
 
@@ -76,12 +75,7 @@ const generateCalendarWeeks = (
 };
 
 function Participant() {
-  const [searchParams] =
-    useSearchParams();
-
-  const eventId =
-    searchParams.get("eventId");
-
+  const [eventId, setEventId] = useState(null);
   const [lineUser, setLineUser] =
     useState(null);
 
@@ -142,6 +136,29 @@ function Participant() {
             import.meta.env.VITE_LIFF_ID,
         });
 
+        // IMPORTANT:
+        // Read eventId only AFTER liff.init() finishes.
+        const params =
+          new URLSearchParams(
+            window.location.search
+          );
+
+        const currentEventId =
+          params.get("eventId");
+
+        console.log(
+          "Event ID after LIFF init:",
+          currentEventId
+        );
+
+        if (!currentEventId) {
+          throw new Error(
+            "Event ID is missing."
+          );
+        }
+
+        setEventId(currentEventId);
+
         if (!liff.isLoggedIn()) {
           liff.login();
           return;
@@ -181,7 +198,7 @@ function Participant() {
       } finally {
         setLiffLoading(false);
       }
-    };
+    };;
 
     initializeLiff();
   }, []);
