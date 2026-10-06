@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import liff from "@line/liff";
+import liff, {
+  initLiff,
+  authHeaders,
+} from "../../lib/liff";
 import "./Participant.css";
 
 const API_BASE = import.meta.env.DEV
@@ -101,9 +104,6 @@ function Participant() {
   const [event, setEvent] =
     useState(null);
 
-  const [participants, setParticipants] =
-    useState([]);
-
   const [isLoading, setIsLoading] =
     useState(true);
 
@@ -124,10 +124,17 @@ function Participant() {
     setSelectedAvailabilityDates,
   ] = useState([]);
 
-  const [
-    savedAvailabilityDates,
-    setSavedAvailabilityDates,
-  ] = useState([]);
+  // How many accepted members are free per date
+  // (counts only, no names: AGENTS.md 5.3).
+  const [availabilityCounts, setAvailabilityCounts] =
+    useState({});
+
+  const [acceptedCount, setAcceptedCount] =
+    useState(0);
+
+  // Bumped after accept/decline/save to reload counts.
+  const [refreshKey, setRefreshKey] =
+    useState(0);
 
   const [showQuickSelect, setShowQuickSelect] =
     useState(false);
@@ -144,9 +151,7 @@ function Participant() {
   useEffect(() => {
     const initializeLiff = async () => {
       try {
-        await liff.init({
-          liffId: import.meta.env.VITE_LIFF_ID,
-        });
+        await initLiff();
 
         // IMPORTANT:
         // Read eventId only AFTER liff.init() finishes.
@@ -280,14 +285,18 @@ function Participant() {
   useEffect(() => {
     const fetchParticipants =
       async () => {
-        if (!eventId || !lineUser) {
+        if (!eventId || !idToken || !lineUser) {
           return;
         }
 
         try {
           const response =
             await fetch(
-              `${API_BASE}/api/events/${eventId}/participants`
+              `${API_BASE}/api/events/${eventId}/participants`,
+              {
+                headers:
+                  authHeaders(idToken),
+              }
             );
 
           const data =
@@ -299,10 +308,6 @@ function Participant() {
                 "Failed to load participants."
             );
           }
-
-          setParticipants(
-            data.participants || []
-          );
 
           const currentParticipant =
             data.participants?.find(
@@ -325,7 +330,7 @@ function Participant() {
       };
 
     fetchParticipants();
-  }, [eventId, lineUser]);
+  }, [eventId, idToken, lineUser]);
 
   /*
    * ================= LOAD AVAILABILITY =================
@@ -334,14 +339,18 @@ function Participant() {
   useEffect(() => {
     const fetchAvailability =
       async () => {
-        if (!eventId || !lineUser) {
+        if (!eventId || !idToken || !lineUser) {
           return;
         }
 
         try {
           const response =
             await fetch(
-              `${API_BASE}/api/events/${eventId}/availability`
+              `${API_BASE}/api/events/${eventId}/availability`,
+              {
+                headers:
+                  authHeaders(idToken),
+              }
             );
 
           const data =
@@ -374,8 +383,12 @@ function Participant() {
             myDates
           );
 
-          setSavedAvailabilityDates(
-            myDates
+          setAvailabilityCounts(
+            data.counts || {}
+          );
+
+          setAcceptedCount(
+            data.acceptedCount || 0
           );
         } catch (error) {
           console.error(
@@ -386,7 +399,7 @@ function Participant() {
       };
 
     fetchAvailability();
-  }, [eventId, lineUser]);
+  }, [eventId, idToken, lineUser, refreshKey]);
 
   /*
    * ================= CALENDAR =================
@@ -462,6 +475,8 @@ function Participant() {
         setParticipantStatus(
           data.participant.status
         );
+
+        setRefreshKey((key) => key + 1);
 
         alert(
           status === "accepted"
@@ -624,9 +639,7 @@ function Participant() {
           );
         }
 
-        setSavedAvailabilityDates(
-          selectedAvailabilityDates
-        );
+        setRefreshKey((key) => key + 1);
 
         alert(
           "Your availability has been saved."
@@ -650,20 +663,19 @@ function Participant() {
    * ================= OVERVIEW DATA =================
    */
 
-  const availabilitySummary =
-    useMemo(() => {
-      const summary = {};
+  // Same thresholds as the organizer Overview:
+  // everyone free → free, some → partial, none → busy.
+  const getDateStatus = (date) => {
+    if (acceptedCount === 0) return "";
 
-      participants.forEach(
-        (participant) => {
-          summary[
-            participant.line_user_id
-          ] = [];
-        }
-      );
+    const count =
+      availabilityCounts[date] || 0;
 
-      return summary;
-    }, [participants]);
+    if (count === acceptedCount) return "free";
+    if (count > 0) return "partial";
+
+    return "busy";
+  };
 
   /*
    * ================= LOADING =================
@@ -905,10 +917,12 @@ function Participant() {
                           date,
                           index
                         ) => {
-                          const isMine =
-                            savedAvailabilityDates.includes(
-                              date.date
-                            );
+                          const status =
+                            date.muted
+                              ? ""
+                              : getDateStatus(
+                                  date.date
+                                );
 
                           return (
                             <div
@@ -917,11 +931,7 @@ function Participant() {
                                 date.muted
                                   ? "muted"
                                   : ""
-                              } ${
-                                isMine
-                                  ? "free"
-                                  : ""
-                              }`}
+                              } ${status}`}
                             >
                               {date.day}
                             </div>

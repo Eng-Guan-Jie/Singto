@@ -1,16 +1,12 @@
 const sql = require("./_db");
+const {
+  verifyLineIdToken,
+  sendError,
+  setCorsHeaders,
+} = require("./_auth");
 
 module.exports = async function handler(req, res) {
-  // CORS
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "POST, OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type"
-  );
+  setCorsHeaders(res, "POST, OPTIONS");
 
   // Handle browser preflight request
   if (req.method === "OPTIONS") {
@@ -33,7 +29,7 @@ module.exports = async function handler(req, res) {
       startDate,
       endDate,
       lineChatId,
-      organizerLineUserId,
+      idToken,
     } = req.body || {};
 
     if (!eventName || !startDate || !endDate) {
@@ -52,6 +48,10 @@ module.exports = async function handler(req, res) {
       return;
     }
 
+    // The organizer is whoever LINE verified, not an
+    // ID the client claims.
+    const organizer = await verifyLineIdToken(idToken);
+
     const rows = await sql`
       INSERT INTO events (
         event_name,
@@ -67,7 +67,7 @@ module.exports = async function handler(req, res) {
         ${startDate},
         ${endDate},
         ${lineChatId || null},
-        ${organizerLineUserId || null}
+        ${organizer.sub}
       )
       RETURNING
         id,
@@ -85,11 +85,7 @@ module.exports = async function handler(req, res) {
       event: rows[0],
     });
   } catch (error) {
-    console.error("Create event failed:", error);
-
-    res.status(500).json({
-      message: "Failed to create event",
-    });
+    sendError(res, error, "Failed to create event");
   }
 };
 

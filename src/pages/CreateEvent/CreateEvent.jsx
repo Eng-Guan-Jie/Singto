@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 
 import { CalendarDays } from "lucide-react";
-import liff from "@line/liff";
+import liff, { initLiff } from "../../lib/liff";
 
 import "./CreateEvent.css";
 
@@ -53,9 +53,7 @@ function CreateEvent() {
   useEffect(() => {
     const initializeLiff = async () => {
       try {
-        await liff.init({
-          liffId: import.meta.env.VITE_LIFF_ID,
-        });
+        await initLiff();
 
         if (!liff.isLoggedIn()) {
           liff.login();
@@ -139,7 +137,7 @@ function CreateEvent() {
               startDate,
               endDate,
               lineChatId,
-              organizerLineUserId,
+              idToken: liff.getIDToken(),
             }),
           }
         );

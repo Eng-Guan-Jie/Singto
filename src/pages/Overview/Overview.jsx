@@ -6,6 +6,10 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import liff, {
+  initLiff,
+  authHeaders,
+} from "../../lib/liff";
 import "./Overview.css";
 
 const API_BASE = import.meta.env.DEV
@@ -95,6 +99,30 @@ const generateCalendarWeeks = (startDate, endDate) => {
   return weeks;
 };
 
+// LINE profile picture, or the first letter of the
+// name when there is no picture.
+function Avatar({ participant, className }) {
+  if (participant.picture_url) {
+    return (
+      <img
+        className={className}
+        src={participant.picture_url}
+        alt=""
+        width="24"
+        height="24"
+      />
+    );
+  }
+
+  return (
+    <span className={className}>
+      {participant.display_name
+        ? participant.display_name.charAt(0).toUpperCase()
+        : "?"}
+    </span>
+  );
+}
+
 function Overview() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -119,6 +147,54 @@ function Overview() {
   const [error, setError] = useState("");
   const [isSavingAvailability, setIsSavingAvailability] = useState(false);
 
+  const [idToken, setIdToken] = useState(null);
+  const [lineUserId, setLineUserId] = useState(null);
+
+  // Bumped after saving to reload the overview data.
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  /*
+   * ================= LIFF =================
+   * The API only shows names and availability to the
+   * event's organizer, so this page needs LINE login.
+   */
+
+  useEffect(() => {
+    const initializeLiff = async () => {
+      try {
+        await initLiff();
+
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        const token = liff.getIDToken();
+
+        if (!token) {
+          throw new Error("Unable to get LINE ID token.");
+        }
+
+        const profile = await liff.getProfile();
+
+        setLineUserId(profile.userId);
+        setIdToken(token);
+      } catch (error) {
+        console.error(
+          "LIFF initialization failed:",
+          error
+        );
+
+        setError(
+          error.message ||
+            "Failed to initialize LINE Login."
+        );
+      }
+    };
+
+    initializeLiff();
+  }, []);
+
   /*
    * ================= FETCH EVENT DATA =================
    */
@@ -131,8 +207,12 @@ function Overview() {
         return;
       }
 
+      // Wait for LINE login before loading protected data.
+      if (!idToken) {
+        return;
+      }
+
       try {
-        setIsLoading(true);
         setError("");
 
         const [
@@ -141,8 +221,12 @@ function Overview() {
           availabilityResponse,
         ] = await Promise.all([
           fetch(`${API_BASE}/api/events/${eventId}`),
-          fetch(`${API_BASE}/api/events/${eventId}/participants`),
-          fetch(`${API_BASE}/api/events/${eventId}/availability`),
+          fetch(`${API_BASE}/api/events/${eventId}/participants`, {
+            headers: authHeaders(idToken),
+          }),
+          fetch(`${API_BASE}/api/events/${eventId}/availability`, {
+            headers: authHeaders(idToken),
+          }),
         ]);
 
         const eventData = await eventResponse.json();
@@ -169,7 +253,25 @@ function Overview() {
           );
         }
 
+        if (participantsData.role !== "organizer") {
+          throw new Error(
+            "Only the organizer of this event can view this page."
+          );
+        }
+
         setEvent(eventData.event);
+
+        // Pre-select the organizer's own saved dates.
+        setSelectedAvailabilityDates(
+          Object.entries(
+            availabilityData.availability || {}
+          )
+            .filter(([, userIds]) =>
+              userIds.includes(lineUserId)
+            )
+            .map(([date]) => date)
+            .sort()
+        );
 
         setParticipants(
           participantsData.participants || []
@@ -194,7 +296,7 @@ function Overview() {
     };
 
     fetchOverviewData();
-  }, [eventId]);
+  }, [eventId, idToken, lineUserId, refreshKey]);
 
   /*
    * ================= EVENT DATA =================
@@ -479,23 +581,47 @@ function Overview() {
 
   /*
    * ================= SAVE AVAILABILITY =================
-   *
-   * Organizer availability is still local-only
-   * because this page does not have LINE identity
-   * connected yet.
    */
 
   const handleSaveAvailability = async () => {
     setIsSavingAvailability(true);
 
     try {
-      console.log(
-        "Organizer availability:",
-        selectedAvailabilityDates
+      const response = await fetch(
+        `${API_BASE}/api/events/${eventId}/availability`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idToken,
+            dates: selectedAvailabilityDates,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Failed to save availability."
+        );
+      }
+
+      setRefreshKey((key) => key + 1);
+
+      alert("Your availability has been saved.");
+    } catch (error) {
+      console.error(
+        "Save availability failed:",
+        error
       );
 
       alert(
-        `Selected ${selectedAvailabilityDates.length} available day(s).`
+        error.message ||
+          "Failed to save availability."
       );
     } finally {
       setIsSavingAvailability(false);
@@ -505,6 +631,22 @@ function Overview() {
   /*
    * ================= LOADING / ERROR =================
    */
+
+  // Check error first: if LINE login fails, the data
+  // fetch never runs and isLoading would stay true.
+  if (error) {
+    return (
+      <div className="overview-page">
+        <div className="overview-header">
+          <h1>Singto</h1>
+        </div>
+
+        <main className="overview-container">
+          <p>{error}</p>
+        </main>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -520,7 +662,7 @@ function Overview() {
     );
   }
 
-  if (error || !eventData) {
+  if (!eventData) {
     return (
       <div className="overview-page">
         <div className="overview-header">
@@ -528,9 +670,7 @@ function Overview() {
         </div>
 
         <main className="overview-container">
-          <p>
-            {error || "Event not found."}
-          </p>
+          <p>Event not found.</p>
         </main>
       </div>
     );
@@ -572,20 +712,11 @@ function Overview() {
               {participants
                 .slice(0, 3)
                 .map((participant) => (
-                  <div
+                  <Avatar
                     className="participant-avatar"
                     key={participant.id}
-                    title={
-                      participant.display_name ||
-                      participant.line_user_id
-                    }
-                  >
-                    {participant.display_name
-                      ? participant.display_name
-                          .charAt(0)
-                          .toUpperCase()
-                      : "?"}
-                  </div>
+                    participant={participant}
+                  />
                 ))}
 
               {participants.length > 3 && (
@@ -843,15 +974,12 @@ function Overview() {
                                   participant.id
                                 }
                               >
-                                <span className="respondent-avatar">
-                                  {participant.display_name
-                                    ? participant.display_name
-                                        .charAt(
-                                          0
-                                        )
-                                        .toUpperCase()
-                                    : "?"}
-                                </span>
+                                <Avatar
+                                  className="respondent-avatar"
+                                  participant={
+                                    participant
+                                  }
+                                />
 
                                 <span>
                                   {(
@@ -890,15 +1018,12 @@ function Overview() {
                                   participant.id
                                 }
                               >
-                                <span className="respondent-avatar">
-                                  {participant.display_name
-                                    ? participant.display_name
-                                        .charAt(
-                                          0
-                                        )
-                                        .toUpperCase()
-                                    : "?"}
-                                </span>
+                                <Avatar
+                                  className="respondent-avatar"
+                                  participant={
+                                    participant
+                                  }
+                                />
 
                                 <span>
                                   {(

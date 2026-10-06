@@ -647,3 +647,9 @@
     font-size: 12px;
   }
 }
+
+/* LINE profile pictures inside the avatar circles */
+.overview-page img.participant-avatar,
+.overview-page img.respondent-avatar {
+  object-fit: cover;
+}

@@ -26,8 +26,6 @@ module.exports = async function handler(req, res) {
         description,
         start_date,
         end_date,
-        line_chat_id,
-        organizer_line_user_id,
         status,
         created_at
       FROM events
