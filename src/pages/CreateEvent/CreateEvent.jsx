@@ -177,11 +177,8 @@ function CreateEvent() {
                     "application/json",
                 },
                 body: JSON.stringify({
-                  lineChatId,
-                  eventData: {
-                    ...eventData,
-                    eventId: createdEvent.id,
-                  },
+                  eventId: createdEvent.id,
+                  idToken: getFreshIdToken(),
                 }),
               }
             );

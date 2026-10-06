@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
@@ -64,6 +65,36 @@ function Home() {
   return <CreateEvent />;
 }
 
+const PAGES = [
+  "create-event",
+  "overview",
+  "confirm-date",
+  "participant",
+];
+
+// Any URL without a route. If the LIFF Endpoint URL is a
+// page path instead of the site root, LIFF links double the
+// path (e.g. /participant/participant?eventId=…), so send
+// those to the page named in the last segment.
+function Fallback() {
+  const { pathname, search } = useLocation();
+  const lastSegment = pathname
+    .split("/")
+    .filter(Boolean)
+    .pop();
+
+  if (PAGES.includes(lastSegment)) {
+    return (
+      <Navigate
+        to={`/${lastSegment}${search}`}
+        replace
+      />
+    );
+  }
+
+  return <p>Page not found.</p>;
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -73,6 +104,7 @@ function App() {
         <Route path="/overview" element={<Overview />} />
         <Route path="/confirm-date" element={<ConfirmDate />} />
         <Route path="/participant" element={<Participant />} />
+        <Route path="*" element={<Fallback />} />
       </Routes>
     </BrowserRouter>
   );

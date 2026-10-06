@@ -1,17 +1,101 @@
+const sql = require("./_db");
+const {
+  AuthError,
+  verifyLineIdToken,
+  getEventRole,
+  sendError,
+} = require("./_auth");
+
 const LINE_PUSH_URL =
   "https://api.line.me/v2/bot/message/push";
 
+// DATE columns come back as Date objects at UTC midnight.
+const toDateKey = (value) =>
+  value instanceof Date
+    ? value.toISOString().slice(0, 10)
+    : String(value).slice(0, 10);
+
+/*
+ * "Created by" row: the organizer's round LINE picture
+ * (when they have one) followed by their name.
+ */
+function createOrganizerRow(eventData) {
+  const contents = [];
+
+  if (eventData.organizerPictureUrl) {
+    contents.push({
+      type: "box",
+
+      layout: "vertical",
+
+      width: "24px",
+
+      height: "24px",
+
+      cornerRadius: "12px",
+
+      flex: 0,
+
+      contents: [
+        {
+          type: "image",
+
+          url: eventData.organizerPictureUrl,
+
+          size: "full",
+
+          aspectMode: "cover",
+
+          aspectRatio: "1:1",
+        },
+      ],
+    });
+  }
+
+  contents.push({
+    type: "text",
+
+    text: `Created by ${eventData.organizerName}`,
+
+    size: "md",
+
+    color: "#666666",
+
+    wrap: true,
+
+    flex: 1,
+  });
+
+  return {
+    type: "box",
+
+    layout: "horizontal",
+
+    spacing: "sm",
+
+    alignItems: "center",
+
+    contents,
+  };
+}
+
+// Day-first to match the design, e.g. "7 SEP".
 function formatDate(dateValue) {
   if (!dateValue) return "";
 
-  return new Intl.DateTimeFormat("en", {
-    day: "numeric",
-    month: "short",
-  })
-    .format(
-      new Date(`${dateValue}T00:00:00`)
-    )
-    .toUpperCase();
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en", {
+      day: "numeric",
+      month: "short",
+      timeZone: "UTC",
+    })
+      .formatToParts(
+        new Date(`${dateValue}T00:00:00Z`)
+      )
+      .map(({ type, value }) => [type, value])
+  );
+
+  return `${parts.day} ${parts.month}`.toUpperCase();
 }
 
 function getBaseUrl(req) {
@@ -111,27 +195,7 @@ function createPickDateBubble(eventData) {
             wrap: true,
           },
 
-          {
-            type: "box",
-
-            layout: "horizontal",
-
-            spacing: "sm",
-
-            contents: [
-              {
-                type: "text",
-
-                text: "Created by Singto",
-
-                size: "md",
-
-                color: "#666666",
-
-                wrap: true,
-              },
-            ],
-          },
+          createOrganizerRow(eventData),
 
           {
             type: "text",
@@ -253,27 +317,69 @@ module.exports = async function handler(
     return;
   }
 
-  const {
-    lineChatId,
-    eventData,
-  } = req.body || {};
+  const { eventId, idToken } = req.body || {};
 
-  if (
-    !lineChatId ||
-    !eventData?.eventId ||
-    !eventData?.eventName ||
-    !eventData?.startDate ||
-    !eventData?.endDate
-  ) {
+  if (!eventId) {
     res.status(400).json({
-      message:
-        "Missing LINE chat id or event details",
+      message: "Event ID is required",
     });
 
     return;
   }
 
   try {
+    // Only the event's organizer may post its invitation,
+    // and only to the chat the event was created from.
+    const organizer = await verifyLineIdToken(idToken);
+
+    const { role } = await getEventRole(
+      eventId,
+      organizer.sub
+    );
+
+    if (role !== "organizer") {
+      throw new AuthError(
+        403,
+        "Only the organizer can share this event."
+      );
+    }
+
+    const eventRows = await sql`
+      SELECT
+        id,
+        event_name,
+        start_date,
+        end_date,
+        line_chat_id
+      FROM events
+      WHERE id = ${eventId}
+      LIMIT 1
+    `;
+
+    const event = eventRows[0];
+
+    if (!event.line_chat_id) {
+      res.status(400).json({
+        message:
+          "This event was not created from a LINE chat.",
+      });
+
+      return;
+    }
+
+    const lineChatId = event.line_chat_id;
+
+    // Name and picture come from the verified token,
+    // not from the request body.
+    const eventData = {
+      eventId: event.id,
+      eventName: event.event_name,
+      startDate: toDateKey(event.start_date),
+      endDate: toDateKey(event.end_date),
+      organizerName: organizer.name || "the organizer",
+      organizerPictureUrl: organizer.picture || null,
+    };
+
     const response = await fetch(
       LINE_PUSH_URL,
       {
@@ -316,15 +422,10 @@ module.exports = async function handler(
       ok: true,
     });
   } catch (error) {
-    console.error(
-      "LINE push event failed:",
-      error
+    sendError(
+      res,
+      error,
+      "Unable to push LINE event bubble"
     );
-
-    res.status(500).json({
-      message:
-        error.message ||
-        "Unable to push LINE event bubble",
-    });
   }
 };
