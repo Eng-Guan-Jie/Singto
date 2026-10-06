@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
 import {
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+
 import { CalendarDays } from "lucide-react";
+import liff from "@line/liff";
+
 import "./CreateEvent.css";
 
 const API_BASE = import.meta.env.DEV
@@ -18,13 +22,17 @@ function CreateEvent() {
 
   const existingEvent = location.state?.eventData;
   const isEditMode = location.state?.editMode === true;
-  const lineChatId = searchParams.get("lineChatId");
-  console.log("lineChatId:", lineChatId);
-  console.log("API_BASE:", API_BASE);
-  console.log("lineChatId:", lineChatId);
-  console.log("About to send LINE notification:", Boolean(lineChatId));
 
-  const [isSaving, setIsSaving] = useState(false);
+  const lineChatId = searchParams.get("lineChatId");
+
+  const [organizerLineUserId, setOrganizerLineUserId] =
+    useState(null);
+
+  const [isLiffLoading, setIsLiffLoading] =
+    useState(true);
+
+  const [isSaving, setIsSaving] =
+    useState(false);
 
   const [eventName, setEventName] = useState(
     existingEvent?.eventName || ""
@@ -42,14 +50,65 @@ function CreateEvent() {
     existingEvent?.endDate || ""
   );
 
+  useEffect(() => {
+    const initializeLiff = async () => {
+      try {
+        await liff.init({
+          liffId: import.meta.env.VITE_LIFF_ID,
+        });
+
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        const profile = await liff.getProfile();
+
+        setOrganizerLineUserId(profile.userId);
+
+        console.log(
+          "Organizer LINE User ID:",
+          profile.userId
+        );
+      } catch (error) {
+        console.error(
+          "LIFF initialization failed:",
+          error
+        );
+      } finally {
+        setIsLiffLoading(false);
+      }
+    };
+
+    initializeLiff();
+  }, []);
+
+  console.log("lineChatId:", lineChatId);
+  console.log(
+    "organizerLineUserId:",
+    organizerLineUserId
+  );
+  console.log("API_BASE:", API_BASE);
+
   const handleSaveEvent = async () => {
     if (!eventName || !startDate || !endDate) {
-      alert("Please fill in the required fields.");
+      alert(
+        "Please fill in the required fields."
+      );
       return;
     }
 
     if (endDate < startDate) {
-      alert("End date must be on or after start date.");
+      alert(
+        "End date must be on or after start date."
+      );
+      return;
+    }
+
+    if (!organizerLineUserId) {
+      alert(
+        "Unable to identify the organizer through LINE."
+      );
       return;
     }
 
@@ -80,6 +139,7 @@ function CreateEvent() {
               startDate,
               endDate,
               lineChatId,
+              organizerLineUserId,
             }),
           }
         );
@@ -88,13 +148,17 @@ function CreateEvent() {
 
         if (!response.ok) {
           throw new Error(
-            data.message || "Unable to create the event."
+            data.message ||
+              "Unable to create the event."
           );
         }
 
         const createdEvent = data.event;
 
-        console.log("Created Event:", createdEvent);
+        console.log(
+          "Created Event:",
+          createdEvent
+        );
 
         /*
          * Send event information to LINE
@@ -107,7 +171,8 @@ function CreateEvent() {
               {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json",
+                  "Content-Type":
+                    "application/json",
                 },
                 body: JSON.stringify({
                   lineChatId,
@@ -148,6 +213,7 @@ function CreateEvent() {
                 id: createdEvent.id,
               },
               lineChatId,
+              organizerLineUserId,
             },
           }
         );
@@ -162,12 +228,16 @@ function CreateEvent() {
        * For now, keep the existing navigation behavior
        * so the current Organizer edit flow is not broken.
        */
-      console.log("Updated Event:", eventData);
+      console.log(
+        "Updated Event:",
+        eventData
+      );
 
       navigate("/overview", {
         state: {
           eventData,
           lineChatId,
+          organizerLineUserId,
         },
       });
     } catch (error) {
@@ -283,10 +353,15 @@ function CreateEvent() {
         <button
           className="create-button"
           onClick={handleSaveEvent}
-          disabled={isSaving}
+          disabled={
+            isSaving ||
+            isLiffLoading
+          }
         >
           {isSaving
             ? "SAVING..."
+            : isLiffLoading
+            ? "LOADING..."
             : isEditMode
             ? "UPDATE EVENT"
             : "CREATE EVENT"}
