@@ -1,100 +1,127 @@
+/*
+ * Values follow Figma "Sync-Solution" → S4.2 เลือกวัน (คนถูกนัด)
+ * (nodes 47:1323 overview, 47:1392 my availability).
+ */
+
 .participant-page {
   min-height: 100vh;
-  background: #f8f5f2;
-  color: #2b211b;
+  background: #f5f8fb;
+  color: #222222;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
 }
 
 .participant-header {
-  height: 72px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2b211b;
+  padding: 8px;
+  background: #2a1e16;
+  border-bottom: 1.5px solid #dddddd;
   color: #ffffff;
 }
 
 .participant-header h1 {
   margin: 0;
   font-size: 24px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-weight: 700;
+  line-height: 22px;
 }
 
 .participant-container {
   width: min(100%, 520px);
   margin: 0 auto;
-  padding: 24px 18px 40px;
-  box-sizing: border-box;
+  padding: 8px 0 0;
 }
 
 /* ================= EVENT CARD ================= */
 
 .participant-event-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 17px;
+  padding: 16px;
+  border: 1px solid #a8a8a8;
+  border-radius: 16px;
   background: #ffffff;
-  border-radius: 18px;
-  padding: 24px 20px;
-  box-shadow: 0 4px 18px rgba(43, 33, 27, 0.08);
 }
 
 .participant-event-card h2 {
-  margin: 0 0 10px;
-  font-size: 25px;
+  margin: 0;
+  color: #000000;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  line-height: 22px;
 }
 
-.participant-description {
-  margin: 0 0 8px;
-  color: #5f5650;
-  font-size: 15px;
-  line-height: 1.5;
-}
-
+.participant-description,
 .participant-date {
   margin: 0;
-  color: #7a7069;
-  font-size: 14px;
+  color: #606060;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
 }
 
 .participant-created-by {
-  margin: 12px 0 0;
-  color: #7a7069;
-  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.participant-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.participant-created-by p {
+  margin: 0;
+  color: #606060;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
 }
 
 .participant-question {
-  margin: 24px 0 14px;
-  color: #2b211b;
-  font-size: 15px;
+  margin: 0;
+  color: #222222;
+  font-size: 14px;
   font-weight: 500;
+  line-height: 22px;
 }
 
 .response-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  align-items: center;
   gap: 10px;
+  margin-top: 2px;
+  padding: 8px;
+  border: 1px solid #000000;
+  border-radius: 16px;
+  background: #f5f8fb;
 }
 
 .response-button {
-  height: 46px;
-  border: 1px solid #d8d0ca;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #2b211b;
-  font-size: 13px;
+  flex: 1;
+  height: 48px;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #222222;
+  font-family: inherit;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  line-height: 22px;
   cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.response-button:hover:not(:disabled) {
-  background: #f4efeb;
 }
 
 .response-button.active {
-  background: #2b211b;
-  border-color: #2b211b;
+  background: #2a1e16;
   color: #ffffff;
 }
 
@@ -103,69 +130,115 @@
   cursor: not-allowed;
 }
 
+.response-divider {
+  flex: none;
+  width: 2px;
+  height: 38px;
+  background: #a8a8a8;
+}
+
 /* ================= TABS ================= */
 
 .participant-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin-top: 24px;
-  border-bottom: 1px solid #ddd5cf;
+  margin-top: 16px;
 }
 
 .participant-tab {
   position: relative;
-  padding: 14px 6px;
+  height: 52px;
+  padding: 8px;
   border: none;
-  background: transparent;
-  color: #9a918b;
-  font-size: 12px;
+  background: #dfdfdf;
+  color: #a8a8a8;
+  font-family: inherit;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.08em;
   cursor: pointer;
 }
 
 .participant-tab.active {
-  color: #2b211b;
+  z-index: 1;
+  background: #ffffff;
+  color: #000000;
+  text-decoration: underline;
+  text-underline-position: from-font;
 }
 
+.participant-tab.active:first-child {
+  border-top-right-radius: 8px;
+}
+
+.participant-tab.active:last-child {
+  border-top-left-radius: 8px;
+}
+
+/* Concave 15px corner joining the active tab to the panel */
 .participant-tab.active::after {
   content: "";
   position: absolute;
-  left: 15%;
-  right: 15%;
-  bottom: -1px;
-  height: 2px;
-  background: #2b211b;
+  bottom: 0;
+  width: 15px;
+  height: 15px;
 }
 
-/* ================= COMMON SECTION ================= */
+.participant-tab.active:first-child::after {
+  left: 100%;
+  background: radial-gradient(
+    circle at 100% 0,
+    transparent 14.5px,
+    #ffffff 15px
+  );
+}
+
+.participant-tab.active:last-child::after {
+  right: 100%;
+  background: radial-gradient(
+    circle at 0 0,
+    transparent 14.5px,
+    #ffffff 15px
+  );
+}
+
+/* ================= PANELS ================= */
 
 .participant-overview,
 .participant-availability {
-  padding-top: 28px;
+  min-height: 500px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.participant-availability {
+  /* room for the fixed SAVE bar */
+  padding-bottom: 104px;
 }
 
 .participant-overview h2,
 .participant-availability h2 {
   margin: 0;
-  font-size: 18px;
-  letter-spacing: 0.05em;
+  color: #000000;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .participant-section-subtitle {
-  margin: 5px 0 18px;
-  color: #8a817b;
-  font-size: 13px;
+  margin: 0 0 17px;
+  color: #606060;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* ================= CALENDAR ================= */
 
 .participant-calendar,
 .participant-availability-calendar {
+  padding-bottom: 8px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
   background: #ffffff;
-  border-radius: 16px;
-  padding: 16px 12px;
-  box-shadow: 0 3px 14px rgba(43, 33, 27, 0.06);
+  overflow: hidden;
 }
 
 .participant-weekday-row,
@@ -174,54 +247,66 @@
   grid-template-columns: repeat(7, 1fr);
 }
 
+.participant-weekday-row {
+  height: 30px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 0 8px;
+  background: #2a1e16;
+}
+
 .participant-weekday {
+  color: #ffffff;
   text-align: center;
-  padding: 6px 0 12px;
-  color: #918780;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.participant-calendar-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .participant-calendar-week {
-  min-height: 48px;
+  padding: 0 8px;
 }
 
 .participant-calendar-date,
 .participant-availability-date {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 0;
-  height: 44px;
-  margin: 2px;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  padding: 0;
   border: none;
-  border-radius: 10px;
+  border-radius: 20px;
   background: transparent;
-  color: #332923;
-  font-size: 13px;
+  color: #000000;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .participant-calendar-date.muted,
 .participant-availability-date.muted {
-  color: #d2cbc6;
+  color: #a8a8a8;
 }
 
 /* Overview availability */
 
 .participant-calendar-date.free {
-  background: #dceedd;
-  color: #2d5d35;
+  background: #22c55e;
 }
 
 .participant-calendar-date.partial {
-  background: #f8edc9;
-  color: #80651a;
+  background: #eab308;
 }
 
 .participant-calendar-date.busy {
-  background: #f4dada;
-  color: #8a3636;
+  background: #ef4444;
 }
 
 /* ================= LEGEND ================= */
@@ -229,31 +314,47 @@
 .participant-legend {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
-  margin-top: 14px;
-  color: #7c736d;
-  font-size: 11px;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 2px;
+  padding: 0 8px;
+  color: #a8a8a8;
+  font-size: 12px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot.busy {
+  background: #ef4444;
+}
+
+.legend-dot.partial {
+  background: #eab308;
+}
+
+.legend-dot.free {
+  background: #22c55e;
 }
 
 /* ================= AVAILABILITY ================= */
 
 .availability-heading {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 16px;
-}
-
-.availability-heading h2 {
-  margin-bottom: 5px;
+  margin-bottom: 20px;
 }
 
 .availability-heading p {
   margin: 0;
-  color: #8a817b;
-  font-size: 13px;
+  color: #606060;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .quick-select-wrapper {
@@ -261,18 +362,16 @@
 }
 
 .quick-select-button {
-  padding: 9px 13px;
-  border: 1px solid #d8d0ca;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #514740;
-  font-size: 11px;
-  font-weight: 600;
+  width: 120px;
+  padding: 8px;
+  border: none;
+  border-radius: 50px;
+  background: #2a1e16;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-}
-
-.quick-select-button:hover {
-  background: #f4efeb;
 }
 
 .quick-select-menu {
@@ -282,10 +381,10 @@
   right: 0;
   width: 165px;
   padding: 6px;
-  border: 1px solid #e3dcd6;
+  border: 1px solid #d9d9d9;
   border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 8px 24px rgba(43, 33, 27, 0.12);
+  box-shadow: 0 8px 24px rgba(42, 30, 22, 0.12);
 }
 
 .quick-select-option {
@@ -295,57 +394,58 @@
   border: none;
   border-radius: 8px;
   background: transparent;
-  color: #403731;
+  color: #222222;
   text-align: left;
-  font-size: 11px;
+  font-family: inherit;
+  font-size: 14px;
   cursor: pointer;
 }
 
 .quick-select-option:hover {
-  background: #f4efeb;
+  background: #f5f8fb;
 }
 
 /* Selected availability */
 
 .participant-availability-date {
-  border: 1px solid transparent;
   cursor: pointer;
-  transition: 0.15s ease;
-}
-
-.participant-availability-date:not(.muted):hover {
-  background: #f3eeea;
 }
 
 .participant-availability-date.selected {
-  background: #2b211b;
+  background: #2a1e16;
   color: #ffffff;
-  border-color: #2b211b;
-  font-weight: 700;
 }
 
-.participant-availability-date.muted {
+.participant-availability-date:disabled {
   cursor: default;
 }
 
 /* ================= SAVE ================= */
 
-.participant-save-button {
-  width: 100%;
-  height: 48px;
-  margin-top: 18px;
-  border: none;
-  border-radius: 12px;
-  background: #2b211b;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  cursor: pointer;
+.participant-bottom-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 20;
+  width: min(100%, 520px);
+  padding: 18px 16px;
+  background: #ffffff;
+  transform: translateX(-50%);
 }
 
-.participant-save-button:hover:not(:disabled) {
-  background: #3b2d25;
+.participant-save-button {
+  width: 100%;
+  height: 52px;
+  padding: 8px;
+  border: none;
+  border-radius: 16px;
+  background: #2a1e16;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+  cursor: pointer;
 }
 
 .participant-save-button:disabled {
@@ -353,37 +453,21 @@
   cursor: not-allowed;
 }
 
-/* ================= MOBILE ================= */
+/* ================= SMALL PHONES ================= */
 
-@media (max-width: 420px) {
-  .participant-container {
-    padding: 18px 14px 32px;
-  }
-
+@media (max-width: 360px) {
   .participant-event-card {
-    padding: 20px 16px;
-  }
-
-  .participant-event-card h2 {
-    font-size: 22px;
-  }
-
-  .participant-calendar,
-  .participant-availability-calendar {
-    padding: 12px 8px;
+    margin: 0 12px;
   }
 
   .participant-calendar-date,
   .participant-availability-date {
-    height: 40px;
-    margin: 1px;
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
   }
 
-  .availability-heading {
-    align-items: center;
-  }
-
-  .quick-select-button {
-    padding: 8px 10px;
+  .participant-weekday {
+    font-size: 12px;
   }
 }

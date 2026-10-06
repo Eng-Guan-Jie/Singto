@@ -750,12 +750,22 @@ function Participant() {
           </p>
 
           {lineUser && (
-            <p className="participant-created-by">
-              Logged in as{" "}
-              <strong>
+            <div className="participant-created-by">
+              {lineUser.pictureUrl && (
+                <img
+                  className="participant-avatar"
+                  src={lineUser.pictureUrl}
+                  alt=""
+                  width="24"
+                  height="24"
+                />
+              )}
+
+              <p>
+                Logged in as{" "}
                 {lineUser.displayName}
-              </strong>
-            </p>
+              </p>
+            </div>
           )}
 
           <p className="participant-question">
@@ -782,6 +792,11 @@ function Participant() {
             >
               DECLINE
             </button>
+
+            <span
+              className="response-divider"
+              aria-hidden="true"
+            />
 
             <button
               type="button"
@@ -919,9 +934,9 @@ function Participant() {
 
             <div className="participant-legend">
               <span>Busy</span>
-              <span>🔴</span>
-              <span>🟡</span>
-              <span>🟢</span>
+              <span className="legend-dot busy" />
+              <span className="legend-dot partial" />
+              <span className="legend-dot free" />
               <span>Free</span>
             </div>
           </section>
@@ -1108,22 +1123,24 @@ function Participant() {
               </div>
             </div>
 
-            <button
-              type="button"
-              className="participant-save-button"
-              onClick={
-                handleSaveAvailability
-              }
-              disabled={
-                isSavingAvailability ||
-                participantStatus !==
-                  "accepted"
-              }
-            >
-              {isSavingAvailability
-                ? "SAVING..."
-                : "SAVE"}
-            </button>
+            <div className="participant-bottom-bar">
+              <button
+                type="button"
+                className="participant-save-button"
+                onClick={
+                  handleSaveAvailability
+                }
+                disabled={
+                  isSavingAvailability ||
+                  participantStatus !==
+                    "accepted"
+                }
+              >
+                {isSavingAvailability
+                  ? "SAVING..."
+                  : "SAVE"}
+              </button>
+            </div>
           </section>
         )}
       </main>
