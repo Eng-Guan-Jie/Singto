@@ -44,6 +44,9 @@ function getBaseUrl(req) {
 function buildParticipantUrl(eventData) {
   const liffId = process.env.LIFF_ID;
 
+  console.log("LIFF_ID:", liffId);
+  console.log("EVENT_ID:", eventData.eventId);
+
   if (!liffId) {
     throw new Error("Missing LIFF_ID");
   }
@@ -58,6 +61,11 @@ function buildParticipantUrl(eventData) {
       eventData.eventId
     );
   }
+
+  console.log(
+    "PARTICIPANT URL:",
+    url.toString()
+  );
 
   return url.toString();
 }
