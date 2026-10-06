@@ -7,7 +7,10 @@ import {
 } from "react-router-dom";
 
 import { CalendarDays } from "lucide-react";
-import liff, { initLiff } from "../../lib/liff";
+import liff, {
+  initLiff,
+  getFreshIdToken,
+} from "../../lib/liff";
 
 import "./CreateEvent.css";
 
@@ -55,8 +58,9 @@ function CreateEvent() {
       try {
         await initLiff();
 
-        if (!liff.isLoggedIn()) {
-          liff.login();
+        // Refresh an expired token now, before the
+        // organizer fills in the form.
+        if (!getFreshIdToken()) {
           return;
         }
 
@@ -137,7 +141,7 @@ function CreateEvent() {
               startDate,
               endDate,
               lineChatId,
-              idToken: liff.getIDToken(),
+              idToken: getFreshIdToken(),
             }),
           }
         );

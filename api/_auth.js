@@ -39,10 +39,18 @@ async function verifyLineIdToken(idToken) {
   });
 
   if (!response.ok) {
-    // Never log the token itself (AGENTS.md 5.4).
+    // LINE's reason, e.g. "IdToken expired." or
+    // "Invalid IdToken audience.". Never log the token
+    // itself (AGENTS.md 5.4).
+    const detail = await response
+      .json()
+      .then((body) => body.error_description || "")
+      .catch(() => "");
+
     console.error(
       "LINE ID token verification failed:",
-      response.status
+      response.status,
+      detail
     );
 
     throw new AuthError(

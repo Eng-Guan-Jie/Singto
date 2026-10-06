@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import liff, {
   initLiff,
+  getFreshIdToken,
   authHeaders,
 } from "../../lib/liff";
 import "./Overview.css";
@@ -164,15 +165,11 @@ function Overview() {
       try {
         await initLiff();
 
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          return;
-        }
+        const token = getFreshIdToken();
 
-        const token = liff.getIDToken();
-
+        // Redirecting to LINE Login.
         if (!token) {
-          throw new Error("Unable to get LINE ID token.");
+          return;
         }
 
         const profile = await liff.getProfile();

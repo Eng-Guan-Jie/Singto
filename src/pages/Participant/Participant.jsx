@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import liff, {
   initLiff,
+  getFreshIdToken,
   authHeaders,
 } from "../../lib/liff";
 import "./Participant.css";
@@ -187,18 +188,12 @@ function Participant() {
 
         setEventId(currentEventId);
 
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          return;
-        }
-
         const token =
-          liff.getIDToken();
+          getFreshIdToken();
 
+        // Redirecting to LINE Login.
         if (!token) {
-          throw new Error(
-            "Unable to get LINE ID token."
-          );
+          return;
         }
 
         setIdToken(token);
