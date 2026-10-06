@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Bell, Pencil } from "lucide-react";
+import bellRingIcon from "../../assets/icons/bell-ring.svg";
+import pencilIcon from "../../assets/icons/pencil.svg";
 import {
   useLocation,
   useNavigate,
@@ -21,15 +22,20 @@ const formatDate = (dateValue) => {
   }).format(new Date(`${dateValue}T00:00:00`));
 };
 
-const getDateLabel = (dateValue) =>
-  new Intl.DateTimeFormat("en", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  })
-    .format(new Date(`${dateValue}T00:00:00`))
-    .replace(",", "")
-    .toUpperCase();
+// Day-first label to match the design, e.g. "08 SEP 2026".
+const getDateLabel = (dateValue) => {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
+      .formatToParts(new Date(`${dateValue}T00:00:00`))
+      .map(({ type, value }) => [type, value])
+  );
+
+  return `${parts.day} ${parts.month} ${parts.year}`.toUpperCase();
+};
 
 const getDayLabel = (dateValue) =>
   new Intl.DateTimeFormat("en", {
@@ -595,9 +601,11 @@ function Overview() {
               className="notify-button"
               onClick={handleNotify}
             >
-              <Bell
-                size={30}
-                strokeWidth={1.5}
+              <img
+                src={bellRingIcon}
+                alt=""
+                width="24"
+                height="24"
               />
 
               <span>Notify Again</span>
@@ -608,9 +616,11 @@ function Overview() {
               onClick={handleEdit}
               aria-label="Edit event"
             >
-              <Pencil
-                size={32}
-                strokeWidth={1.5}
+              <img
+                src={pencilIcon}
+                alt=""
+                width="24"
+                height="24"
               />
             </button>
           </div>
@@ -657,7 +667,13 @@ function Overview() {
                 Overview of Everyone’s Availability
               </p>
 
-              <div className="calendar">
+              <div
+                className={`calendar ${
+                  selectedDate
+                    ? "has-selection"
+                    : ""
+                }`}
+              >
                 <div className="weekday-row">
                   {[
                     "SUN",
@@ -748,20 +764,9 @@ function Overview() {
                 Busy
               </span>
 
-              <span className="legend-item">
-                <span className="legend-dot busy-dot" />
-                🔴
-              </span>
-
-              <span className="legend-item">
-                <span className="legend-dot partial-dot" />
-                🟡
-              </span>
-
-              <span className="legend-item">
-                <span className="legend-dot free-dot" />
-                🟢
-              </span>
+              <span className="legend-dot busy-dot" />
+              <span className="legend-dot partial-dot" />
+              <span className="legend-dot free-dot" />
 
               <span className="legend-label">
                 Free
@@ -792,29 +797,29 @@ function Overview() {
                   <div
                     className={`best-date-card ${selectedDateSummary.status}`}
                   >
-                    <div className="best-date-info">
+                    <div className="best-date-top">
                       <strong>
                         {
                           selectedDateSummary.label
                         }
                       </strong>
 
-                      <span>
+                      <strong>
                         {
-                          selectedDateSummary.day
+                          selectedDateSummary.available
                         }
-                      </span>
+                        /
+                        {
+                          selectedDateSummary.total
+                        }
+                      </strong>
                     </div>
 
-                    <strong className="best-date-count">
+                    <span className="best-date-day">
                       {
-                        selectedDateSummary.available
+                        selectedDateSummary.day
                       }
-                      /
-                      {
-                        selectedDateSummary.total
-                      }
-                    </strong>
+                    </span>
                   </div>
 
                   <div className="availability-breakdown">
@@ -926,20 +931,20 @@ function Overview() {
                           )
                         }
                       >
-                        <div className="best-date-info">
+                        <div className="best-date-top">
                           <strong>
                             {item.label}
                           </strong>
 
-                          <span>
-                            {item.day}
-                          </span>
+                          <strong>
+                            {item.available}/
+                            {item.total}
+                          </strong>
                         </div>
 
-                        <strong className="best-date-count">
-                          {item.available}/
-                          {item.total}
-                        </strong>
+                        <span className="best-date-day">
+                          {item.day}
+                        </span>
                       </button>
                     ))
                   ) : (
@@ -953,12 +958,14 @@ function Overview() {
 
             {/* ================= FINALIZE ================= */}
 
-            <button
-              className="finalize-button"
-              onClick={handleFinalize}
-            >
-              FINALIZE DATE
-            </button>
+            <div className="overview-bottom-bar">
+              <button
+                className="finalize-button"
+                onClick={handleFinalize}
+              >
+                FINALIZE DATE
+              </button>
+            </div>
           </section>
         )}
 
@@ -1086,17 +1093,19 @@ function Overview() {
               </div>
             </section>
 
-            <button
-              className="save-availability-button"
-              onClick={
-                handleSaveAvailability
-              }
-              disabled={isSavingAvailability}
-            >
-              {isSavingAvailability
-                ? "SAVING..."
-                : "SAVE"}
-            </button>
+            <div className="overview-bottom-bar">
+              <button
+                className="save-availability-button"
+                onClick={
+                  handleSaveAvailability
+                }
+                disabled={isSavingAvailability}
+              >
+                {isSavingAvailability
+                  ? "SAVING..."
+                  : "SAVE"}
+              </button>
+            </div>
           </section>
         )}
       </main>

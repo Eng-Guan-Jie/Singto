@@ -11,7 +11,7 @@
     sans-serif;
 }
 
-.participant-header {
+.participant-page .participant-header {
   height: 56px;
   display: flex;
   align-items: center;
@@ -22,22 +22,25 @@
   color: #ffffff;
 }
 
-.participant-header h1 {
+.participant-page .participant-header h1 {
   margin: 0;
   font-size: 24px;
   font-weight: 700;
   line-height: 22px;
 }
 
-.participant-container {
+.participant-page .participant-container {
+  display: flex;
+  flex-direction: column;
   width: min(100%, 520px);
+  min-height: calc(100vh - 56px);
   margin: 0 auto;
   padding: 8px 0 0;
 }
 
 /* ================= EVENT CARD ================= */
 
-.participant-event-card {
+.participant-page .participant-event-card {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -48,7 +51,7 @@
   background: #ffffff;
 }
 
-.participant-event-card h2 {
+.participant-page .participant-event-card h2 {
   margin: 0;
   color: #000000;
   font-size: 20px;
@@ -56,8 +59,8 @@
   line-height: 22px;
 }
 
-.participant-description,
-.participant-date {
+.participant-page .participant-description,
+.participant-page .participant-date {
   margin: 0;
   color: #606060;
   font-size: 16px;
@@ -65,20 +68,20 @@
   line-height: 22px;
 }
 
-.participant-created-by {
+.participant-page .participant-created-by {
   display: flex;
   align-items: center;
   gap: 3px;
 }
 
-.participant-avatar {
+.participant-page .participant-avatar {
   width: 24px;
   height: 24px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.participant-created-by p {
+.participant-page .participant-created-by p {
   margin: 0;
   color: #606060;
   font-size: 14px;
@@ -86,7 +89,7 @@
   line-height: 22px;
 }
 
-.participant-question {
+.participant-page .participant-question {
   margin: 0;
   color: #222222;
   font-size: 14px;
@@ -94,7 +97,7 @@
   line-height: 22px;
 }
 
-.response-buttons {
+.participant-page .response-buttons {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -105,7 +108,7 @@
   background: #f5f8fb;
 }
 
-.response-button {
+.participant-page .response-button {
   flex: 1;
   height: 48px;
   padding: 8px;
@@ -120,17 +123,17 @@
   cursor: pointer;
 }
 
-.response-button.active {
+.participant-page .response-button.active {
   background: #2a1e16;
   color: #ffffff;
 }
 
-.response-button:disabled {
+.participant-page .response-button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.response-divider {
+.participant-page .response-divider {
   flex: none;
   width: 2px;
   height: 38px;
@@ -139,13 +142,13 @@
 
 /* ================= TABS ================= */
 
-.participant-tabs {
+.participant-page .participant-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin-top: 16px;
 }
 
-.participant-tab {
+.participant-page .participant-tab {
   position: relative;
   height: 52px;
   padding: 8px;
@@ -158,7 +161,7 @@
   cursor: pointer;
 }
 
-.participant-tab.active {
+.participant-page .participant-tab.active {
   z-index: 1;
   background: #ffffff;
   color: #000000;
@@ -166,16 +169,16 @@
   text-underline-position: from-font;
 }
 
-.participant-tab.active:first-child {
+.participant-page .participant-tab.active:first-child {
   border-top-right-radius: 8px;
 }
 
-.participant-tab.active:last-child {
+.participant-page .participant-tab.active:last-child {
   border-top-left-radius: 8px;
 }
 
 /* Concave 15px corner joining the active tab to the panel */
-.participant-tab.active::after {
+.participant-page .participant-tab.active::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -183,7 +186,7 @@
   height: 15px;
 }
 
-.participant-tab.active:first-child::after {
+.participant-page .participant-tab.active:first-child::after {
   left: 100%;
   background: radial-gradient(
     circle at 100% 0,
@@ -192,7 +195,7 @@
   );
 }
 
-.participant-tab.active:last-child::after {
+.participant-page .participant-tab.active:last-child::after {
   right: 100%;
   background: radial-gradient(
     circle at 0 0,
@@ -203,27 +206,27 @@
 
 /* ================= PANELS ================= */
 
-.participant-overview,
-.participant-availability {
-  min-height: 500px;
+.participant-page .participant-overview,
+.participant-page .participant-availability {
+  flex: 1;
   padding: 16px;
   background: #ffffff;
 }
 
-.participant-availability {
+.participant-page .participant-availability {
   /* room for the fixed SAVE bar */
   padding-bottom: 104px;
 }
 
-.participant-overview h2,
-.participant-availability h2 {
+.participant-page .participant-overview h2,
+.participant-page .participant-availability h2 {
   margin: 0;
   color: #000000;
   font-size: 20px;
   font-weight: 700;
 }
 
-.participant-section-subtitle {
+.participant-page .participant-section-subtitle {
   margin: 0 0 17px;
   color: #606060;
   font-size: 14px;
@@ -232,8 +235,8 @@
 
 /* ================= CALENDAR ================= */
 
-.participant-calendar,
-.participant-availability-calendar {
+.participant-page .participant-calendar,
+.participant-page .participant-availability-calendar {
   padding-bottom: 8px;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
@@ -241,13 +244,13 @@
   overflow: hidden;
 }
 
-.participant-weekday-row,
-.participant-calendar-week {
+.participant-page .participant-weekday-row,
+.participant-page .participant-calendar-week {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
 
-.participant-weekday-row {
+.participant-page .participant-weekday-row {
   height: 30px;
   align-items: center;
   margin-bottom: 8px;
@@ -255,25 +258,25 @@
   background: #2a1e16;
 }
 
-.participant-weekday {
+.participant-page .participant-weekday {
   color: #ffffff;
   text-align: center;
   font-size: 14px;
   font-weight: 600;
 }
 
-.participant-calendar-body {
+.participant-page .participant-calendar-body {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.participant-calendar-week {
+.participant-page .participant-calendar-week {
   padding: 0 8px;
 }
 
-.participant-calendar-date,
-.participant-availability-date {
+.participant-page .participant-calendar-date,
+.participant-page .participant-availability-date {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -290,28 +293,28 @@
   font-weight: 500;
 }
 
-.participant-calendar-date.muted,
-.participant-availability-date.muted {
+.participant-page .participant-calendar-date.muted,
+.participant-page .participant-availability-date.muted {
   color: #a8a8a8;
 }
 
 /* Overview availability */
 
-.participant-calendar-date.free {
+.participant-page .participant-calendar-date.free {
   background: #22c55e;
 }
 
-.participant-calendar-date.partial {
+.participant-page .participant-calendar-date.partial {
   background: #eab308;
 }
 
-.participant-calendar-date.busy {
+.participant-page .participant-calendar-date.busy {
   background: #ef4444;
 }
 
 /* ================= LEGEND ================= */
 
-.participant-legend {
+.participant-page .participant-legend {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -322,27 +325,27 @@
   font-size: 12px;
 }
 
-.legend-dot {
+.participant-page .legend-dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
 }
 
-.legend-dot.busy {
+.participant-page .legend-dot.busy {
   background: #ef4444;
 }
 
-.legend-dot.partial {
+.participant-page .legend-dot.partial {
   background: #eab308;
 }
 
-.legend-dot.free {
+.participant-page .legend-dot.free {
   background: #22c55e;
 }
 
 /* ================= AVAILABILITY ================= */
 
-.availability-heading {
+.participant-page .availability-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -350,18 +353,18 @@
   margin-bottom: 20px;
 }
 
-.availability-heading p {
+.participant-page .availability-heading p {
   margin: 0;
   color: #606060;
   font-size: 14px;
   font-weight: 500;
 }
 
-.quick-select-wrapper {
+.participant-page .quick-select-wrapper {
   position: relative;
 }
 
-.quick-select-button {
+.participant-page .quick-select-button {
   width: 120px;
   padding: 8px;
   border: none;
@@ -374,7 +377,7 @@
   cursor: pointer;
 }
 
-.quick-select-menu {
+.participant-page .quick-select-menu {
   position: absolute;
   z-index: 10;
   top: calc(100% + 7px);
@@ -387,7 +390,7 @@
   box-shadow: 0 8px 24px rgba(42, 30, 22, 0.12);
 }
 
-.quick-select-option {
+.participant-page .quick-select-option {
   display: block;
   width: 100%;
   padding: 9px 10px;
@@ -401,28 +404,28 @@
   cursor: pointer;
 }
 
-.quick-select-option:hover {
+.participant-page .quick-select-option:hover {
   background: #f5f8fb;
 }
 
 /* Selected availability */
 
-.participant-availability-date {
+.participant-page .participant-availability-date {
   cursor: pointer;
 }
 
-.participant-availability-date.selected {
+.participant-page .participant-availability-date.selected {
   background: #2a1e16;
   color: #ffffff;
 }
 
-.participant-availability-date:disabled {
+.participant-page .participant-availability-date:disabled {
   cursor: default;
 }
 
 /* ================= SAVE ================= */
 
-.participant-bottom-bar {
+.participant-page .participant-bottom-bar {
   position: fixed;
   left: 50%;
   bottom: 0;
@@ -433,7 +436,7 @@
   transform: translateX(-50%);
 }
 
-.participant-save-button {
+.participant-page .participant-save-button {
   width: 100%;
   height: 52px;
   padding: 8px;
@@ -448,7 +451,7 @@
   cursor: pointer;
 }
 
-.participant-save-button:disabled {
+.participant-page .participant-save-button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -456,18 +459,18 @@
 /* ================= SMALL PHONES ================= */
 
 @media (max-width: 360px) {
-  .participant-event-card {
+  .participant-page .participant-event-card {
     margin: 0 12px;
   }
 
-  .participant-calendar-date,
-  .participant-availability-date {
+  .participant-page .participant-calendar-date,
+  .participant-page .participant-availability-date {
     width: 34px;
     height: 34px;
     font-size: 14px;
   }
 
-  .participant-weekday {
+  .participant-page .participant-weekday {
     font-size: 12px;
   }
 }

@@ -1,917 +1,649 @@
-button {
-  font-family: inherit;
-}
-
-/* =================================
-   PAGE
-================================= */
+/*
+ * Values follow Figma "Sync-Solution" → S4.1 เลือกวัน (คนนัด)
+ * (nodes 6:4 overview, 9:74 my availability,
+ * 58:2688 day detail).
+ *
+ * Every rule is scoped to .overview-page so it cannot
+ * leak into other pages (all page CSS is bundled globally).
+ */
 
 .overview-page {
   min-height: 100vh;
-  background: #ffffff;
-  color: #080808;
-  padding-bottom: 48px;
+  background: #f5f8fb;
+  color: #222222;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
 }
 
-/* =================================
-   MAIN CONTAINER
-================================= */
-
-.overview-container {
-  width: min(calc(100% - 36px), 920px);
-  margin: 24px auto 0;
-  background: #ffffff;
+.overview-page button {
+  font-family: inherit;
 }
 
-/* =================================
-   HEADER
-================================= */
-
-.overview-header {
-  width: 100%;
-  min-height: 72px;
-  margin: 0 auto;
+.overview-page .overview-header {
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2b211b;
-  border-radius: 0;
-}
-
-.overview-header h1 {
-  margin: 0;
+  padding: 8px;
+  background: #2a1e16;
+  border-bottom: 1.5px solid #dddddd;
   color: #ffffff;
 }
 
-/* =================================
-   EVENT CARD
-================================= */
-
-.event-card {
-  width: 100%;
-  padding: clamp(18px, 3vw, 24px);
-
-  border: 1.5px solid #b4b4b4;
-  border-radius: 16px;
-
-  background: #ffffff;
-
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.event-info {
-  min-width: 0;
-}
-
-.event-info h2 {
-  margin: 0 0 4px;
-
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-
-.event-description {
+.overview-page .overview-header h1 {
   margin: 0;
-
-  color: #656565;
-
-  font-size: clamp(0.95rem, 2vw, 1.12rem);
-  line-height: 1.3;
-  overflow-wrap: anywhere;
-}
-
-.event-date-range {
-  margin: 8px 0 0;
-  color: #333333;
-  font-size: 0.95rem;
+  font-size: 24px;
   font-weight: 700;
+  line-height: 22px;
 }
 
-.response-count {
-  margin: 12px 0 8px;
-
-  color: #666666;
-
-  font-size: 0.95rem;
-}
-
-/* =================================
-   PARTICIPANTS
-================================= */
-
-.participants {
-  display: flex;
-  align-items: center;
-
-  height: 35px;
-}
-
-.participant-avatar,
-.more-participants {
-  width: 31px;
-  height: 31px;
-
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: 2px solid #ffffff;
-
-  margin-right: -4px;
-
-  font-size: 19px;
-
-  background: #c8c8c8;
-}
-
-.more-participants {
-  background: #d3d3d3;
-  color: #333333;
-
-  font-size: 16px;
-
-  border: none;
-}
-
-/* =================================
-   EVENT ACTIONS
-================================= */
-
-.event-actions {
-  display: flex;
-  gap: 9px;
-
-  margin-top: 0;
-  align-items: flex-start;
-}
-
-.notify-button {
-  min-width: 166px;
-
-  min-height: 45px;
-  padding: 0 18px;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #2b211b;
-  color: #ffffff;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 11px;
-
-  font-size: 0.95rem;
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-.notify-button:hover,
-.finalize-button:hover,
-.quick-select-button:hover,
-.save-availability-button:hover {
-  opacity: 0.9;
-}
-
-.edit-button {
-  width: 45px;
-  height: 45px;
-
-  border: 2px solid #2b211b;
-  border-radius: 14px;
-
-  background: #ffffff;
-  color: #2b211b;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-}
-
-/* =================================
-   TABS
-================================= */
-
-.tabs {
-  margin-top: 22px;
-  min-height: 58px;
-  display: flex;
-  background: #eeeeee;
-}
-
-.tab {
-  flex: 1;
-  border: none;
-  background: transparent;
-  color: #aaaaaa;
-  min-height: 58px;
-  padding: 0 12px;
-  font-size: clamp(0.82rem, 2vw, 1rem);
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-.tab.active {
-  background: #ffffff;
-  color: #080808;
-  text-decoration: underline;
-  text-underline-offset: 7px;
-}
-
-/* Overview active */
-.tab:first-child.active {
-  border-radius: 0 24px 0 0;
-}
-
-/* My Availability acitve */
-.tab:last-child.active {
-  border-radius: 24px 0 0 0;
-}
-
-/* =================================
-   OVERVIEW CONTENT
-================================= */
-
-.overview-content {
-  width: 100%;
-  margin: 0;
-  padding: 24px 0 0;
-  min-height: 420px;
+.overview-page .overview-container {
   display: flex;
   flex-direction: column;
+  width: min(100%, 520px);
+  min-height: calc(100vh - 56px);
+  margin: 0 auto;
+  padding: 8px 0 0;
+}
+
+/* ================= EVENT CARD ================= */
+
+.overview-page .event-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 17px;
+  padding: 16px;
+  border: 1px solid #a8a8a8;
+  border-radius: 16px;
   background: #ffffff;
 }
 
-.calendar-section h2,
-.availability-heading h2 {
-  margin: 2px 0 0;
-  font-size: 0.95rem;
+.overview-page .event-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-page .event-info h2 {
+  margin: 0;
+  color: #000000;
+  font-size: 20px;
   font-weight: 700;
+  line-height: 22px;
 }
 
-.calendar-subtitle {
-  margin: 2px 0 22px;
-
-  color: #666666;
-
-  font-size: 0.95rem;
+.overview-page .event-description,
+.overview-page .event-date-range {
+  margin: 0;
+  color: #606060;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
 }
 
-/* =================================
-   CALENDAR
-================================= */
-
-.calendar {
-  width: 100%;
-
-  border: 1.5px solid #d3d3d3;
-  border-radius: 12px;
-
-  overflow: hidden;
-  background: #ffffff;
+.overview-page .response-count {
+  margin: 5px 0 0;
+  color: #606060;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
 }
 
-.weekday-row {
-  min-height: 40px;
-
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-
-  background: #2b211b;
+/* Stacked avatars: 24px circles, 18px apart */
+.overview-page .participants {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
 }
 
-.weekday {
+.overview-page .participant-avatar,
+.overview-page .more-participants {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  color: #ffffff;
-
-  font-size: clamp(0.68rem, 1.8vw, 0.9rem);
-  font-weight: 700;
-}
-
-.calendar-body {
-  padding: 6px;
-}
-
-.calendar-week {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-
-  min-height: clamp(42px, 12vw, 68px);
-}
-
-.calendar-date {
-  width: min(78%, 54px);
-  aspect-ratio: 1;
-  height: auto;
-
-  margin: auto;
-
-  border: none;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
+  font-size: 12px;
+}
 
-  background: transparent;
+.overview-page .participant-avatar + .participant-avatar,
+.overview-page .participant-avatar + .more-participants {
+  margin-left: -6px;
+}
 
+.overview-page .participant-avatar {
+  border: 1px solid #ffffff;
+  background: #2a1e16;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.overview-page .more-participants {
+  background: #a8a8a8;
+  color: #222222;
+}
+
+.overview-page .event-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.overview-page .notify-button {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: clamp(0.85rem, 2.5vw, 1rem);
-
+  gap: 8px;
+  height: 52px;
+  padding: 8px;
+  border: none;
+  border-radius: 16px;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
   cursor: pointer;
 }
 
-.calendar-date.muted {
-  color: #cfcfcf;
+.overview-page .edit-button {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  padding: 8px;
+  border: 2px solid #2a1e16;
+  border-radius: 16px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+/* ================= TABS ================= */
+
+.overview-page .tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 16px;
+}
+
+.overview-page .tab {
+  position: relative;
+  height: 52px;
+  padding: 8px;
+  border: none;
+  background: #dfdfdf;
+  color: #a8a8a8;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.overview-page .tab.active {
+  z-index: 1;
+  background: #ffffff;
+  color: #000000;
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+.overview-page .tab.active:first-child {
+  border-top-right-radius: 8px;
+}
+
+.overview-page .tab.active:last-child {
+  border-top-left-radius: 8px;
+}
+
+/* Concave 15px corner joining the active tab to the panel */
+.overview-page .tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 15px;
+  height: 15px;
+}
+
+.overview-page .tab.active:first-child::after {
+  left: 100%;
+  background: radial-gradient(
+    circle at 100% 0,
+    transparent 14.5px,
+    #ffffff 15px
+  );
+}
+
+.overview-page .tab.active:last-child::after {
+  right: 100%;
+  background: radial-gradient(
+    circle at 0 0,
+    transparent 14.5px,
+    #ffffff 15px
+  );
+}
+
+/* ================= PANELS ================= */
+
+.overview-page .overview-content,
+.overview-page .availability-content {
+  flex: 1;
+  /* bottom padding leaves room for the fixed button bar */
+  padding: 16px 16px 104px;
+  background: #ffffff;
+}
+
+.overview-page .calendar-section h2,
+.overview-page .availability-heading h2,
+.overview-page .best-date-header h2 {
+  margin: 0;
+  color: #000000;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.overview-page .calendar-subtitle {
+  margin: 0 0 17px;
+  color: #606060;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ================= CALENDAR ================= */
+
+.overview-page .calendar,
+.overview-page .availability-calendar {
+  padding-bottom: 8px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.overview-page .weekday-row,
+.overview-page .availability-weekday-row,
+.overview-page .calendar-week,
+.overview-page .availability-calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0 8px;
+}
+
+.overview-page .weekday-row,
+.overview-page .availability-weekday-row {
+  height: 30px;
+  align-items: center;
+  margin-bottom: 8px;
+  background: #2a1e16;
+}
+
+.overview-page .weekday,
+.overview-page .availability-weekday {
+  color: #ffffff;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.overview-page .calendar-body,
+.overview-page .availability-calendar-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.overview-page .calendar-date,
+.overview-page .availability-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  padding: 0;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  color: #000000;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.overview-page .calendar-date.muted,
+.overview-page .availability-date.muted {
+  color: #a8a8a8;
   cursor: default;
 }
 
-.calendar-date:disabled {
-  cursor: default;
+.overview-page .calendar-date.free {
+  background: #22c55e;
 }
 
-.calendar-date.free {
-  background: #20c463;
-  color: #000000;
+.overview-page .calendar-date.partial {
+  background: #eab308;
 }
 
-.calendar-date.partial {
-  background: #f2b800;
-  color: #000000;
+.overview-page .calendar-date.busy {
+  background: #ef4444;
 }
 
-.calendar-date.busy {
-  background: #f23f46;
-  color: #000000;
+/* When a day is selected, other days fade to 30% */
+.overview-page .calendar.has-selection .calendar-date.free:not(.selected) {
+  background: rgba(34, 197, 94, 0.3);
 }
 
-.calendar-date.selected {
-  outline: 3px solid #923cff;
-  outline-offset: 0;
+.overview-page
+  .calendar.has-selection
+  .calendar-date.partial:not(.selected) {
+  background: rgba(234, 179, 8, 0.3);
 }
 
-/* =================================
-   LEGEND
-================================= */
+.overview-page .calendar.has-selection .calendar-date.busy:not(.selected) {
+  background: rgba(239, 68, 68, 0.3);
+}
 
-.legend {
+.overview-page .availability-date.selected {
+  background: #2a1e16;
+  color: #ffffff;
+}
+
+/* ================= LEGEND ================= */
+
+.overview-page .legend {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-
-  gap: 5px;
-
-  margin-top: 8px;
-  margin-bottom: 8px;
-
-  color: #aaaaaa;
-
-  font-size: 0.88rem;
+  gap: 4px;
+  margin-top: 2px;
+  padding: 0 8px;
+  color: #a8a8a8;
+  font-size: 12px;
 }
 
-.legend-item {
-  display: flex;
-  align-items: center;
+.overview-page .legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
 }
 
-.legend-dot {
-  display: none;
+.overview-page .busy-dot {
+  background: #ef4444;
 }
 
-.legend-label:first-child {
-  margin-right: 2px;
+.overview-page .partial-dot {
+  background: #eab308;
 }
 
-/* =================================
-   FINALIZE BUTTON
-================================= */
-
-.finalize-button {
-  width: 100%;
-  min-height: 54px;
-
-  margin-top: auto;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #2b211b;
-  color: #ffffff;
-
-  font-size: 0.98rem;
-  font-weight: 700;
-
-  cursor: pointer;
+.overview-page .free-dot {
+  background: #22c55e;
 }
 
-/* =================================
-   MY AVAILABILITY
-================================= */
+/* ================= BEST DATE ================= */
 
-.availability-content {
-  width: 100%;
-  margin: 0;
-  padding: 24px 0 28px;
-  min-height: 420px;
-  display: flex;
-  flex-direction: column;
-  background: #ffffff;
+.overview-page .best-date-section {
+  margin-top: 20px;
 }
 
-.availability-heading {
+.overview-page .best-date-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 22px;
+  margin-bottom: 10px;
 }
 
-.availability-heading p {
-  margin: 2px 0 0;
-
-  color: #666666;
-
-  font-size: 0.95rem;
-}
-
-.quick-select-button {
-  min-height: 44px;
-  padding: 0 24px;
-
-  border: none;
-  border-radius: 999px;
-
-  background: #2b211b;
-  color: #ffffff;
-
-  font-size: 0.95rem;
-  font-weight: 700;
-  white-space: nowrap;
-
-  cursor: pointer;
-}
-
-.availability-calendar {
-  width: 100%;
-
-  border: 1.5px solid #d3d3d3;
-  border-radius: 12px;
-
-  overflow: hidden;
-  background: #ffffff;
-}
-
-.availability-weekday-row {
-  min-height: 40px;
-
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-
-  background: #2b211b;
-}
-
-.availability-weekday {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: #ffffff;
-
-  font-size: clamp(0.68rem, 1.8vw, 0.9rem);
-  font-weight: 700;
-}
-
-.availability-calendar-body {
-  padding: 6px;
-}
-
-.availability-calendar-week {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-
-  min-height: clamp(42px, 12vw, 68px);
-}
-
-.availability-date {
-  width: min(78%, 54px);
-  aspect-ratio: 1;
-  height: auto;
-
-  margin: auto;
-
-  border: none;
-  border-radius: 50%;
-
-  background: transparent;
-  color: #000000;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: clamp(0.85rem, 2.5vw, 1rem);
-
-  cursor: pointer;
-}
-
-.availability-date.muted {
-  color: #cfcfcf;
-  cursor: default;
-}
-
-.availability-date.selected {
-  background: #2b211b;
-  color: #ffffff;
-  font-weight: 700;
-}
-
-.save-availability-button {
-  width: 100%;
-  min-height: 54px;
-
-  margin-top: 28px;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #2b211b;
-  color: #ffffff;
-
-  font-size: 0.98rem;
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-/* quicl select */
-.quick-select-wrapper {
-  position: relative;
-}
-
-.quick-select-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: 180px;
-  background: #ffffff;
-  border: 1px solid #b4b4b4;
-  border-radius: 10px;
-  overflow: hidden;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.quick-select-option {
-  width: 100%;
-  min-height: 40px;
-  padding: 0 14px;
-  border: none;
-  border-bottom: 1px solid #eeeeee;
-  background: #ffffff;
-  color: #080808;
-  text-align: left;
-  font-size: 0.88rem;
-  cursor: pointer;
-}
-
-.quick-select-option:last-child {
-  border-bottom: none;
-}
-
-.quick-select-option:hover {
-  background: #f5f5f5;
-}
-
-/* =================================
-   RESPONSIVE
-================================= */
-
-@media (max-width: 600px) {
-
-  .overview-header {
-    min-height: 64px;
-    height: 10vh;
-  }
-
-  .overview-header h1 {
-    font-size: 1.7rem;
-  }
-
-  .event-card {
-    width: 100%;
-    margin: 0 auto;
-    padding: 18px;
-    display: block;
-  }
-
-  .event-info h2 {
-    font-size: 1.25rem;
-  }
-
-  .event-description {
-    font-size: 0.98rem;
-  }
-
-  .event-actions {
-    margin-top: 14px;
-  }
-
-  .notify-button {
-    min-width: 0;
-    flex: 1;
-    font-size: 0.92rem;
-  }
-
-  .tab {
-    font-size: 0.82rem;
-  }
-
-  .overview-content,
-  .availability-content {
-    width: calc(100% - 32px);
-    margin: 0 auto;
-  }
-
-  .calendar-date {
-    width: min(82%, 44px);
-  }
-
-  .availability-heading {
-    gap: 12px;
-    margin-bottom: 22px;
-  }
-
-  .availability-heading h2 {
-    font-size: 1.25rem;
-  }
-
-  .quick-select-button {
-    min-height: 40px;
-    padding: 0 18px;
-    font-size: 0.88rem;
-  }
-
-  .availability-date {
-    width: min(82%, 44px);
-  }
-
-  .save-availability-button {
-    margin-top: 24px;
-  }
-}
-/* =================================
-   BEST DATE
-================================= */
-
-.best-date-section {
-  width: 100%;
-  margin-top: 24px;
-  padding: 0 0 28px;
-}
-
-.best-date-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  margin-bottom: 14px;
-}
-
-.best-date-header h2 {
+.overview-page .best-date-header p {
   margin: 0;
-
-  font-size: 1.1rem;
-  font-weight: 700;
+  color: #606060;
+  font-size: 16px;
+  font-weight: 500;
 }
 
-.best-date-header p {
-  margin: 2px 0 0;
-
-  color: #666666;
-
-  font-size: 0.95rem;
-}
-
-.filter-button {
-  min-height: 44px;
-  padding: 0 24px;
-
+.overview-page .filter-button {
+  width: 80px;
+  padding: 8px;
   border: none;
-  border-radius: 999px;
-
-  background: #2b211b;
+  border-radius: 50px;
+  background: #2a1e16;
   color: #ffffff;
-
-  font-size: 0.95rem;
-  font-weight: 700;
-
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
   cursor: pointer;
 }
 
-.best-date-list {
+.overview-page .best-date-list,
+.overview-page .selected-date-detail {
   display: flex;
   flex-direction: column;
-
-  gap: 12px;
-}
-
-.best-date-card {
-  position: relative;
-
-  width: 100%;
-  min-height: 72px;
-
-  padding: 10px 14px 10px 24px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  background: #ffffff;
-
-  border: 1.5px solid #b4b4b4;
-  border-radius: 12px;
-
-  cursor: pointer;
-  text-align: left;
-
-  box-sizing: border-box;
-}
-
-.best-date-card::before {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  top: 0;
-  bottom: 0;
-
-  width: 10px;
-
-  border-radius: 12px 0 0 12px;
-}
-
-.best-date-card.free::before {
-  background: #20c463;
-}
-
-.best-date-card.partial::before {
-  background: #f2b800;
-}
-
-.best-date-card.busy::before {
-  background: #f23f46;
-}
-
-.best-date-info {
-  display: flex;
-  flex-direction: column;
-
-  gap: 2px;
-}
-
-.best-date-info strong {
-  font-size: 1rem;
-  line-height: 1.2;
-  font-weight: 700;
-
-  color: #080808;
-}
-
-.best-date-info span {
-  font-size: 0.95rem;
-  line-height: 1.2;
-
-  color: #080808;
-}
-
-.best-date-count {
-  align-self: flex-start;
-
-  margin-top: 1px;
-
-  font-size: 1rem;
-  font-weight: 700;
-
-  color: #080808;
-}
-
-.selected-date-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.selected-date-detail .best-date-card {
-  cursor: default;
-}
-
-.availability-breakdown {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.respondent-group h3 {
-  margin: 0 0 12px;
-
-  display: flex;
-  align-items: center;
   gap: 10px;
-
-  font-size: 1rem;
-  line-height: 1.2;
-  font-weight: 700;
 }
 
-.status-dot {
-  width: 18px;
-  height: 18px;
-
-  flex: 0 0 18px;
-
-  border-radius: 50%;
-}
-
-.available-dot {
-  background: #16d500;
-}
-
-.unavailable-dot {
-  background: #f23f46;
-}
-
-.respondent-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding-left: 18px;
-}
-
-.respondent-row {
-  min-height: 24px;
-
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  color: #080808;
-  font-size: 0.92rem;
-  line-height: 1.2;
-}
-
-.respondent-avatar {
-  width: 22px;
-  height: 22px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  background: #c8c8c8;
-
+.overview-page .best-date-list > p {
+  margin: 0;
+  color: #606060;
   font-size: 14px;
 }
 
-.empty-respondent-list {
-  margin: 0;
-  color: #777777;
-  font-size: 0.92rem;
-}
-
-/* =================================
-   FINALIZE BUTTON
-================================= */
-
-.finalize-button {
+/* Result card: 7px status bar on the left */
+.overview-page .best-date-card {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   min-height: 54px;
-
-  margin-top: 0;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #2b211b;
-  color: #ffffff;
-
-  font-size: 0.98rem;
-  font-weight: 700;
-
+  padding: 8px 8px 8px 11px;
+  border: 1px solid #a8a8a8;
+  border-left: 7px solid #22c55e;
+  border-radius: 0 8px 8px 0;
+  background: #ffffff;
+  color: #000000;
+  text-align: left;
+  font-size: 16px;
   cursor: pointer;
+}
+
+.overview-page .best-date-card.free {
+  border-left-color: #11e207;
+}
+
+.overview-page .best-date-card.partial {
+  border-left-color: #eab308;
+}
+
+.overview-page .best-date-card.busy {
+  border-left-color: #ef4444;
+}
+
+.overview-page .best-date-top {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.overview-page .best-date-day {
+  font-weight: 500;
+}
+
+/* ================= DAY DETAIL ================= */
+
+.overview-page .availability-breakdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-page .respondent-group h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px;
+  color: #000000;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.overview-page .status-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.overview-page .available-dot {
+  background: #22c55e;
+}
+
+.overview-page .unavailable-dot {
+  background: #ef4444;
+}
+
+.overview-page .respondent-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 8px 8px 24px;
+  color: #000000;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.overview-page .respondent-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.overview-page .empty-respondent-list {
+  margin: 0;
+  padding: 8px 8px 8px 24px;
+  color: #a8a8a8;
+  font-size: 14px;
+}
+
+/* ================= MY AVAILABILITY ================= */
+
+.overview-page .availability-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.overview-page .availability-heading p {
+  margin: 0;
+  color: #606060;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.overview-page .quick-select-wrapper {
+  position: relative;
+}
+
+.overview-page .quick-select-button {
+  width: 120px;
+  padding: 8px;
+  border: none;
+  border-radius: 50px;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.overview-page .quick-select-menu {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 7px);
+  right: 0;
+  width: 165px;
+  padding: 6px;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(42, 30, 22, 0.12);
+}
+
+.overview-page .quick-select-option {
+  display: block;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #222222;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.overview-page .quick-select-option:hover {
+  background: #f5f8fb;
+}
+
+/* ================= BOTTOM BUTTON BAR ================= */
+
+.overview-page .overview-bottom-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 20;
+  width: min(100%, 520px);
+  padding: 18px 16px;
+  background: #ffffff;
+  transform: translateX(-50%);
+}
+
+.overview-page .finalize-button,
+.overview-page .save-availability-button {
+  width: 100%;
+  height: 52px;
+  padding: 8px;
+  border: none;
+  border-radius: 16px;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.overview-page .save-availability-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ================= SMALL PHONES ================= */
+
+@media (max-width: 360px) {
+  .overview-page .event-card {
+    margin: 0 12px;
+  }
+
+  .overview-page .calendar-date,
+  .overview-page .availability-date {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .overview-page .weekday,
+  .overview-page .availability-weekday {
+    font-size: 12px;
+  }
 }
