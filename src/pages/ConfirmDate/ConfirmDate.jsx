@@ -10,9 +10,11 @@ import {
   authHeaders,
 } from "../../lib/liff";
 import {
-  generateCalendarWeeks,
+  getCalendarMonths,
+  findMonthIndex,
   getAvailabilityStatus,
 } from "../../lib/calendar";
+import MonthNav from "../../components/MonthNav";
 import "./ConfirmDate.css";
 
 const API_BASE = import.meta.env.DEV
@@ -153,10 +155,22 @@ function ConfirmDate() {
   const startDate = event?.start_date?.slice(0, 10) || "";
   const endDate = event?.end_date?.slice(0, 10) || "";
 
-  const weeks = useMemo(
-    () => generateCalendarWeeks(startDate, endDate),
+  // Shown one month at a time.
+  const months = useMemo(
+    () => getCalendarMonths(startDate, endDate),
     [startDate, endDate]
   );
+
+  const [monthIndex, setMonthIndex] = useState(0);
+
+  // Open on the month of the first preselected date.
+  useEffect(() => {
+    setMonthIndex(findMonthIndex(months, selectedDates[0]));
+    // Only when the dates first load, not on every tap.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [months]);
+
+  const visibleWeeks = months[monthIndex]?.weeks || [];
 
   const handleDateClick = (date) => {
     if (selectionMode === "single") {
@@ -298,6 +312,12 @@ function ConfirmDate() {
           <h2>CALENDAR</h2>
           <p>Choose a date that works for everyone.</p>
 
+<MonthNav
+            months={months}
+            monthIndex={monthIndex}
+            onChange={setMonthIndex}
+          />
+
           <div className="confirm-calendar">
             <div className="confirm-weekdays">
               {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map(
@@ -308,7 +328,7 @@ function ConfirmDate() {
             </div>
 
             <div className="confirm-calendar-body">
-              {weeks.map((week, weekIndex) => (
+              {visibleWeeks.map((week, weekIndex) => (
                 <div className="confirm-calendar-week" key={weekIndex}>
                   {week.map((date) => {
                     const status = date.muted

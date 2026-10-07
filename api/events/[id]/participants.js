@@ -172,12 +172,12 @@ module.exports = async function handler(req, res) {
       }
 
       // A new response updates the count in the LINE chat
-      // with a fresh card, until everyone has responded.
-      // Changing an earlier answer does not post again.
+      // with a fresh card, up to the one where everyone has
+      // responded. Changing an earlier answer does not post.
       if (!previous) {
         try {
           await sendInvitation(eventId, {
-            onlyIfIncomplete: true,
+            untilComplete: true,
           });
         } catch (error) {
           // The response is saved; a failed chat update

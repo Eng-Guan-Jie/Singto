@@ -13,8 +13,11 @@ import liff, {
 } from "../../lib/liff";
 import {
   generateCalendarWeeks,
+  getCalendarMonths,
+  findMonthIndex,
   isHoliday,
 } from "../../lib/calendar";
+import MonthNav from "../../components/MonthNav";
 import "./Overview.css";
 
 const API_BASE = import.meta.env.DEV
@@ -309,6 +312,21 @@ function Overview() {
       eventData.endDate
     );
   }, [eventData]);
+
+  // Shown one month at a time; `weeks` above still covers
+  // the whole period for Best Date and Quick Select.
+  const months = useMemo(() => {
+    if (!eventData) return [];
+
+    return getCalendarMonths(
+      eventData.startDate,
+      eventData.endDate
+    );
+  }, [eventData]);
+
+  const [monthIndex, setMonthIndex] = useState(0);
+
+  const visibleWeeks = months[monthIndex]?.weeks || [];
 
   /*
    * ================= PARTICIPANTS =================
@@ -890,6 +908,12 @@ function Overview() {
                 Overview of Everyone’s Availability
               </p>
 
+<MonthNav
+                months={months}
+                monthIndex={monthIndex}
+                onChange={setMonthIndex}
+              />
+
               <div
                 className={`calendar ${
                   selectedDates.length > 0
@@ -917,7 +941,7 @@ function Overview() {
                 </div>
 
                 <div className="calendar-body">
-                  {weeks.map(
+                  {visibleWeeks.map(
                     (week, weekIndex) => (
                       <div
                         className="calendar-week"
@@ -1173,11 +1197,17 @@ function Overview() {
                       <button
                         key={item.dates.join()}
                         className={`best-date-card ${item.status}`}
-                        onClick={() =>
+                        onClick={() => {
                           setSelectedDates(
                             item.dates
-                          )
-                        }
+                          );
+                          setMonthIndex(
+                            findMonthIndex(
+                              months,
+                              item.dates[0]
+                            )
+                          );
+                        }}
                       >
                         <div className="best-date-top">
                           <strong>
@@ -1266,6 +1296,12 @@ function Overview() {
                 </div>
               </div>
 
+<MonthNav
+                months={months}
+                monthIndex={monthIndex}
+                onChange={setMonthIndex}
+              />
+
               <div className="availability-calendar">
                 <div className="availability-weekday-row">
                   {[
@@ -1287,7 +1323,7 @@ function Overview() {
                 </div>
 
                 <div className="availability-calendar-body">
-                  {weeks.map(
+                  {visibleWeeks.map(
                     (week, weekIndex) => (
                       <div
                         className="availability-calendar-week"

@@ -364,13 +364,14 @@ async function pushToChat(to, messages) {
  * LINE cannot edit sent messages, so every update is a
  * new card.
  *
- * With onlyIfIncomplete, nothing is sent once everyone in
- * the chat has responded, or when the chat size is unknown.
+ * With untilComplete (a new response), the card that
+ * reaches everyone (e.g. 5/5) is still sent, but nothing
+ * after that, or when the chat size is unknown.
  * Returns { sent, respondedCount, memberCount }.
  */
 async function sendInvitation(
   eventId,
-  { onlyIfIncomplete = false } = {}
+  { untilComplete = false } = {}
 ) {
   const eventRows = await sql`
     SELECT
@@ -414,13 +415,14 @@ async function sendInvitation(
     event.line_chat_id
   );
 
-  const isComplete =
+  // Everyone had already responded before this one.
+  const wasComplete =
     memberCount !== null &&
-    respondedCount >= memberCount;
+    respondedCount > memberCount;
 
   if (
-    onlyIfIncomplete &&
-    (memberCount === null || isComplete)
+    untilComplete &&
+    (memberCount === null || wasComplete)
   ) {
     return { sent: false, respondedCount, memberCount };
   }

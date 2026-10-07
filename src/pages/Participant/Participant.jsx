@@ -7,7 +7,9 @@ import liff, {
 } from "../../lib/liff";
 import {
   generateCalendarWeeks,
+  getCalendarMonths,
 } from "../../lib/calendar";
+import MonthNav from "../../components/MonthNav";
 import "./Participant.css";
 
 const API_BASE = import.meta.env.DEV
@@ -370,6 +372,26 @@ function Participant() {
       eventEndDate,
     ]
   );
+
+  // Shown one month at a time; `weeks` above still covers
+  // the whole period for Quick Select.
+  const months = useMemo(
+    () =>
+      getCalendarMonths(
+        eventStartDate,
+        eventEndDate
+      ),
+    [
+      eventStartDate,
+      eventEndDate,
+    ]
+  );
+
+  const [monthIndex, setMonthIndex] =
+    useState(0);
+
+  const visibleWeeks =
+    months[monthIndex]?.weeks || [];
 
   /*
    * ================= ACCEPT / DECLINE =================
@@ -832,6 +854,12 @@ function Participant() {
               Availability
             </p>
 
+<MonthNav
+              months={months}
+              monthIndex={monthIndex}
+              onChange={setMonthIndex}
+            />
+
             <div className="participant-calendar">
               <div className="participant-weekday-row">
                 {[
@@ -855,7 +883,7 @@ function Participant() {
               </div>
 
               <div className="participant-calendar-body">
-                {weeks.map(
+                {visibleWeeks.map(
                   (
                     week,
                     weekIndex
@@ -1008,6 +1036,12 @@ function Participant() {
               </div>
             </div>
 
+<MonthNav
+              months={months}
+              monthIndex={monthIndex}
+              onChange={setMonthIndex}
+            />
+
             <div className="participant-availability-calendar">
               <div className="participant-weekday-row">
                 {[
@@ -1031,7 +1065,7 @@ function Participant() {
               </div>
 
               <div className="participant-calendar-body">
-                {weeks.map(
+                {visibleWeeks.map(
                   (
                     week,
                     weekIndex

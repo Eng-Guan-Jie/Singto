@@ -111,3 +111,67 @@ export const isHoliday = (dateKey) => {
     FIXED_THAI_HOLIDAYS.has(dateKey.slice(5))
   );
 };
+
+// One entry per month of the scheduling period, for showing
+// a single month at a time. Days of the previous/next month
+// that pad the grid are muted, so each day appears (and can
+// be tapped) in its own month only.
+export const getCalendarMonths = (startDate, endDate) => {
+  if (!startDate || !endDate) return [];
+
+  const start = new Date(`${startDate}T00:00:00`);
+  const end = new Date(`${endDate}T00:00:00`);
+
+  const months = [];
+  let monthStart = new Date(start.getFullYear(), start.getMonth(), 1);
+
+  while (monthStart <= end) {
+    const monthEnd = new Date(
+      monthStart.getFullYear(),
+      monthStart.getMonth() + 1,
+      0
+    );
+
+    const weeks = generateCalendarWeeks(
+      toDateKey(monthStart),
+      toDateKey(monthEnd)
+    ).map((week) =>
+      week.map((day) => {
+        const date = new Date(`${day.date}T00:00:00`);
+
+        return {
+          ...day,
+          muted: day.otherMonth || date < start || date > end,
+        };
+      })
+    );
+
+    months.push({
+      key: toDateKey(monthStart).slice(0, 7),
+      label: new Intl.DateTimeFormat("en", {
+        month: "long",
+        year: "numeric",
+      })
+        .format(monthStart)
+        .toUpperCase(),
+      weeks,
+    });
+
+    monthStart = new Date(
+      monthStart.getFullYear(),
+      monthStart.getMonth() + 1,
+      1
+    );
+  }
+
+  return months;
+};
+
+// Index of the month containing a YYYY-MM-DD date (0 if none).
+export const findMonthIndex = (months, dateKey) => {
+  const index = months.findIndex(
+    (month) => month.key === dateKey?.slice(0, 7)
+  );
+
+  return index === -1 ? 0 : index;
+};

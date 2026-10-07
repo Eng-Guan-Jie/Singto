@@ -1,0 +1,35 @@
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.month-nav-label {
+  color: #000000;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.month-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0 0 2px;
+  border: none;
+  border-radius: 50%;
+  background: #2a1e16;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.month-nav-button:disabled {
+  background: #dfdfdf;
+  color: #a8a8a8;
+  cursor: default;
+}
