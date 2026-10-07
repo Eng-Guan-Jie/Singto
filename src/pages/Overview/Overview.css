@@ -567,7 +567,8 @@
 
 .overview-page .quick-select-menu {
   position: absolute;
-  z-index: 10;
+  /* above the fixed bottom button bar (z-index 20) */
+  z-index: 30;
   top: calc(100% + 7px);
   right: 0;
   width: 165px;
@@ -674,43 +675,50 @@
   line-height: 22px;
 }
 
-/* Best Date filter dropdown (Figma "filter") */
+/* Best Date filter: same menu as Quick Select
+   (.quick-select-menu / .quick-select-option) */
 .overview-page .filter-wrapper {
   position: relative;
 }
 
 .overview-page .filter-menu {
-  position: absolute;
-  /* above the fixed FINALIZE DATE bar (z-index 20) */
-  z-index: 30;
-  top: calc(100% + 6px);
-  right: 0;
+  width: auto;
+  min-width: 165px;
+  white-space: nowrap;
+}
+
+.overview-page .filter-menu .quick-select-option.active {
+  font-weight: 700;
+}
+
+/* Shown until the organizer saves their own days */
+.overview-page .own-availability-notice {
   display: flex;
   flex-direction: column;
-  width: 184px;
-  border: 1px solid #a8a8a8;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid #eab308;
   border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
+  background: rgba(234, 179, 8, 0.12);
 }
 
-.overview-page .filter-option {
-  padding: 8px;
-  border: none;
-  background: #ffffff;
-  color: #000000;
-  text-align: left;
-  font-size: 16px;
+.overview-page .own-availability-notice p {
+  margin: 0;
+  color: #222222;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 22px;
+  line-height: 20px;
+}
+
+.overview-page .own-availability-notice button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 50px;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-}
-
-.overview-page .filter-option:hover {
-  background: #f5f8fb;
-}
-
-.overview-page .filter-option.active {
-  font-weight: 700;
 }

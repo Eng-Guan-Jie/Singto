@@ -379,7 +379,8 @@
 
 .participant-page .quick-select-menu {
   position: absolute;
-  z-index: 10;
+  /* above the fixed bottom button bar (z-index 20) */
+  z-index: 30;
   top: calc(100% + 7px);
   right: 0;
   width: 165px;

@@ -1,6 +1,7 @@
 const sql = require("../_db");
 const {
   AuthError,
+  isEventId,
   verifyLineIdToken,
   getEventRole,
   sendError,
@@ -34,6 +35,11 @@ module.exports = async function handler(req, res) {
   }
 
   const { id } = req.query;
+
+  if (!isEventId(id)) {
+    res.status(404).json({ message: "Event not found" });
+    return;
+  }
 
   try {
     /*

@@ -431,6 +431,12 @@ function Overview() {
    * ================= BEST DATE =================
    */
 
+  // The organizer counts as a participant, so until they
+  // save their own days every date shows them as busy.
+  const hasOwnAvailability = Object.values(
+    availability
+  ).some((userIds) => userIds.includes(lineUserId));
+
   const activeFilter = BEST_DATE_FILTERS.find(
     (filter) => filter.value === bestDateFilter
   );
@@ -627,15 +633,12 @@ function Overview() {
   };
 
   const handleFinalize = () => {
-    // The picked day(s), otherwise the top Best Date.
-    const finalizeDates =
-      selectedDates.length > 0
-        ? selectedDates
-        : bestOptions[0]?.dates || [];
-
     navigate(`/confirm-date?eventId=${eventId}`, {
       state: {
-        selectedDates: finalizeDates,
+        // Day(s) the organizer picked here, if any.
+        pickedDates: selectedDates,
+        // Otherwise start from the top Best Date.
+        suggestedDates: bestOptions[0]?.dates || [],
       },
     });
   };
@@ -862,6 +865,24 @@ function Overview() {
 
         {activeTab === "overview" && (
           <section className="overview-content">
+            {!hasOwnAvailability && (
+              <div className="own-availability-notice">
+                <p>
+                  You haven’t added your available days yet,
+                  so every date counts you as busy.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveTab("availability")
+                  }
+                >
+                  Add my availability
+                </button>
+              </div>
+            )}
+
             <section className="calendar-section">
               <h2>CALENDAR</h2>
 
@@ -999,12 +1020,12 @@ function Overview() {
                   </button>
 
                   {showFilterMenu && (
-                    <div className="filter-menu">
+                    <div className="quick-select-menu filter-menu">
                       {BEST_DATE_FILTERS.map(
                         (filter) => (
                           <button
                             key={filter.value}
-                            className={`filter-option ${
+                            className={`quick-select-option ${
                               filter.value ===
                               bestDateFilter
                                 ? "active"

@@ -120,22 +120,21 @@ function ConfirmDate() {
         setCounts(availabilityData.counts || {});
         setAcceptedCount(availabilityData.acceptedCount || 0);
 
-        // Start from an earlier confirmation, else the date
-        // chosen on Overview (Best Date or the tapped day).
+        // Start from the day(s) picked on Overview, else an
+        // earlier confirmation, else the top Best Date.
         const previous = loadedEvent.confirmed_dates || [];
 
-        if (previous.length > 0) {
-          setSelectedDates(previous);
-          setSelectionMode(previous.length > 1 ? "multiple" : "single");
-          setNote(loadedEvent.confirmation_note || "");
-        } else if (location.state?.selectedDates?.length) {
-          const fromOverview = location.state.selectedDates;
+        const initialDates = [
+          location.state?.pickedDates,
+          previous,
+          location.state?.suggestedDates,
+        ].find((dates) => dates?.length > 0) || [];
 
-          setSelectedDates(fromOverview);
-          setSelectionMode(
-            fromOverview.length > 1 ? "multiple" : "single"
-          );
-        }
+        setSelectedDates(initialDates);
+        setSelectionMode(
+          initialDates.length > 1 ? "multiple" : "single"
+        );
+        setNote(loadedEvent.confirmation_note || "");
       } catch (error) {
         console.error("Failed to load confirm page:", error);
         setError(error.message || "Failed to load event.");

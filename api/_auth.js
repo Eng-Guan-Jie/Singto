@@ -72,6 +72,14 @@ function getBearerToken(req) {
   return match ? match[1] : null;
 }
 
+// Event IDs are UUIDs; anything else (a cut-off or mistyped
+// link) would make Postgres throw "invalid input syntax".
+function isEventId(value) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    String(value || "")
+  );
+}
+
 /*
  * Work out what the caller may see for this event:
  * - "organizer": the user who created the event
@@ -79,6 +87,10 @@ function getBearerToken(req) {
  * - "guest": signed in with LINE but not part of the event yet
  */
 async function getEventRole(eventId, lineUserId) {
+  if (!isEventId(eventId)) {
+    throw new AuthError(404, "Event not found");
+  }
+
   const eventRows = await sql`
     SELECT
       id,
@@ -167,6 +179,7 @@ function setCorsHeaders(res, methods) {
 
 module.exports = {
   AuthError,
+  isEventId,
   verifyLineIdToken,
   getBearerToken,
   getEventRole,
