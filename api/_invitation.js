@@ -589,8 +589,9 @@ async function sendConfirmation(eventId) {
       event_name,
       description,
       line_chat_id,
-      confirmed_dates,
-      confirmation_note
+      finalized_date,
+      finalized_dates,
+      finalization_note
     FROM events
     WHERE id = ${eventId}
     LIMIT 1
@@ -616,8 +617,10 @@ async function sendConfirmation(eventId) {
     createConfirmationBubble({
       eventName: event.event_name,
       description: event.description,
-      note: event.confirmation_note,
-      dates: (event.confirmed_dates || []).map(toDateKey),
+      note: event.finalization_note,
+      dates: event.finalized_dates?.length
+        ? event.finalized_dates.map(toDateKey)
+        : [event.finalized_date].filter(Boolean).map(toDateKey),
       acceptedCount: acceptedRows[0].count,
       memberCount: await getChatMemberCount(
         event.line_chat_id

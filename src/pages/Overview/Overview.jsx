@@ -13,6 +13,7 @@ import liff, {
 } from "../../lib/liff";
 import {
   generateCalendarWeeks,
+  isHoliday,
 } from "../../lib/calendar";
 import "./Overview.css";
 
@@ -74,6 +75,19 @@ function Avatar({ participant, className }) {
   );
 }
 
+// Best Date filters (Figma "filter" dropdown).
+const BEST_DATE_FILTERS = [
+  { value: "single", label: "Single Day", days: 1 },
+  { value: "two-days", label: "2 Consecutive Days", days: 2 },
+  { value: "three-days", label: "3 Consecutive Days", days: 3 },
+  {
+    value: "holiday",
+    label: "Only holiday",
+    days: 1,
+    holidaysOnly: true,
+  },
+];
+
 function Overview() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -82,7 +96,14 @@ function Overview() {
   const eventId = searchParams.get("eventId");
 
   const [activeTab, setActiveTab] = useState("overview");
-  const [selectedDate, setSelectedDate] = useState(null);
+  // Day(s) picked on the calendar or from Best Date.
+  const [selectedDates, setSelectedDates] = useState([]);
+
+  const [bestDateFilter, setBestDateFilter] =
+    useState("single");
+
+  const [showFilterMenu, setShowFilterMenu] =
+    useState(false);
   const [selectedAvailabilityDates, setSelectedAvailabilityDates] =
     useState([]);
   const [showQuickSelect, setShowQuickSelect] = useState(false);
@@ -321,8 +342,13 @@ function Overview() {
    * ================= AVAILABILITY =================
    */
 
-  const getDateAvailabilitySummary = (dateValue) => {
-    const availableIds = availability[dateValue] || [];
+  // Who is free on every one of the given dates.
+  const getDatesSummary = (dates) => {
+    const availableIds = dates
+      .map((date) => availability[date] || [])
+      .reduce((common, ids) =>
+        common.filter((id) => ids.includes(id))
+      );
 
     const availableParticipants =
       acceptedParticipants.filter((participant) =>
@@ -355,10 +381,19 @@ function Overview() {
       }
     }
 
+    const first = dates[0];
+    const last = dates[dates.length - 1];
+
     return {
-      date: dateValue,
-      label: getDateLabel(dateValue),
-      day: getDayLabel(dateValue),
+      dates,
+      label:
+        dates.length > 1
+          ? `${getDateLabel(first)} – ${getDateLabel(last)}`
+          : getDateLabel(first),
+      day:
+        dates.length > 1
+          ? `${getDayLabel(first)} – ${getDayLabel(last)}`
+          : getDayLabel(first),
       available: availableCount,
       total,
       status,
@@ -366,6 +401,9 @@ function Overview() {
       unavailableParticipants,
     };
   };
+
+  const getDateAvailabilitySummary = (dateValue) =>
+    getDatesSummary([dateValue]);
 
   const dateSummaries = useMemo(() => {
     if (!eventData) return [];
@@ -378,9 +416,10 @@ function Overview() {
           date.date >= eventData.startDate &&
           date.date <= eventData.endDate
       )
-      .map((date) =>
-        getDateAvailabilitySummary(date.date)
-      );
+      .map((date) => ({
+        date: date.date,
+        ...getDateAvailabilitySummary(date.date),
+      }));
   }, [
     weeks,
     eventData,
@@ -392,43 +431,56 @@ function Overview() {
    * ================= BEST DATE =================
    */
 
-  const maxAvailableCount = useMemo(() => {
-    if (dateSummaries.length === 0) return 0;
+  const activeFilter = BEST_DATE_FILTERS.find(
+    (filter) => filter.value === bestDateFilter
+  );
 
-    return Math.max(
-      ...dateSummaries.map(
-        (item) => item.available
-      )
+  // Candidate date sets for the active filter, keeping
+  // those where the most people are free on every day.
+  const bestOptions = useMemo(() => {
+    const rangeDates = dateSummaries.map(
+      (summary) => summary.date
     );
-  }, [dateSummaries]);
 
-  const bestDates = useMemo(() => {
-    if (
-      dateSummaries.length === 0 ||
-      maxAvailableCount === 0
-    ) {
-      return [];
-    }
+    const candidates = activeFilter.holidaysOnly
+      ? rangeDates
+          .filter(isHoliday)
+          .map((date) => [date])
+      : rangeDates
+          .slice(0, rangeDates.length - activeFilter.days + 1)
+          .map((_, index) =>
+            rangeDates.slice(index, index + activeFilter.days)
+          );
 
-    return dateSummaries.filter(
-      (item) =>
-        item.available === maxAvailableCount
+    const summaries = candidates.map(getDatesSummary);
+
+    const maxAvailable = Math.max(
+      0,
+      ...summaries.map((summary) => summary.available)
+    );
+
+    if (maxAvailable === 0) return [];
+
+    return summaries.filter(
+      (summary) => summary.available === maxAvailable
     );
   }, [
     dateSummaries,
-    maxAvailableCount,
+    activeFilter,
+    availability,
+    acceptedParticipants,
   ]);
 
-  const selectedDateSummary = selectedDate
-    ? getDateAvailabilitySummary(
-        selectedDate
-      )
-    : null;
+  const selectedDateSummary =
+    selectedDates.length > 0
+      ? getDatesSummary(selectedDates)
+      : null;
 
-  const finalizeDate =
-    selectedDate ||
-    bestDates[0]?.date ||
-    eventData?.endDate;
+  const handleFilterChange = (value) => {
+    setBestDateFilter(value);
+    setSelectedDates([]);
+    setShowFilterMenu(false);
+  };
 
   /*
    * ================= QUICK SELECT =================
@@ -575,15 +627,15 @@ function Overview() {
   };
 
   const handleFinalize = () => {
-    if (!finalizeDate) {
-      alert("Please select a date first.");
-      return;
-    }
+    // The picked day(s), otherwise the top Best Date.
+    const finalizeDates =
+      selectedDates.length > 0
+        ? selectedDates
+        : bestOptions[0]?.dates || [];
 
     navigate(`/confirm-date?eventId=${eventId}`, {
       state: {
-        eventData,
-        selectedDate: finalizeDate,
+        selectedDates: finalizeDates,
       },
     });
   };
@@ -819,7 +871,7 @@ function Overview() {
 
               <div
                 className={`calendar ${
-                  selectedDate
+                  selectedDates.length > 0
                     ? "has-selection"
                     : ""
                 }`}
@@ -860,8 +912,9 @@ function Overview() {
                                   ).status;
 
                             const isSelected =
-                              date.date ===
-                              selectedDate;
+                              selectedDates.includes(
+                                date.date
+                              );
 
                             return (
                               <button
@@ -884,9 +937,9 @@ function Overview() {
                                   if (
                                     !date.muted
                                   ) {
-                                    setSelectedDate(
-                                      date.date
-                                    );
+                                    setSelectedDates([
+                                      date.date,
+                                    ]);
                                   }
                                 }}
                                 disabled={
@@ -929,17 +982,47 @@ function Overview() {
               <div className="best-date-header">
                 <div>
                   <h2>BEST DATE</h2>
-                  <p>Single Day</p>
+                  <p>{activeFilter.label}</p>
                 </div>
 
-                <button
-                  className="filter-button"
-                  onClick={() =>
-                    alert("Filter options")
-                  }
-                >
-                  Filter
-                </button>
+                <div className="filter-wrapper">
+                  <button
+                    className="filter-button"
+                    onClick={() =>
+                      setShowFilterMenu(
+                        (current) => !current
+                      )
+                    }
+                    aria-expanded={showFilterMenu}
+                  >
+                    Filter
+                  </button>
+
+                  {showFilterMenu && (
+                    <div className="filter-menu">
+                      {BEST_DATE_FILTERS.map(
+                        (filter) => (
+                          <button
+                            key={filter.value}
+                            className={`filter-option ${
+                              filter.value ===
+                              bestDateFilter
+                                ? "active"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              handleFilterChange(
+                                filter.value
+                              )
+                            }
+                          >
+                            {filter.label}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {selectedDateSummary ? (
@@ -1064,14 +1147,14 @@ function Overview() {
                 </div>
               ) : (
                 <div className="best-date-list">
-                  {bestDates.length > 0 ? (
-                    bestDates.map((item) => (
+                  {bestOptions.length > 0 ? (
+                    bestOptions.map((item) => (
                       <button
-                        key={item.date}
+                        key={item.dates.join()}
                         className={`best-date-card ${item.status}`}
                         onClick={() =>
-                          setSelectedDate(
-                            item.date
+                          setSelectedDates(
+                            item.dates
                           )
                         }
                       >

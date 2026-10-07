@@ -78,3 +78,36 @@ export const getAvailabilityStatus = (count, total) => {
 
   return "busy";
 };
+
+// Thai public holidays that fall on the same date every
+// year (MM-DD). Lunar holidays (Makha Bucha, Visakha
+// Bucha, Asahna Bucha, Khao Phansa) and substitution days
+// change yearly and are not included.
+const FIXED_THAI_HOLIDAYS = new Set([
+  "01-01", // New Year's Day
+  "04-06", // Chakri Memorial Day
+  "04-13", // Songkran
+  "04-14", // Songkran
+  "04-15", // Songkran
+  "05-01", // Labour Day
+  "05-04", // Coronation Day
+  "06-03", // Queen Suthida's Birthday
+  "07-28", // King Vajiralongkorn's Birthday
+  "08-12", // Mother's Day
+  "10-13", // King Bhumibol Memorial Day
+  "10-23", // Chulalongkorn Day
+  "12-05", // Father's Day
+  "12-10", // Constitution Day
+  "12-31", // New Year's Eve
+]);
+
+// Saturday, Sunday, or a fixed-date Thai public holiday.
+export const isHoliday = (dateKey) => {
+  const day = new Date(`${dateKey}T00:00:00`).getDay();
+
+  return (
+    day === 0 ||
+    day === 6 ||
+    FIXED_THAI_HOLIDAYS.has(dateKey.slice(5))
+  );
+};

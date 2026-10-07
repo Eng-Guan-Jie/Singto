@@ -18,7 +18,7 @@ const toDateKey = (value) =>
 
 /*
  * PB-09: the organizer confirms the final date(s).
- * Requires db/migrations/001_event_confirmation.sql.
+ * Requires db/migrations/001_event_finalization.sql.
  */
 module.exports = async function handler(req, res) {
   setCorsHeaders(res, "POST, OPTIONS");
@@ -82,15 +82,16 @@ module.exports = async function handler(req, res) {
         ? note.trim().slice(0, 500)
         : null;
 
-    // confirmed_by "user": the organizer pressed Confirm
-    // (AGENTS.md 5.6).
+    // finalized_by "user": the organizer pressed Confirm
+    // (AGENTS.md 5.6). finalized_date keeps the first day.
     await sql`
       UPDATE events
       SET
-        confirmed_dates = ${uniqueDates}::date[],
-        confirmation_note = ${trimmedNote},
-        confirmed_at = NOW(),
-        confirmed_by = 'user'
+        finalized_date = ${uniqueDates[0]},
+        finalized_dates = ${uniqueDates}::date[],
+        finalization_note = ${trimmedNote},
+        finalized_at = NOW(),
+        finalized_by = 'user'
       WHERE id = ${eventId}
     `;
 
@@ -119,7 +120,18 @@ module.exports = async function handler(req, res) {
 
       res.status(500).json({
         message:
-          "The database is missing the confirmation columns. Run db/migrations/001_event_confirmation.sql in Neon.",
+          "The database is missing the finalization columns. Run db/migrations/001_event_finalization.sql in Neon.",
+      });
+      return;
+    }
+
+    // Other database errors: show the Postgres error code
+    // (no data) so the cause can be found without logs.
+    if (/^[0-9A-Z]{5}$/.test(error.code || "")) {
+      console.error("Confirm date failed:", error);
+
+      res.status(500).json({
+        message: `Failed to confirm the date (database error ${error.code}).`,
       });
       return;
     }

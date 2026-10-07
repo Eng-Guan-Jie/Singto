@@ -128,8 +128,13 @@ function ConfirmDate() {
           setSelectedDates(previous);
           setSelectionMode(previous.length > 1 ? "multiple" : "single");
           setNote(loadedEvent.confirmation_note || "");
-        } else if (location.state?.selectedDate) {
-          setSelectedDates([location.state.selectedDate]);
+        } else if (location.state?.selectedDates?.length) {
+          const fromOverview = location.state.selectedDates;
+
+          setSelectedDates(fromOverview);
+          setSelectionMode(
+            fromOverview.length > 1 ? "multiple" : "single"
+          );
         }
       } catch (error) {
         console.error("Failed to load confirm page:", error);

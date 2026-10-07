@@ -13,6 +13,18 @@ const toDateKey = (value) =>
     ? value.toISOString().slice(0, 10)
     : String(value).slice(0, 10);
 
+// Confirmed day(s): finalized_dates, or the single
+// finalized_date when only that one is set.
+const getFinalizedDates = (event) => {
+  if (event.finalized_dates?.length) {
+    return event.finalized_dates.map(toDateKey);
+  }
+
+  return event.finalized_date
+    ? [toDateKey(event.finalized_date)]
+    : [];
+};
+
 module.exports = async function handler(req, res) {
   setCorsHeaders(res, "GET, PATCH, OPTIONS");
 
@@ -58,11 +70,9 @@ module.exports = async function handler(req, res) {
           end_date: event.end_date,
           status: event.status,
           created_at: event.created_at,
-          confirmed_dates: (event.confirmed_dates || []).map(
-            toDateKey
-          ),
-          confirmation_note: event.confirmation_note || null,
-          confirmed_at: event.confirmed_at || null,
+          confirmed_dates: getFinalizedDates(event),
+          confirmation_note: event.finalization_note || null,
+          confirmed_at: event.finalized_at || null,
         },
       });
       return;

@@ -673,3 +673,44 @@
   font-weight: 700;
   line-height: 22px;
 }
+
+/* Best Date filter dropdown (Figma "filter") */
+.overview-page .filter-wrapper {
+  position: relative;
+}
+
+.overview-page .filter-menu {
+  position: absolute;
+  /* above the fixed FINALIZE DATE bar (z-index 20) */
+  z-index: 30;
+  top: calc(100% + 6px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  width: 184px;
+  border: 1px solid #a8a8a8;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.overview-page .filter-option {
+  padding: 8px;
+  border: none;
+  background: #ffffff;
+  color: #000000;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.overview-page .filter-option:hover {
+  background: #f5f8fb;
+}
+
+.overview-page .filter-option.active {
+  font-weight: 700;
+}
