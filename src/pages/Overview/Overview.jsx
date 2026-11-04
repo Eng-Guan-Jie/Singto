@@ -351,9 +351,6 @@ function Overview() {
 
   const respondedCount = responders.length;
 
-  // No colours on the calendar until someone has responded.
-  const hasResponses = respondedCount > 0;
-
   // Everyone in the LINE chat when known, otherwise
   // everyone who has opened the invitation.
   const totalParticipants =
@@ -911,26 +908,7 @@ function Overview() {
                 Overview of Everyone’s Availability
               </p>
 
-              {hasResponses && (
-                <div className="availability-legend">
-                  <span>
-                    <span className="legend-dot free-dot" />
-                    All free
-                  </span>
-
-                  <span>
-                    <span className="legend-dot partial-dot" />
-                    Some free
-                  </span>
-
-                  <span>
-                    <span className="legend-dot busy-dot" />
-                    No one free
-                  </span>
-                </div>
-              )}
-
-              <MonthNav
+<MonthNav
                 months={months}
                 monthIndex={monthIndex}
                 onChange={setMonthIndex}
@@ -971,16 +949,12 @@ function Overview() {
                       >
                         {week.map(
                           (date, index) => {
-                            const summary =
-                              date.muted || !hasResponses
-                                ? null
+                            const status =
+                              date.muted
+                                ? ""
                                 : getDateAvailabilitySummary(
                                     date.date
-                                  );
-
-                            const status = summary
-                              ? summary.status
-                              : "";
+                                  ).status;
 
                             const isSelected =
                               selectedDates.includes(
@@ -1016,22 +990,10 @@ function Overview() {
                                 disabled={
                                   date.muted
                                 }
-                                aria-label={
-                                  summary
-                                    ? `Day ${date.day}: ${summary.available} of ${summary.total} free`
-                                    : `Day ${date.day}`
-                                }
                               >
                                 <span>
                                   {date.day}
                                 </span>
-
-                                {summary && (
-                                  <small className="date-count">
-                                    {summary.available}/
-                                    {summary.total}
-                                  </small>
-                                )}
                               </button>
                             );
                           }
@@ -1042,6 +1004,22 @@ function Overview() {
                 </div>
               </div>
             </section>
+
+            {/* ================= LEGEND ================= */}
+
+            <div className="legend">
+              <span className="legend-label">
+                Busy
+              </span>
+
+              <span className="legend-dot busy-dot" />
+              <span className="legend-dot partial-dot" />
+              <span className="legend-dot free-dot" />
+
+              <span className="legend-label">
+                Free
+              </span>
+            </div>
 
             {/* ================= BEST DATE ================= */}
 
@@ -1318,7 +1296,7 @@ function Overview() {
                 </div>
               </div>
 
-              <MonthNav
+<MonthNav
                 months={months}
                 monthIndex={monthIndex}
                 onChange={setMonthIndex}
