@@ -354,15 +354,20 @@
 
 /* ================= LEGEND ================= */
 
-.overview-page .legend {
+/* Shown under the subtitle once someone has responded */
+.overview-page .availability-legend {
   display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: #333333;
+  font-size: 13px;
+}
+
+.overview-page .availability-legend > span {
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 4px;
-  margin-top: 2px;
-  padding: 0 8px;
-  color: #a8a8a8;
-  font-size: 12px;
 }
 
 .overview-page .legend-dot {
@@ -721,4 +726,52 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* ================= DAY COUNTS (OVERVIEW) ================= */
+
+/* Day number with "available/total" underneath */
+.overview-page .calendar-date {
+  flex-direction: column;
+  line-height: 1;
+}
+
+.overview-page .date-count {
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* ================= MY AVAILABILITY DAYS ================= */
+
+/* Days in the period get a grey circle so they look tappable */
+.overview-page .availability-date:not(.muted) {
+  position: relative;
+  background: #ececec;
+}
+
+/* Chosen days: brand brown with a small ✓ badge. Not green,
+   because green on the Overview tab means "everyone free". */
+.overview-page .availability-date.selected {
+  background: #2a1e16;
+  color: #ffffff;
+}
+
+.overview-page .availability-date.selected::after {
+  content: "✓";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
 }
