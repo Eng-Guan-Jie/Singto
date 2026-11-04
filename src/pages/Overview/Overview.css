@@ -753,3 +753,20 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+/* Before anyone has picked a day: grey circles */
+.overview-page .calendar-date.pending {
+  background: #ececec;
+}
+
+/* Day number with "available/total" inside the circle */
+.overview-page .calendar-date {
+  flex-direction: column;
+  line-height: 1;
+}
+
+.overview-page .calendar-date .date-count {
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 500;
+}

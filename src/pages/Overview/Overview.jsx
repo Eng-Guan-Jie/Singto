@@ -99,7 +99,8 @@ function Overview() {
 
   const eventId = searchParams.get("eventId");
 
-  const [activeTab, setActiveTab] = useState("overview");
+  // Start on MY AVAILABILITY so people add their days first.
+  const [activeTab, setActiveTab] = useState("availability");
   // Day(s) picked on the calendar or from Best Date.
   const [selectedDates, setSelectedDates] = useState([]);
 
@@ -697,6 +698,9 @@ function Overview() {
       setRefreshKey((key) => key + 1);
 
       alert("Your availability has been saved.");
+
+      // Then show how it fits with everyone else's.
+      setActiveTab("overview");
     } catch (error) {
       console.error(
         "Save availability failed:",
@@ -951,12 +955,18 @@ function Overview() {
                       >
                         {week.map(
                           (date, index) => {
-                            const status =
-                              date.muted || !hasAvailability
-                                ? ""
-                                : getDateAvailabilitySummary(
-                                    date.date
-                                  ).status;
+                            const summary = date.muted
+                              ? null
+                              : getDateAvailabilitySummary(
+                                  date.date
+                                );
+
+                            // Grey until anyone has picked a day.
+                            const status = !summary
+                              ? ""
+                              : hasAvailability
+                                ? summary.status
+                                : "pending";
 
                             const isSelected =
                               selectedDates.includes(
@@ -992,10 +1002,22 @@ function Overview() {
                                 disabled={
                                   date.muted
                                 }
+                                aria-label={
+                                  summary && hasAvailability
+                                    ? `Day ${date.day}: ${summary.available} of ${summary.total} free`
+                                    : `Day ${date.day}`
+                                }
                               >
                                 <span>
                                   {date.day}
                                 </span>
+
+                                {summary && hasAvailability && (
+                                  <small className="date-count">
+                                    {summary.available}/
+                                    {summary.total}
+                                  </small>
+                                )}
                               </button>
                             );
                           }

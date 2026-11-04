@@ -537,3 +537,20 @@
   font-size: 14px;
   font-weight: 500;
 }
+
+/* Before anyone has picked a day: grey circles */
+.participant-page .participant-calendar-date.pending {
+  background: #ececec;
+}
+
+/* Day number with "available/total" inside the circle */
+.participant-page .participant-calendar-date {
+  flex-direction: column;
+  line-height: 1;
+}
+
+.participant-page .participant-calendar-date .date-count {
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 500;
+}

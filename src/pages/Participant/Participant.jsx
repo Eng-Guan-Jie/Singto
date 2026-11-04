@@ -58,8 +58,9 @@ function Participant() {
   const [isSubmitting, setIsSubmitting] =
     useState(false);
 
+  // Start on MY AVAILABILITY so people add their days first.
   const [activeTab, setActiveTab] =
-    useState("overview");
+    useState("availability");
 
   const [
     selectedAvailabilityDates,
@@ -611,6 +612,9 @@ function Participant() {
         alert(
           "Your availability has been saved."
         );
+
+        // Then show how it fits with everyone else's.
+        setActiveTab("overview");
       } catch (error) {
         console.error(
           "Save availability failed:",
@@ -632,11 +636,17 @@ function Participant() {
 
   // Same thresholds as the organizer Overview:
   // everyone free → free, some → partial, none → busy.
+  // Grey until anyone has picked a day.
+  const hasAvailability =
+    Object.keys(availabilityCounts).length > 0;
+
   const getDateStatus = (date) =>
-    getAvailabilityStatus(
-      availabilityCounts[date] || 0,
-      acceptedCount
-    );
+    hasAvailability
+      ? getAvailabilityStatus(
+          availabilityCounts[date] || 0,
+          acceptedCount
+        )
+      : "pending";
 
   /*
    * ================= LOADING =================
@@ -910,7 +920,18 @@ function Participant() {
                                   : ""
                               } ${status}`}
                             >
-                              {date.day}
+                              <span>{date.day}</span>
+
+                              {!date.muted &&
+                                hasAvailability &&
+                                acceptedCount > 0 && (
+                                  <small className="date-count">
+                                    {availabilityCounts[
+                                      date.date
+                                    ] || 0}
+                                    /{acceptedCount}
+                                  </small>
+                                )}
                             </div>
                           );
                         }
