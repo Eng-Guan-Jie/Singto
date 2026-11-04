@@ -8,6 +8,7 @@ import liff, {
 import {
   generateCalendarWeeks,
   getCalendarMonths,
+  getAvailabilityStatus,
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
 import "./Participant.css";
@@ -631,17 +632,11 @@ function Participant() {
 
   // Same thresholds as the organizer Overview:
   // everyone free → free, some → partial, none → busy.
-  const getDateStatus = (date) => {
-    if (acceptedCount === 0) return "";
-
-    const count =
-      availabilityCounts[date] || 0;
-
-    if (count === acceptedCount) return "free";
-    if (count > 0) return "partial";
-
-    return "busy";
-  };
+  const getDateStatus = (date) =>
+    getAvailabilityStatus(
+      availabilityCounts[date] || 0,
+      acceptedCount
+    );
 
   /*
    * ================= LOADING =================
@@ -854,7 +849,7 @@ function Participant() {
               Availability
             </p>
 
-<MonthNav
+            <MonthNav
               months={months}
               monthIndex={monthIndex}
               onChange={setMonthIndex}
@@ -1036,7 +1031,13 @@ function Participant() {
               </div>
             </div>
 
-<MonthNav
+            {participantStatus !== "accepted" && (
+              <p className="accept-first-hint">
+                Accept the event first to pick your days.
+              </p>
+            )}
+
+            <MonthNav
               months={months}
               monthIndex={monthIndex}
               onChange={setMonthIndex}

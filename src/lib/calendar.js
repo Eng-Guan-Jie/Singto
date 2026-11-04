@@ -69,12 +69,15 @@ export const generateCalendarWeeks = (startDate, endDate) => {
 };
 
 // Calendar colour for a date from how many accepted
-// members are free: everyone → free, some → partial,
-// nobody → busy.
+// members picked it:
+// - nobody → no colour
+// - everyone → "free" (green)
+// - at least half → "partial" (yellow)
+// - fewer than half → "busy" (red)
 export const getAvailabilityStatus = (count, total) => {
-  if (!total) return "";
+  if (!total || count === 0) return "";
   if (count >= total) return "free";
-  if (count > 0) return "partial";
+  if (count * 2 >= total) return "partial";
 
   return "busy";
 };

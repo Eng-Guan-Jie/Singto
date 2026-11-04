@@ -321,35 +321,65 @@
 }
 
 .overview-page .calendar-date.free {
-  background: #22c55e;
+  background: #74ce86;
 }
 
 .overview-page .calendar-date.partial {
-  background: #eab308;
+  background: #e7c455;
 }
 
 .overview-page .calendar-date.busy {
-  background: #ef4444;
+  background: #db7370;
 }
 
 /* When a day is selected, other days fade to 30% */
 .overview-page .calendar.has-selection .calendar-date.free:not(.selected) {
-  background: rgba(34, 197, 94, 0.3);
+  background: rgba(116, 206, 134, 0.3);
 }
 
 .overview-page
   .calendar.has-selection
   .calendar-date.partial:not(.selected) {
-  background: rgba(234, 179, 8, 0.3);
+  background: rgba(231, 196, 85, 0.3);
 }
 
 .overview-page .calendar.has-selection .calendar-date.busy:not(.selected) {
-  background: rgba(239, 68, 68, 0.3);
+  background: rgba(219, 115, 112, 0.3);
+}
+
+/* Days in the period get a grey circle so they look
+   tappable. Chosen days use the brand brown with a ✓,
+   not green: green on the Overview tab means "everyone
+   free". */
+.overview-page .availability-date:not(.muted) {
+  background: #ececec;
 }
 
 .overview-page .availability-date.selected {
+  position: relative;
   background: #2a1e16;
   color: #ffffff;
+}
+
+/* Small ✓ badge on chosen days */
+.overview-page .availability-date.selected::after {
+  content: "✓";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 /* ================= LEGEND ================= */
@@ -372,15 +402,15 @@
 }
 
 .overview-page .busy-dot {
-  background: #ef4444;
+  background: #db7370;
 }
 
 .overview-page .partial-dot {
-  background: #eab308;
+  background: #e7c455;
 }
 
 .overview-page .free-dot {
-  background: #22c55e;
+  background: #74ce86;
 }
 
 /* ================= BEST DATE ================= */
@@ -437,7 +467,8 @@
   min-height: 54px;
   padding: 8px 8px 8px 11px;
   border: 1px solid #a8a8a8;
-  border-left: 7px solid #22c55e;
+  /* no colour when nobody picked the day(s) */
+  border-left: 7px solid #d9d9d9;
   border-radius: 0 8px 8px 0;
   background: #ffffff;
   color: #000000;
@@ -451,11 +482,11 @@
 }
 
 .overview-page .best-date-card.partial {
-  border-left-color: #eab308;
+  border-left-color: #e7c455;
 }
 
 .overview-page .best-date-card.busy {
-  border-left-color: #ef4444;
+  border-left-color: #db7370;
 }
 
 .overview-page .best-date-top {
@@ -494,11 +525,11 @@
 }
 
 .overview-page .available-dot {
-  background: #22c55e;
+  background: #74ce86;
 }
 
 .overview-page .unavailable-dot {
-  background: #ef4444;
+  background: #db7370;
 }
 
 .overview-page .respondent-row {

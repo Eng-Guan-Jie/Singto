@@ -179,15 +179,15 @@
 
 /* Everyone free stands out; the rest are faded (Figma). */
 .confirm-page .confirm-date.free {
-  background: #22c55e;
+  background: #74ce86;
 }
 
 .confirm-page .confirm-date.partial {
-  background: rgba(234, 179, 8, 0.3);
+  background: rgba(231, 196, 85, 0.3);
 }
 
 .confirm-page .confirm-date.busy {
-  background: rgba(239, 68, 68, 0.3);
+  background: rgba(219, 115, 112, 0.3);
 }
 
 /* Chosen date(s): dark ring on top of the colour. */

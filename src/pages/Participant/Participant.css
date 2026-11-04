@@ -301,15 +301,15 @@
 /* Overview availability */
 
 .participant-page .participant-calendar-date.free {
-  background: #22c55e;
+  background: #74ce86;
 }
 
 .participant-page .participant-calendar-date.partial {
-  background: #eab308;
+  background: #e7c455;
 }
 
 .participant-page .participant-calendar-date.busy {
-  background: #ef4444;
+  background: #db7370;
 }
 
 /* ================= LEGEND ================= */
@@ -332,15 +332,15 @@
 }
 
 .participant-page .legend-dot.busy {
-  background: #ef4444;
+  background: #db7370;
 }
 
 .participant-page .legend-dot.partial {
-  background: #eab308;
+  background: #e7c455;
 }
 
 .participant-page .legend-dot.free {
-  background: #22c55e;
+  background: #74ce86;
 }
 
 /* ================= AVAILABILITY ================= */
@@ -415,9 +415,38 @@
   cursor: pointer;
 }
 
+/* Days that can be tapped get a grey circle. Chosen days
+   use the brand brown with a ✓, not green: green on the
+   Overview tab means "everyone free". */
+.participant-page .participant-availability-date:not(:disabled) {
+  background: #ececec;
+}
+
 .participant-page .participant-availability-date.selected {
+  position: relative;
   background: #2a1e16;
   color: #ffffff;
+}
+
+/* Small ✓ badge on chosen days */
+.participant-page .participant-availability-date.selected::after {
+  content: "✓";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .participant-page .participant-availability-date:disabled {
@@ -494,4 +523,17 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 22px;
+}
+
+/* Shown on MY AVAILABILITY until the invitation is accepted,
+   since the days can't be tapped yet */
+.participant-page .accept-first-hint {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px solid #e7c455;
+  border-radius: 8px;
+  background: rgba(231, 196, 85, 0.15);
+  color: #5b4508;
+  font-size: 14px;
+  font-weight: 500;
 }

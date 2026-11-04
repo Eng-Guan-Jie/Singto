@@ -15,6 +15,7 @@ import {
   generateCalendarWeeks,
   getCalendarMonths,
   findMonthIndex,
+  getAvailabilityStatus,
   isHoliday,
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
@@ -351,6 +352,12 @@ function Overview() {
 
   const respondedCount = responders.length;
 
+  // The calendar stays uncoloured until someone has saved
+  // their available days. (Counting accepted participants
+  // would colour it at once: the organizer is added as
+  // accepted when the event is created.)
+  const hasAvailability = Object.keys(availability).length > 0;
+
   // Everyone in the LINE chat when known, otherwise
   // everyone who has opened the invitation.
   const totalParticipants =
@@ -389,15 +396,10 @@ function Overview() {
     const total =
       acceptedParticipants.length;
 
-    let status = "busy";
-
-    if (total > 0) {
-      if (availableCount === total) {
-        status = "free";
-      } else if (availableCount > 0) {
-        status = "partial";
-      }
-    }
+    const status = getAvailabilityStatus(
+      availableCount,
+      total
+    );
 
     const first = dates[0];
     const last = dates[dates.length - 1];
@@ -908,7 +910,7 @@ function Overview() {
                 Overview of Everyone’s Availability
               </p>
 
-<MonthNav
+              <MonthNav
                 months={months}
                 monthIndex={monthIndex}
                 onChange={setMonthIndex}
@@ -950,7 +952,7 @@ function Overview() {
                         {week.map(
                           (date, index) => {
                             const status =
-                              date.muted
+                              date.muted || !hasAvailability
                                 ? ""
                                 : getDateAvailabilitySummary(
                                     date.date
@@ -1007,19 +1009,21 @@ function Overview() {
 
             {/* ================= LEGEND ================= */}
 
-            <div className="legend">
-              <span className="legend-label">
-                Busy
-              </span>
+            {hasAvailability && (
+              <div className="legend">
+                <span className="legend-label">
+                  Busy
+                </span>
 
-              <span className="legend-dot busy-dot" />
-              <span className="legend-dot partial-dot" />
-              <span className="legend-dot free-dot" />
+                <span className="legend-dot busy-dot" />
+                <span className="legend-dot partial-dot" />
+                <span className="legend-dot free-dot" />
 
-              <span className="legend-label">
-                Free
-              </span>
-            </div>
+                <span className="legend-label">
+                  Free
+                </span>
+              </div>
+            )}
 
             {/* ================= BEST DATE ================= */}
 
@@ -1296,7 +1300,7 @@ function Overview() {
                 </div>
               </div>
 
-<MonthNav
+              <MonthNav
                 months={months}
                 monthIndex={monthIndex}
                 onChange={setMonthIndex}
