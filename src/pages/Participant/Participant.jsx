@@ -12,6 +12,7 @@ import {
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
+import LanguageToggle from "../../components/LanguageToggle";
 import "./Participant.css";
 
 const API_BASE = import.meta.env.DEV
@@ -705,6 +706,7 @@ function Participant() {
     <div className="participant-page">
       <header className="participant-header">
         <h1>Singto</h1>
+        <LanguageToggle />
       </header>
 
       <main className="participant-container">

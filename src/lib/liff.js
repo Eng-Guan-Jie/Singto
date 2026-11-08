@@ -1,5 +1,5 @@
 import liff from "@line/liff";
-import { pickLanguage, setLanguage } from "./i18n";
+import { hasSavedLanguage, pickLanguage, setLanguage } from "./i18n";
 
 let initPromise = null;
 
@@ -13,7 +13,12 @@ export const initLiff = () => {
         liffId: import.meta.env.VITE_LIFF_ID,
       })
       .then(() => {
-        // Show the pages in the LINE app's language.
+        // Show the pages in the LINE app's language, unless
+        // the user already picked one with the TH/EN switch.
+        // LINE only reports its own language on iOS; on
+        // Android and other browsers this is the device's.
+        if (hasSavedLanguage()) return;
+
         try {
           setLanguage(
             pickLanguage(

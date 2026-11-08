@@ -12,6 +12,7 @@
 }
 
 .participant-page .participant-header {
+  position: relative;
   height: 56px;
   display: flex;
   align-items: center;

@@ -1,0 +1,30 @@
+/* Sits at the right edge of each page's dark header.
+   The header needs position: relative. */
+.language-toggle {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  display: flex;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+}
+
+.language-toggle button {
+  min-width: 34px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.language-toggle button.active {
+  background: #ffffff;
+  color: #2a1e16;
+}

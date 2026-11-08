@@ -18,6 +18,7 @@
 }
 
 .confirm-page .confirm-header {
+  position: relative;
   height: 56px;
   display: flex;
   align-items: center;

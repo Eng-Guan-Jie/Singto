@@ -122,6 +122,7 @@ const messages = {
       "Event created successfully, but Singto could not send the event to LINE.\n\n{reason}",
     unableUpdateEvent: "Unable to update the event.",
     saveEventFailed: "Something went wrong while saving the event.",
+    language: "Language",
   },
 
   th: {
@@ -236,6 +237,7 @@ const messages = {
       "สร้างนัดแล้ว แต่ส่งการ์ดเข้ากลุ่ม LINE ไม่สำเร็จ\n\n{reason}",
     unableUpdateEvent: "แก้ไขนัดไม่สำเร็จ",
     saveEventFailed: "บันทึกนัดไม่สำเร็จ",
+    language: "ภาษา",
   },
 };
 
@@ -247,9 +249,31 @@ export const pickLanguage = (code) => {
   return String(code).toLowerCase().startsWith("th") ? "th" : "en";
 };
 
-let currentLanguage = pickLanguage(
-  typeof navigator !== "undefined" ? navigator.language : ""
-);
+// A language the user picked with the TH/EN switch. It is
+// kept only in this browser (never sent to the server) and
+// wins over the detected language on later visits.
+const STORAGE_KEY = "singto-language";
+
+const readSavedLanguage = () => {
+  try {
+    const saved = window.localStorage.getItem(STORAGE_KEY);
+    return saved === "th" || saved === "en" ? saved : null;
+  } catch {
+    return null;
+  }
+};
+
+export const hasSavedLanguage = () => readSavedLanguage() !== null;
+
+let currentLanguage =
+  readSavedLanguage() ||
+  pickLanguage(
+    typeof navigator !== "undefined" ? navigator.language : ""
+  );
+
+if (typeof document !== "undefined") {
+  document.documentElement.lang = currentLanguage;
+}
 
 const listeners = new Set();
 
@@ -265,6 +289,17 @@ export const setLanguage = (language) => {
   }
 
   listeners.forEach((listener) => listener());
+};
+
+// Called by the TH/EN switch: change now and remember it.
+export const chooseLanguage = (language) => {
+  setLanguage(language);
+
+  try {
+    window.localStorage.setItem(STORAGE_KEY, currentLanguage);
+  } catch {
+    // Storage blocked: the choice lasts for this page only.
+  }
 };
 
 const subscribe = (listener) => {

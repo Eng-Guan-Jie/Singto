@@ -20,6 +20,7 @@ import {
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
+import LanguageToggle from "../../components/LanguageToggle";
 import "./Overview.css";
 
 const API_BASE = import.meta.env.DEV
@@ -753,6 +754,7 @@ function Overview() {
 
       <div className="overview-header">
         <h1>Singto</h1>
+        <LanguageToggle />
       </div>
 
       <main className="overview-container">

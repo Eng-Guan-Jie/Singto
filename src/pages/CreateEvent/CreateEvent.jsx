@@ -13,6 +13,7 @@ import liff, {
 } from "../../lib/liff";
 
 import { useI18n } from "../../lib/i18n";
+import LanguageToggle from "../../components/LanguageToggle";
 import "./CreateEvent.css";
 
 const API_BASE = import.meta.env.DEV
@@ -285,6 +286,7 @@ function CreateEvent() {
       {/* Header */}
       <header className="header">
         <h1>Singto</h1>
+        <LanguageToggle />
       </header>
 
       {/* Main Content */}
