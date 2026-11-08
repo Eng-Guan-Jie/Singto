@@ -61,7 +61,7 @@ function createOrganizerRow(eventData) {
   contents.push({
     type: "text",
 
-    text: `Created by ${eventData.organizerName}`,
+    text: `สร้างโดย ${eventData.organizerName}`,
 
     size: "md",
 
@@ -85,12 +85,16 @@ function createOrganizerRow(eventData) {
   };
 }
 
-// Day-first to match the design, e.g. "7 SEP".
+// Cards in the LINE chat are in Thai: one card is seen by
+// the whole group, so it cannot follow each person's app
+// language.
+
+// Short date, e.g. "7 ก.ย."
 function formatDate(dateValue) {
   if (!dateValue) return "";
 
   const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en", {
+    new Intl.DateTimeFormat("th-TH", {
       day: "numeric",
       month: "short",
       timeZone: "UTC",
@@ -101,7 +105,7 @@ function formatDate(dateValue) {
       .map(({ type, value }) => [type, value])
   );
 
-  return `${parts.day} ${parts.month}`.toUpperCase();
+  return `${parts.day} ${parts.month}`;
 }
 
 /*
@@ -167,7 +171,7 @@ function createPickDateBubble(eventData) {
   return {
     type: "flex",
 
-    altText: `${eventData.eventName}: pick your date`,
+    altText: `${eventData.eventName}: เลือกวันที่คุณว่าง`,
 
     contents: {
       type: "bubble",
@@ -221,7 +225,7 @@ function createPickDateBubble(eventData) {
               {
                 type: "text",
 
-                text: "Responses",
+                text: "ตอบแล้ว",
 
                 size: "md",
 
@@ -304,7 +308,7 @@ function createPickDateBubble(eventData) {
             action: {
               type: "uri",
 
-              label: "PICK YOUR DATE",
+              label: "เลือกวันที่ว่าง",
 
               uri: buildParticipantUrl(
                 eventData
@@ -438,7 +442,7 @@ async function sendInvitation(
     startDate: toDateKey(event.start_date),
     endDate: toDateKey(event.end_date),
     organizerName:
-      organizer?.display_name || "the organizer",
+      organizer?.display_name || "ผู้จัด",
     organizerPictureUrl: organizer?.picture_url || null,
     respondedCount,
     memberCount,
@@ -454,10 +458,10 @@ async function sendInvitation(
   return { sent: true, respondedCount, memberCount };
 }
 
-// "Friday, 12 September 2026"
+// "วันเสาร์ที่ 12 กันยายน 2569"
 function formatLongDate(dateValue) {
   const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en", {
+    new Intl.DateTimeFormat("th-TH", {
       weekday: "long",
       day: "numeric",
       month: "long",
@@ -468,13 +472,13 @@ function formatLongDate(dateValue) {
       .map(({ type, value }) => [type, value])
   );
 
-  return `${parts.weekday}, ${parts.day} ${parts.month} ${parts.year}`;
+  return `${parts.weekday}ที่ ${parts.day} ${parts.month} ${parts.year}`;
 }
 
 function createConfirmationBubble(data) {
   const badgeText = data.memberCount
-    ? `${data.acceptedCount}/${data.memberCount} join this event`
-    : `${data.acceptedCount} join this event`;
+    ? `เข้าร่วม ${data.acceptedCount}/${data.memberCount} คน`
+    : `เข้าร่วม ${data.acceptedCount} คน`;
 
   const bodyContents = [
     {
@@ -508,7 +512,7 @@ function createConfirmationBubble(data) {
   if (data.note) {
     bodyContents.push({
       type: "text",
-      text: `Note: ${data.note}`,
+      text: `หมายเหตุ: ${data.note}`,
       size: "sm",
       color: "#606060",
       wrap: true,
@@ -547,7 +551,7 @@ function createConfirmationBubble(data) {
   return {
     type: "flex",
 
-    altText: `It's a date! ${data.eventName}: ${data.dates
+    altText: `ได้วันนัดแล้ว! ${data.eventName}: ${data.dates
       .map(formatLongDate)
       .join(", ")}`,
 
@@ -562,7 +566,7 @@ function createConfirmationBubble(data) {
         contents: [
           {
             type: "text",
-            text: "IT'S A DATE!",
+            text: "ได้วันนัดแล้ว!",
             weight: "bold",
             size: "xl",
             color: "#ffffff",

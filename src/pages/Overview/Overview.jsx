@@ -19,41 +19,12 @@ import {
   isHoliday,
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
+import { useI18n } from "../../lib/i18n";
 import "./Overview.css";
 
 const API_BASE = import.meta.env.DEV
   ? "https://singto-eight.vercel.app"
   : "";
-
-const formatDate = (dateValue) => {
-  if (!dateValue) return "";
-
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(`${dateValue}T00:00:00`));
-};
-
-// Day-first label to match the design, e.g. "08 SEP 2026".
-const getDateLabel = (dateValue) => {
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    })
-      .formatToParts(new Date(`${dateValue}T00:00:00`))
-      .map(({ type, value }) => [type, value])
-  );
-
-  return `${parts.day} ${parts.month} ${parts.year}`.toUpperCase();
-};
-
-const getDayLabel = (dateValue) =>
-  new Intl.DateTimeFormat("en", {
-    weekday: "long",
-  }).format(new Date(`${dateValue}T00:00:00`));
 
 // LINE profile picture, or the first letter of the
 // name when there is no picture.
@@ -81,18 +52,27 @@ function Avatar({ participant, className }) {
 
 // Best Date filters (Figma "filter" dropdown).
 const BEST_DATE_FILTERS = [
-  { value: "single", label: "Single Day", days: 1 },
-  { value: "two-days", label: "2 Consecutive Days", days: 2 },
-  { value: "three-days", label: "3 Consecutive Days", days: 3 },
+  { value: "single", labelKey: "filterSingle", days: 1 },
+  { value: "two-days", labelKey: "filterTwoDays", days: 2 },
+  { value: "three-days", labelKey: "filterThreeDays", days: 3 },
   {
     value: "holiday",
-    label: "Only holiday",
+    labelKey: "filterHoliday",
     days: 1,
     holidaysOnly: true,
   },
 ];
 
 function Overview() {
+  const {
+    lang,
+    t,
+    formatDate,
+    formatDayLabel: getDateLabel,
+    formatWeekday: getDayLabel,
+    weekdaysShort,
+    weekdaysLong,
+  } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -165,7 +145,7 @@ function Overview() {
 
         setError(
           error.message ||
-            "Failed to initialize LINE Login."
+            t("liffFailed")
         );
       }
     };
@@ -180,7 +160,7 @@ function Overview() {
   useEffect(() => {
     const fetchOverviewData = async () => {
       if (!eventId) {
-        setError("Event ID is missing.");
+        setError(t("eventIdMissing"));
         setIsLoading(false);
         return;
       }
@@ -213,27 +193,27 @@ function Overview() {
 
         if (!eventResponse.ok) {
           throw new Error(
-            eventData.message || "Failed to load event."
+            eventData.message || t("failedLoadEvent")
           );
         }
 
         if (!participantsResponse.ok) {
           throw new Error(
             participantsData.message ||
-              "Failed to load participants."
+              t("failedLoadParticipants")
           );
         }
 
         if (!availabilityResponse.ok) {
           throw new Error(
             availabilityData.message ||
-              "Failed to load availability."
+              t("failedLoadAvailability")
           );
         }
 
         if (participantsData.role !== "organizer") {
           throw new Error(
-            "Only the organizer of this event can view this page."
+            t("onlyOrganizerView")
           );
         }
 
@@ -270,7 +250,7 @@ function Overview() {
 
         setError(
           error.message ||
-            "Failed to load overview."
+            t("failedLoadOverview")
         );
       } finally {
         setIsLoading(false);
@@ -446,6 +426,7 @@ function Overview() {
     eventData,
     availability,
     acceptedParticipants,
+    lang,
   ]);
 
   /*
@@ -514,15 +495,13 @@ function Overview() {
    */
 
   const quickSelectOptions = [
-    { label: "All Day", type: "all" },
-    { label: "Weekends", type: "weekends" },
-    { label: "Every Monday", type: 1 },
-    { label: "Every Tuesday", type: 2 },
-    { label: "Every Wednesday", type: 3 },
-    { label: "Every Thursday", type: 4 },
-    { label: "Every Friday", type: 5 },
-    { label: "Every Saturday", type: 6 },
-    { label: "Every Sunday", type: 0 },
+    { label: t("quickAllDays"), type: "all" },
+    { label: t("quickWeekends"), type: "weekends" },
+    // Monday … Saturday, then Sunday
+    ...[1, 2, 3, 4, 5, 6, 0].map((day) => ({
+      label: t("quickEveryDay", { day: weekdaysLong[day] }),
+      type: day,
+    })),
   ];
 
   const toggleAvailabilityDate = (date) => {
@@ -601,7 +580,7 @@ function Overview() {
       memberCount !== null &&
       respondedCount >= memberCount
     ) {
-      alert("Everyone has already responded.");
+      alert(t("everyoneResponded"));
       return;
     }
 
@@ -627,17 +606,17 @@ function Overview() {
       if (!response.ok) {
         throw new Error(
           data.message ||
-            "Unable to send the reminder."
+            t("reminderFailed")
         );
       }
 
-      alert("Reminder sent to the LINE chat.");
+      alert(t("reminderSent"));
     } catch (error) {
       console.error("Notify again failed:", error);
 
       alert(
         error.message ||
-          "Unable to send the reminder."
+          t("reminderFailed")
       );
     } finally {
       setIsNotifying(false);
@@ -691,13 +670,13 @@ function Overview() {
       if (!response.ok) {
         throw new Error(
           data.message ||
-            "Failed to save availability."
+            t("failedSaveAvailability")
         );
       }
 
       setRefreshKey((key) => key + 1);
 
-      alert("Your availability has been saved.");
+      alert(t("availabilitySaved"));
 
       // Then show how it fits with everyone else's.
       setActiveTab("overview");
@@ -709,7 +688,7 @@ function Overview() {
 
       alert(
         error.message ||
-          "Failed to save availability."
+          t("failedSaveAvailability")
       );
     } finally {
       setIsSavingAvailability(false);
@@ -744,7 +723,7 @@ function Overview() {
         </div>
 
         <main className="overview-container">
-          <p>Loading event...</p>
+          <p>{t("loadingEvent")}</p>
         </main>
       </div>
     );
@@ -758,7 +737,7 @@ function Overview() {
         </div>
 
         <main className="overview-container">
-          <p>Event not found.</p>
+          <p>{t("eventNotFound")}</p>
         </main>
       </div>
     );
@@ -793,16 +772,19 @@ function Overview() {
 
             {eventData.confirmedDates.length > 0 && (
               <p className="event-confirmed">
-                Confirmed:{" "}
-                {eventData.confirmedDates
-                  .map(getDateLabel)
-                  .join(", ")}
+                {t("confirmedOn", {
+                  dates: eventData.confirmedDates
+                    .map(getDateLabel)
+                    .join(", "),
+                })}
               </p>
             )}
 
             <p className="response-count">
-              {respondedCount} of{" "}
-              {totalParticipants} Responded
+              {t("respondedCount", {
+                count: respondedCount,
+                total: totalParticipants,
+              })}
             </p>
 
             <div className="participants">
@@ -837,13 +819,13 @@ function Overview() {
                 height="24"
               />
 
-              <span>Notify Again</span>
+              <span>{t("notifyAgain")}</span>
             </button>
 
             <button
               className="edit-button"
               onClick={handleEdit}
-              aria-label="Edit event"
+              aria-label={t("editEvent")}
             >
               <img
                 src={pencilIcon}
@@ -868,7 +850,7 @@ function Overview() {
               setActiveTab("overview")
             }
           >
-            OVERVIEW
+            {t("tabOverview")}
           </button>
 
           <button
@@ -881,7 +863,7 @@ function Overview() {
               setActiveTab("availability")
             }
           >
-            MY AVAILABILITY
+            {t("tabMyAvailability")}
           </button>
         </div>
 
@@ -892,8 +874,7 @@ function Overview() {
             {!hasOwnAvailability && (
               <div className="own-availability-notice">
                 <p>
-                  You haven’t added your available days yet,
-                  so every date counts you as busy.
+                  {t("ownAvailabilityNotice")}
                 </p>
 
                 <button
@@ -902,16 +883,16 @@ function Overview() {
                     setActiveTab("availability")
                   }
                 >
-                  Add my availability
+                  {t("addMyAvailability")}
                 </button>
               </div>
             )}
 
             <section className="calendar-section">
-              <h2>CALENDAR</h2>
+              <h2>{t("calendar")}</h2>
 
               <p className="calendar-subtitle">
-                Overview of Everyone’s Availability
+                {t("overviewSubtitle")}
               </p>
 
               <MonthNav
@@ -928,15 +909,7 @@ function Overview() {
                 }`}
               >
                 <div className="weekday-row">
-                  {[
-                    "SUN",
-                    "MON",
-                    "TUE",
-                    "WED",
-                    "THU",
-                    "FRI",
-                    "SAT",
-                  ].map((day) => (
+                  {weekdaysShort.map((day) => (
                     <div
                       className="weekday"
                       key={day}
@@ -1004,8 +977,12 @@ function Overview() {
                                 }
                                 aria-label={
                                   summary && hasAvailability
-                                    ? `Day ${date.day}: ${summary.available} of ${summary.total} free`
-                                    : `Day ${date.day}`
+                                    ? t("dayCountAria", {
+                                        day: date.day,
+                                        available: summary.available,
+                                        total: summary.total,
+                                      })
+                                    : t("dayAria", { day: date.day })
                                 }
                               >
                                 <span>
@@ -1034,7 +1011,7 @@ function Overview() {
             {hasAvailability && (
               <div className="legend">
                 <span className="legend-label">
-                  Busy
+                  {t("legendBusy")}
                 </span>
 
                 <span className="legend-dot busy-dot" />
@@ -1042,7 +1019,7 @@ function Overview() {
                 <span className="legend-dot free-dot" />
 
                 <span className="legend-label">
-                  Free
+                  {t("legendFree")}
                 </span>
               </div>
             )}
@@ -1052,8 +1029,8 @@ function Overview() {
             <section className="best-date-section">
               <div className="best-date-header">
                 <div>
-                  <h2>BEST DATE</h2>
-                  <p>{activeFilter.label}</p>
+                  <h2>{t("bestDate")}</h2>
+                  <p>{t(activeFilter.labelKey)}</p>
                 </div>
 
                 <div className="filter-wrapper">
@@ -1066,7 +1043,7 @@ function Overview() {
                     }
                     aria-expanded={showFilterMenu}
                   >
-                    Filter
+                    {t("filter")}
                   </button>
 
                   {showFilterMenu && (
@@ -1087,7 +1064,7 @@ function Overview() {
                               )
                             }
                           >
-                            {filter.label}
+                            {t(filter.labelKey)}
                           </button>
                         )
                       )}
@@ -1132,7 +1109,7 @@ function Overview() {
                     <section className="respondent-group">
                       <h3>
                         <span className="status-dot available-dot" />
-                        AVAILABLE
+                        {t("available")}
                       </h3>
 
                       <div className="respondent-list">
@@ -1165,7 +1142,7 @@ function Overview() {
                           )
                         ) : (
                           <p className="empty-respondent-list">
-                            No one yet
+                            {t("noOneYet")}
                           </p>
                         )}
                       </div>
@@ -1176,7 +1153,7 @@ function Overview() {
                     <section className="respondent-group">
                       <h3>
                         <span className="status-dot unavailable-dot" />
-                        UNAVAILABLE
+                        {t("unavailable")}
                       </h3>
 
                       <div className="respondent-list">
@@ -1209,7 +1186,7 @@ function Overview() {
                           )
                         ) : (
                           <p className="empty-respondent-list">
-                            No one
+                            {t("noOne")}
                           </p>
                         )}
                       </div>
@@ -1253,7 +1230,7 @@ function Overview() {
                     ))
                   ) : (
                     <p>
-                      No available date yet.
+                      {t("noAvailableDate")}
                     </p>
                   )}
                 </div>
@@ -1267,7 +1244,7 @@ function Overview() {
                 className="finalize-button"
                 onClick={handleFinalize}
               >
-                FINALIZE DATE
+                {t("finalizeDate")}
               </button>
             </div>
           </section>
@@ -1280,10 +1257,10 @@ function Overview() {
             <section className="availability-calendar-section">
               <div className="availability-heading">
                 <div>
-                  <h2>CALENDAR</h2>
+                  <h2>{t("calendar")}</h2>
 
                   <p>
-                    Tap your available days
+                    {t("tapYourDays")}
                   </p>
                 </div>
 
@@ -1297,7 +1274,7 @@ function Overview() {
                       )
                     }
                   >
-                    Quick Select
+                    {t("quickSelect")}
                   </button>
 
                   {showQuickSelect && (
@@ -1330,15 +1307,7 @@ function Overview() {
 
               <div className="availability-calendar">
                 <div className="availability-weekday-row">
-                  {[
-                    "SUN",
-                    "MON",
-                    "TUE",
-                    "WED",
-                    "THU",
-                    "FRI",
-                    "SAT",
-                  ].map((day) => (
+                  {weekdaysShort.map((day) => (
                     <div
                       className="availability-weekday"
                       key={day}
@@ -1386,7 +1355,12 @@ function Overview() {
                                     date.date
                                   )
                                 }
-                                aria-label={`${isSelected ? "Remove" : "Add"} availability for day ${date.day}`}
+                                aria-label={t(
+                                  isSelected
+                                    ? "removeDayAria"
+                                    : "addDayAria",
+                                  { day: date.day }
+                                )}
                                 aria-pressed={
                                   isSelected
                                 }
@@ -1412,8 +1386,8 @@ function Overview() {
                 disabled={isSavingAvailability}
               >
                 {isSavingAvailability
-                  ? "SAVING..."
-                  : "SAVE"}
+                  ? t("saving")
+                  : t("save")}
               </button>
             </div>
           </section>

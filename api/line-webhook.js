@@ -73,7 +73,7 @@ function buildCreateEventUrl(chatId) {
 function createCallToActionBubble(chatId) {
   return {
     type: "flex",
-    altText: "Create a Singto event",
+    altText: "สร้างนัดกับสิงโต",
     contents: {
       type: "bubble",
       size: "mega",
@@ -85,14 +85,14 @@ function createCallToActionBubble(chatId) {
         contents: [
           {
             type: "text",
-            text: "Want to hang out?",
+            text: "อยากนัดกันไหม?",
             weight: "bold",
             size: "lg",
             color: "#111111",
           },
           {
             type: "text",
-            text: "Create a meetup and let Singto find a day that works for everyone.",
+            text: "สร้างนัด แล้วให้สิงโตช่วยหาวันที่ทุกคนว่าง",
             size: "md",
             color: "#666666",
             wrap: true,
@@ -104,7 +104,7 @@ function createCallToActionBubble(chatId) {
             color: "#2d1f17",
             action: {
               type: "uri",
-              label: "CREATE EVENT",
+              label: "สร้างนัด",
               uri: buildCreateEventUrl(chatId),
             },
           },
@@ -152,7 +152,7 @@ async function handleEvent(event) {
     await reply(event.replyToken, [
       {
         type: "text",
-        text: "Hey everyone! 👋 Singto here!\nFrom now on, whenever you want to make plans, I’ll help you find a day that works for everyone. Just call on ‘Singto’ whenever you need me!",
+        text: "สวัสดีทุกคน! 👋 สิงโตมาแล้ว!\nต่อจากนี้ถ้าอยากนัดกัน สิงโตจะช่วยหาวันที่ทุกคนว่างให้ แค่พิมพ์เรียก ‘สิงโต’ ได้เลย!",
       },
     ]);
     return;

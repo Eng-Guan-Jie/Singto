@@ -1,4 +1,5 @@
 import liff from "@line/liff";
+import { pickLanguage, setLanguage } from "./i18n";
 
 let initPromise = null;
 
@@ -7,9 +8,22 @@ let initPromise = null;
 // Create Event → Overview) does not initialize twice.
 export const initLiff = () => {
   if (!initPromise) {
-    initPromise = liff.init({
-      liffId: import.meta.env.VITE_LIFF_ID,
-    });
+    initPromise = liff
+      .init({
+        liffId: import.meta.env.VITE_LIFF_ID,
+      })
+      .then(() => {
+        // Show the pages in the LINE app's language.
+        try {
+          setLanguage(
+            pickLanguage(
+              liff.getAppLanguage?.() || liff.getLanguage?.()
+            )
+          );
+        } catch {
+          // Keep the browser-based default.
+        }
+      });
   }
 
   return initPromise;

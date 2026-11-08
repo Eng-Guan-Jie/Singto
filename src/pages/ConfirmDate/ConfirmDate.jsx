@@ -15,6 +15,7 @@ import {
   getAvailabilityStatus,
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
+import { useI18n } from "../../lib/i18n";
 import "./ConfirmDate.css";
 
 const API_BASE = import.meta.env.DEV
@@ -22,6 +23,7 @@ const API_BASE = import.meta.env.DEV
   : "";
 
 function ConfirmDate() {
+  const { t, weekdaysShort } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -63,7 +65,7 @@ function ConfirmDate() {
         console.error("LIFF initialization failed:", error);
 
         setError(
-          error.message || "Failed to initialize LINE Login."
+          error.message || t("liffFailed")
         );
       }
     };
@@ -78,7 +80,7 @@ function ConfirmDate() {
   useEffect(() => {
     const loadEvent = async () => {
       if (!eventId) {
-        setError("Event ID is missing.");
+        setError(t("eventIdMissing"));
         return;
       }
 
@@ -101,18 +103,18 @@ function ConfirmDate() {
         const availabilityData = await availabilityResponse.json();
 
         if (!eventResponse.ok) {
-          throw new Error(eventData.message || "Failed to load event.");
+          throw new Error(eventData.message || t("failedLoadEvent"));
         }
 
         if (participantsData.role !== "organizer") {
           throw new Error(
-            "Only the organizer of this event can confirm the date."
+            t("onlyOrganizerConfirm")
           );
         }
 
         if (!availabilityResponse.ok) {
           throw new Error(
-            availabilityData.message || "Failed to load availability."
+            availabilityData.message || t("failedLoadAvailability")
           );
         }
 
@@ -139,7 +141,7 @@ function ConfirmDate() {
         setNote(loadedEvent.confirmation_note || "");
       } catch (error) {
         console.error("Failed to load confirm page:", error);
-        setError(error.message || "Failed to load event.");
+        setError(error.message || t("failedLoadEvent"));
       } finally {
         setIsLoading(false);
       }
@@ -203,7 +205,7 @@ function ConfirmDate() {
 
   const handleConfirm = async () => {
     if (selectedDates.length === 0) {
-      alert("Please select at least one date.");
+      alert(t("selectAtLeastOne"));
       return;
     }
 
@@ -229,25 +231,25 @@ function ConfirmDate() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to confirm the date.");
+        throw new Error(data.message || t("failedConfirm"));
       }
 
       if (data.notifyError) {
         alert(
-          `The date is confirmed, but Singto could not post it to the LINE group.\n\n${data.notifyError}`
+          t("confirmedNotPosted", { reason: data.notifyError })
         );
       } else {
         alert(
           data.notified
-            ? "The date is confirmed and posted to the LINE group."
-            : "The date is confirmed."
+            ? t("confirmedAndPosted")
+            : t("confirmedOnly")
         );
       }
 
       navigate(`/overview?eventId=${eventId}`);
     } catch (error) {
       console.error("Confirm date failed:", error);
-      alert(error.message || "Failed to confirm the date.");
+      alert(error.message || t("failedConfirm"));
     } finally {
       setIsConfirming(false);
     }
@@ -265,7 +267,7 @@ function ConfirmDate() {
         </header>
 
         <main className="confirm-container">
-          <p>{error || "Loading..."}</p>
+          <p>{error || t("loading")}</p>
         </main>
       </div>
     );
@@ -279,7 +281,7 @@ function ConfirmDate() {
 
       <main className="confirm-container">
         <section className="confirm-selection">
-          <h2>CONFIRM DATE</h2>
+          <h2>{t("confirmDateTitle")}</h2>
 
           <div className="selection-options">
             <button
@@ -291,7 +293,7 @@ function ConfirmDate() {
               aria-pressed={selectionMode === "single"}
             >
               <span className="radio-circle"></span>
-              <span>Single Date</span>
+              <span>{t("singleDate")}</span>
             </button>
 
             <button
@@ -303,16 +305,16 @@ function ConfirmDate() {
               aria-pressed={selectionMode === "multiple"}
             >
               <span className="radio-circle"></span>
-              <span>Multiple Dates</span>
+              <span>{t("multipleDates")}</span>
             </button>
           </div>
         </section>
 
         <section className="confirm-calendar-section">
-          <h2>CALENDAR</h2>
-          <p>Choose a date that works for everyone.</p>
+          <h2>{t("calendar")}</h2>
+          <p>{t("chooseDate")}</p>
 
-<MonthNav
+          <MonthNav
             months={months}
             monthIndex={monthIndex}
             onChange={setMonthIndex}
@@ -320,7 +322,7 @@ function ConfirmDate() {
 
           <div className="confirm-calendar">
             <div className="confirm-weekdays">
-              {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map(
+              {weekdaysShort.map(
                 (day) => (
                   <span key={day}>{day}</span>
                 )
@@ -368,25 +370,25 @@ function ConfirmDate() {
         </section>
 
         <section className="confirm-note-section">
-          <h2>NOTE</h2>
+          <h2>{t("note")}</h2>
 
           <input
             type="text"
             value={note}
             maxLength={500}
             onChange={(event) => setNote(event.target.value)}
-            placeholder="e.g. Meet in front of the restaurant."
+            placeholder={t("notePlaceholder")}
           />
         </section>
 
         <section className="notification-section">
-          <span>Send a notification to the group</span>
+          <span>{t("sendNotification")}</span>
 
           <button
             type="button"
             className={`toggle-switch ${sendNotification ? "on" : ""}`}
             onClick={() => setSendNotification((current) => !current)}
-            aria-label="Toggle group notification"
+            aria-label={t("toggleNotification")}
             aria-pressed={sendNotification}
           >
             <span className="toggle-knob"></span>
@@ -400,7 +402,7 @@ function ConfirmDate() {
             onClick={handleConfirm}
             disabled={isConfirming}
           >
-            {isConfirming ? "CONFIRMING..." : "CONFIRM DATE"}
+            {isConfirming ? t("confirming") : t("confirmDateButton")}
           </button>
         </div>
       </main>

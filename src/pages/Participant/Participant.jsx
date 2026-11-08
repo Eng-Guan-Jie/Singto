@@ -11,23 +11,20 @@ import {
   getAvailabilityStatus,
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
+import { useI18n } from "../../lib/i18n";
 import "./Participant.css";
 
 const API_BASE = import.meta.env.DEV
   ? "https://singto-eight.vercel.app"
   : "";
 
-const formatDate = (dateValue) => {
-  if (!dateValue) return "";
-
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(`${dateValue}T00:00:00`));
-};
-
 function Participant() {
+  const {
+    t,
+    formatDate,
+    weekdaysShort,
+    weekdaysLong,
+  } = useI18n();
   const navigate = useNavigate();
   const [eventId, setEventId] = useState(null);
   const [lineUser, setLineUser] =
@@ -124,7 +121,7 @@ function Participant() {
 
         if (!currentEventId) {
           throw new Error(
-            "Event ID is missing."
+            t("eventIdMissing")
           );
         }
 
@@ -158,7 +155,7 @@ function Participant() {
 
         setError(
           error.message ||
-            "Failed to initialize LINE Login."
+            t("liffFailed")
         );
       } finally {
         setLiffLoading(false);
@@ -192,7 +189,7 @@ function Participant() {
         if (!response.ok) {
           throw new Error(
             data.message ||
-              "Failed to load event."
+              t("failedLoadEvent")
           );
         }
 
@@ -205,7 +202,7 @@ function Participant() {
 
         setError(
           error.message ||
-            "Failed to load event."
+            t("failedLoadEvent")
         );
       } finally {
         setIsLoading(false);
@@ -242,7 +239,7 @@ function Participant() {
           if (!response.ok) {
             throw new Error(
               data.message ||
-                "Failed to load participants."
+                t("failedLoadParticipants")
             );
           }
 
@@ -307,7 +304,7 @@ function Participant() {
           if (!response.ok) {
             throw new Error(
               data.message ||
-                "Failed to load availability."
+                t("failedLoadAvailability")
             );
           }
 
@@ -403,7 +400,7 @@ function Participant() {
     async (status) => {
       if (!eventId || !idToken) {
         alert(
-          "Unable to identify this participant."
+          t("unableIdentifyParticipant")
         );
 
         return;
@@ -436,7 +433,7 @@ function Participant() {
         if (!response.ok) {
           throw new Error(
             data.message ||
-              "Failed to update participation."
+              t("failedUpdateParticipation")
           );
         }
 
@@ -448,8 +445,8 @@ function Participant() {
 
         alert(
           status === "accepted"
-            ? "You accepted this event."
-            : "You declined this event."
+            ? t("youAccepted")
+            : t("youDeclined")
         );
       } catch (error) {
         console.error(
@@ -459,7 +456,7 @@ function Participant() {
 
         alert(
           error.message ||
-            "Something went wrong."
+            t("somethingWrong")
         );
       } finally {
         setIsSubmitting(false);
@@ -563,7 +560,7 @@ function Participant() {
         participantStatus !== "accepted"
       ) {
         alert(
-          "Please accept the event first."
+          t("acceptFirst")
         );
 
         return;
@@ -571,7 +568,7 @@ function Participant() {
 
       if (!idToken) {
         alert(
-          "Unable to identify this participant."
+          t("unableIdentifyParticipant")
         );
 
         return;
@@ -603,14 +600,14 @@ function Participant() {
         if (!response.ok) {
           throw new Error(
             data.message ||
-              "Failed to save availability."
+              t("failedSaveAvailability")
           );
         }
 
         setRefreshKey((key) => key + 1);
 
         alert(
-          "Your availability has been saved."
+          t("availabilitySaved")
         );
 
         // Then show how it fits with everyone else's.
@@ -623,7 +620,7 @@ function Participant() {
 
         alert(
           error.message ||
-            "Failed to save availability."
+            t("failedSaveAvailability")
         );
       } finally {
         setIsSavingAvailability(false);
@@ -680,7 +677,7 @@ function Participant() {
         </header>
 
         <main className="participant-container">
-          <p>Loading...</p>
+          <p>{t("loading")}</p>
         </main>
       </div>
     );
@@ -694,9 +691,7 @@ function Participant() {
         </header>
 
         <main className="participant-container">
-          <p>
-            Event not found.
-          </p>
+          <p>{t("eventNotFound")}</p>
         </main>
       </div>
     );
@@ -736,10 +731,11 @@ function Participant() {
 
           {event.confirmed_dates?.length > 0 && (
             <p className="participant-confirmed">
-              Confirmed:{" "}
-              {event.confirmed_dates
-                .map(formatDate)
-                .join(", ")}
+              {t("confirmedOn", {
+                dates: event.confirmed_dates
+                  .map(formatDate)
+                  .join(", "),
+              })}
             </p>
           )}
 
@@ -756,15 +752,17 @@ function Participant() {
               )}
 
               <p>
-                Created by{" "}
-                {organizer.display_name ||
-                  "the organizer"}
+                {t("createdBy", {
+                  name:
+                    organizer.display_name ||
+                    t("theOrganizer"),
+                })}
               </p>
             </div>
           )}
 
           <p className="participant-question">
-            Do you want to join this event?
+            {t("joinQuestion")}
           </p>
 
           <div className="response-buttons">
@@ -785,7 +783,7 @@ function Participant() {
                 isSubmitting
               }
             >
-              DECLINE
+              {t("decline")}
             </button>
 
             <span
@@ -810,7 +808,7 @@ function Participant() {
                 isSubmitting
               }
             >
-              ACCEPT
+              {t("accept")}
             </button>
           </div>
         </section>
@@ -829,7 +827,7 @@ function Participant() {
               )
             }
           >
-            OVERVIEW
+            {t("tabOverview")}
           </button>
 
           <button
@@ -846,17 +844,16 @@ function Participant() {
               )
             }
           >
-            MY AVAILABILITY
+            {t("tabMyAvailability")}
           </button>
         </div>
 
         {activeTab === "overview" && (
           <section className="participant-overview">
-            <h2>CALENDAR</h2>
+            <h2>{t("calendar")}</h2>
 
             <p className="participant-section-subtitle">
-              Overview of Everyone’s
-              Availability
+              {t("overviewSubtitle")}
             </p>
 
             <MonthNav
@@ -867,15 +864,7 @@ function Participant() {
 
             <div className="participant-calendar">
               <div className="participant-weekday-row">
-                {[
-                  "SUN",
-                  "MON",
-                  "TUE",
-                  "WED",
-                  "THU",
-                  "FRI",
-                  "SAT",
-                ].map(
+                {weekdaysShort.map(
                   (day) => (
                     <div
                       className="participant-weekday"
@@ -943,11 +932,11 @@ function Participant() {
             </div>
 
             <div className="participant-legend">
-              <span>Busy</span>
+              <span>{t("legendBusy")}</span>
               <span className="legend-dot busy" />
               <span className="legend-dot partial" />
               <span className="legend-dot free" />
-              <span>Free</span>
+              <span>{t("legendFree")}</span>
             </div>
           </section>
         )}
@@ -957,12 +946,9 @@ function Participant() {
           <section className="participant-availability">
             <div className="availability-heading">
               <div>
-                <h2>CALENDAR</h2>
+                <h2>{t("calendar")}</h2>
 
-                <p>
-                  Tap your available
-                  days
-                </p>
+                <p>{t("tapYourDays")}</p>
               </div>
 
               <div className="quick-select-wrapper">
@@ -976,57 +962,29 @@ function Participant() {
                     )
                   }
                 >
-                  Quick Select
+                  {t("quickSelect")}
                 </button>
 
                 {showQuickSelect && (
                   <div className="quick-select-menu">
                     {[
                       {
-                        label:
-                          "All Day",
+                        label: t("quickAllDays"),
                         type: "all",
                       },
                       {
-                        label:
-                          "Weekends",
+                        label: t("quickWeekends"),
                         type: "weekends",
                       },
-                      {
-                        label:
-                          "Every Monday",
-                        type: 1,
-                      },
-                      {
-                        label:
-                          "Every Tuesday",
-                        type: 2,
-                      },
-                      {
-                        label:
-                          "Every Wednesday",
-                        type: 3,
-                      },
-                      {
-                        label:
-                          "Every Thursday",
-                        type: 4,
-                      },
-                      {
-                        label:
-                          "Every Friday",
-                        type: 5,
-                      },
-                      {
-                        label:
-                          "Every Saturday",
-                        type: 6,
-                      },
-                      {
-                        label:
-                          "Every Sunday",
-                        type: 0,
-                      },
+                      // Monday … Saturday, then Sunday
+                      ...[1, 2, 3, 4, 5, 6, 0].map(
+                        (day) => ({
+                          label: t("quickEveryDay", {
+                            day: weekdaysLong[day],
+                          }),
+                          type: day,
+                        })
+                      ),
                     ].map(
                       (option) => (
                         <button
@@ -1054,7 +1012,7 @@ function Participant() {
 
             {participantStatus !== "accepted" && (
               <p className="accept-first-hint">
-                Accept the event first to pick your days.
+                {t("acceptFirstHint")}
               </p>
             )}
 
@@ -1066,15 +1024,7 @@ function Participant() {
 
             <div className="participant-availability-calendar">
               <div className="participant-weekday-row">
-                {[
-                  "SUN",
-                  "MON",
-                  "TUE",
-                  "WED",
-                  "THU",
-                  "FRI",
-                  "SAT",
-                ].map(
+                {weekdaysShort.map(
                   (day) => (
                     <div
                       className="participant-weekday"
@@ -1159,8 +1109,8 @@ function Participant() {
                 }
               >
                 {isSavingAvailability
-                  ? "SAVING..."
-                  : "SAVE"}
+                  ? t("saving")
+                  : t("save")}
               </button>
             </div>
           </section>

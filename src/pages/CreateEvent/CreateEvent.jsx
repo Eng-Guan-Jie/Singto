@@ -12,6 +12,7 @@ import liff, {
   getFreshIdToken,
 } from "../../lib/liff";
 
+import { useI18n } from "../../lib/i18n";
 import "./CreateEvent.css";
 
 const API_BASE = import.meta.env.DEV
@@ -19,6 +20,7 @@ const API_BASE = import.meta.env.DEV
   : "";
 
 function CreateEvent() {
+  const { t } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -95,21 +97,21 @@ function CreateEvent() {
   const handleSaveEvent = async () => {
     if (!eventName || !startDate || !endDate) {
       alert(
-        "Please fill in the required fields."
+        t("fillRequired")
       );
       return;
     }
 
     if (endDate < startDate) {
       alert(
-        "End date must be on or after start date."
+        t("endAfterStart")
       );
       return;
     }
 
     if (!organizerLineUserId) {
       alert(
-        "Unable to identify the organizer through LINE."
+        t("unableIdentifyOrganizer")
       );
       return;
     }
@@ -151,7 +153,7 @@ function CreateEvent() {
         if (!response.ok) {
           throw new Error(
             data.message ||
-              "Unable to create the event."
+              t("unableCreateEvent")
           );
         }
 
@@ -190,7 +192,7 @@ function CreateEvent() {
 
               throw new Error(
                 lineData.message ||
-                  "Unable to send the event bubble to LINE."
+                  t("somethingWrong")
               );
             }
           } catch (error) {
@@ -200,7 +202,9 @@ function CreateEvent() {
             );
 
             alert(
-              `Event created successfully, but Singto could not send the event to LINE.\n\n${error.message}`
+              t("createdNotSent", {
+                reason: error.message,
+              })
             );
           }
         }
@@ -251,7 +255,7 @@ function CreateEvent() {
       if (!updateResponse.ok) {
         throw new Error(
           updateData.message ||
-            "Unable to update the event."
+            t("unableUpdateEvent")
         );
       }
 
@@ -269,7 +273,7 @@ function CreateEvent() {
 
       alert(
         error.message ||
-          "Something went wrong while saving the event."
+          t("saveEventFailed")
       );
     } finally {
       setIsSaving(false);
@@ -288,13 +292,13 @@ function CreateEvent() {
         {/* Event Name */}
         <div className="form-group">
           <label htmlFor="eventName">
-            EVENT NAME
+            {t("eventName")}
           </label>
 
           <input
             id="eventName"
             type="text"
-            placeholder="e.g. dinner, trip to CEI"
+            placeholder={t("eventNamePlaceholder")}
             value={eventName}
             onChange={(e) =>
               setEventName(e.target.value)
@@ -305,13 +309,13 @@ function CreateEvent() {
         {/* Description */}
         <div className="form-group description-group">
           <label htmlFor="description">
-            DESCRIPTION
+            {t("description")}
           </label>
 
           <input
             id="description"
             type="text"
-            placeholder="e.g. trip to CEI 7:00PM"
+            placeholder={t("descriptionPlaceholder")}
             value={description}
             onChange={(e) =>
               setDescription(e.target.value)
@@ -321,12 +325,12 @@ function CreateEvent() {
 
         {/* Scheduling Periods */}
         <section className="scheduling-section">
-          <h2>SCHEDULING PERIODS</h2>
+          <h2>{t("schedulingPeriod")}</h2>
 
           {/* Start Date */}
           <div className="form-group">
             <label htmlFor="startDate">
-              START DATE
+              {t("startDate")}
             </label>
 
             <div className="date-input">
@@ -349,7 +353,7 @@ function CreateEvent() {
           {/* End Date */}
           <div className="form-group end-date-group">
             <label htmlFor="endDate">
-              END DATE
+              {t("endDate")}
             </label>
 
             <div className="date-input">
@@ -380,12 +384,12 @@ function CreateEvent() {
           }
         >
           {isSaving
-            ? "SAVING..."
+            ? t("savingEvent")
             : isLiffLoading
-            ? "LOADING..."
+            ? t("loadingButton")
             : isEditMode
-            ? "UPDATE EVENT"
-            : "CREATE EVENT"}
+            ? t("updateEvent")
+            : t("createEvent")}
         </button>
       </main>
     </div>

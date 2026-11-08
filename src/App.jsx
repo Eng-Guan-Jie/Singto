@@ -9,6 +9,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { initLiff } from "./lib/liff";
+import { useI18n } from "./lib/i18n";
 import Overview from "./pages/Overview/Overview";
 import CreateEvent from "./pages/CreateEvent/CreateEvent";
 import ConfirmDate from "./pages/ConfirmDate/ConfirmDate";
@@ -22,6 +23,7 @@ import Participant from "./pages/Participant/Participant";
 //   (liff.line.me/{id}?eventId=…) arrive as /?eventId=…
 //   and belong to the Participant page.
 function Home() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const hasLiffState = searchParams.has("liff.state");
@@ -50,7 +52,7 @@ function Home() {
   }, [hasLiffState, navigate]);
 
   if (hasLiffState) {
-    return <p>Loading...</p>;
+    return <p>{t("loading")}</p>;
   }
 
   if (searchParams.has("eventId")) {
@@ -77,6 +79,7 @@ const PAGES = [
 // path (e.g. /participant/participant?eventId=…), so send
 // those to the page named in the last segment.
 function Fallback() {
+  const { t } = useI18n();
   const { pathname, search } = useLocation();
   const lastSegment = pathname
     .split("/")
@@ -92,7 +95,7 @@ function Fallback() {
     );
   }
 
-  return <p>Page not found.</p>;
+  return <p>{t("pageNotFound")}</p>;
 }
 
 function App() {
