@@ -85,7 +85,7 @@ function createCallToActionBubble(chatId) {
         contents: [
           {
             type: "text",
-            text: "อยากนัดกันไหม?",
+            text: "มาสร้างนัดกันเถอะ",
             weight: "bold",
             size: "lg",
             color: "#111111",
