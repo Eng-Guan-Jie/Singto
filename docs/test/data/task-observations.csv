@@ -1,0 +1,61 @@
+user,date,device,browser,role,facilitator,task_id,task,completion,total_time_s,time_bound,discovery_s,discovery_bound,errors,help,observed_behaviour,user_feedback
+U01,2026-11-11,Mobile,LINE,Organizer + Participant,Chayanit Triroj,T1,Create Event,Success,50,exact,1,exact,0,0,Filled in the form alone. Asked one question only to double-check,Wants a voting close time. Would like to attach a link or image to make the plan more appealing
+U01,2026-11-11,Mobile,LINE,Organizer + Participant,Chayanit Triroj,T2,Access Event,Success,2,exact,1,exact,0,0,Easy to tap. Slight lag,"""Easy, just a little laggy"""
+U01,2026-11-11,Mobile,LINE,Organizer + Participant,Chayanit Triroj,T3,Submit Availability,Success,8,exact,2,exact,0,0,Picked dates easily,
+U01,2026-11-11,Mobile,LINE,Organizer + Participant,Chayanit Triroj,T4,View Overview,Success,3,exact,1,exact,0,0,Understood which dates overlap without explanation,
+U01,2026-11-11,Mobile,LINE,Organizer + Participant,Chayanit Triroj,T5,Find Best Date,Success,2,exact,2,exact,0,0,"Understood green = everyone free, so found the date quickly",
+U01,2026-11-11,Mobile,LINE,Organizer + Participant,Chayanit Triroj,T6,Finalize Date,Success,5,exact,1,exact,0,0,Completed alone,
+U02,2026-11-11,Mobile,LINE,Organizer,Chayanit Triroj,T1,Create Event,Success,60,exact,1,exact,0,1,Asked about the start–end date range to confirm,
+U02,2026-11-11,Mobile,LINE,Organizer,Chayanit Triroj,T2,Access Event,Success,3,exact,1,exact,0,0,Understood alone,
+U02,2026-11-11,Mobile,LINE,Organizer,Chayanit Triroj,T3,Submit Availability,Success,5,exact,3,exact,0,0,Understood alone,
+U02,2026-11-11,Mobile,LINE,Organizer,Chayanit Triroj,T4,View Overview,Success,3,exact,3,exact,0,0,Asked a small question,"After opening a single day's details, getting back to the full overview requires changing the filter. Expected tapping the date again (or a clearer way back) to work"
+U02,2026-11-11,Mobile,LINE,Organizer,Chayanit Triroj,T5,Find Best Date,Success,3,exact,3,exact,0,0,Easy to understand,
+U02,2026-11-11,Mobile,LINE,Organizer,Chayanit Triroj,T6,Finalize Date,Success,10,exact,1,exact,0,0,"Understood, wanted a bit more","No way to cancel attendance after a date is finalized (not rescheduling, just ""not going""). Suggests Google Calendar integration in future"
+U03,2026-11-11,iPad,LINE,Organizer + Participant,Chayanit Triroj,T1,Create Event,Success,90,exact,1,exact,0,1,Asked questions to be sure,"Wants to set the date by which the organizer will pick the final date, so participants know the deadline"
+U03,2026-11-11,iPad,LINE,Organizer + Participant,Chayanit Triroj,T2,Access Event,Success,3,exact,1,exact,0,0,Understood alone,
+U03,2026-11-11,iPad,LINE,Organizer + Participant,Chayanit Triroj,T3,Submit Availability,Success,20,exact,5,exact,0,1,"Asked what ""Quick Select"" means",
+U03,2026-11-11,iPad,LINE,Organizer + Participant,Chayanit Triroj,T4,View Overview,Success,5,exact,3,exact,0,1,Asked about yellow. Wanted to know who is free on each day,"Participants should also see who is and isn't free, because the group will end up asking that anyway"
+U03,2026-11-11,iPad,LINE,Organizer + Participant,Chayanit Triroj,T5,Find Best Date,Success,5,exact,2,exact,0,0,Understood,
+U03,2026-11-11,iPad,LINE,Organizer + Participant,Chayanit Triroj,T6,Finalize Date,Success,40,exact,3,exact,0,0,Asked a little to confirm,Should send a reminder before the event day. *(Team note: this was in the design but was missed in implementation.)*
+U04,2026-11-07,Mobile,LINE,Organizer,Tanitsorn,T1,Create Event,Success,42,exact,3,approx,0,0,"Filled in alone, but had a language gap. Misread ""schedule period"" as the dates of the meetup","Easy to use, but wants a Thai language option. The example in the description helped them understand they were entering a time range"
+U04,2026-11-07,Mobile,LINE,Organizer,Tanitsorn,T2,Access Event,Success,3,exact,1,approx,0,0,Opened the event link after about 3 s of loading,"Loading takes a moment. Normal, not serious"
+U04,2026-11-07,Mobile,LINE,Organizer,Tanitsorn,T3,Submit Availability,Success,11,exact,1,approx,0,0,Selected dates alone,"""Choosing dates is very easy"""
+U04,2026-11-07,Mobile,LINE,Organizer,Tanitsorn,T4,View Overview,Partial,4,exact,1,approx,0,1,Asked what the colours mean. Had to reopen to see the updated calendar after others submitted,"""I wasn't sure what the colors meant at first."""
+U04,2026-11-07,Mobile,LINE,Organizer,Tanitsorn,T5,Find Best Date,Success,25,exact,,missing,0,0,Found the summary alone,"""This feature is useful."""
+U04,2026-11-07,Mobile,LINE,Organizer,Tanitsorn,T6,Finalize Date,Success,9,exact,2,approx,0,0,Tapped the button alone,"""The confirmation button is very easy to find."""
+U05,2026-11-08,Mobile,LINE,Organizer + Participant,Tanitsorn,T1,Create Event,Success,52,exact,2,exact,0,0,"Created the event alone. Understood ""schedule period"" as fixed trip dates (e.g. ""we're going on the 1st, 2nd, 3rd"")","Suggests a different term than ""schedule period"""
+U05,2026-11-08,Mobile,LINE,Organizer + Participant,Tanitsorn,T2,Access Event,Success,3,exact,1,exact,0,0,Waited about 3 s to load,"Not instant, but not so slow it's a problem"
+U05,2026-11-08,Mobile,LINE,Organizer + Participant,Tanitsorn,T3,Submit Availability,Success,40,exact,2,exact,0,0,Understood all three colours. Understood the organizer must be free on every date in the period,"""Easy to select and to use."" Wants a Maybe option, as there's only accept/decline"
+U05,2026-11-08,Mobile,LINE,Organizer + Participant,Tanitsorn,T4,View Overview,Partial,,missing,1,exact,0,1,Had to reopen to see the updated calendar after others submitted,Wants a Best Date summary on the participant side too. Wants an explanation of yellow
+U05,2026-11-08,Mobile,LINE,Organizer + Participant,Tanitsorn,T5,Find Best Date,Success,40,exact,8,exact,0,0,Found the section and used the filter alone,"""This feature is useful."""
+U05,2026-11-08,Mobile,LINE,Organizer + Participant,Tanitsorn,T6,Finalize Date,Success,61,exact,2,exact,0,0,Found and tapped the button alone,"Joked: ""If I want 3 days but friends are free only 1, what's the fun?"" (they noted it's not Singto's problem to solve)"
+U06,2026-11-12,Mobile,LINE,Organizer + Participant,Tanitsorn,T1,Create Event,Success,55,exact,1,exact,0,0,Completed alone,"""Easy to use"""
+U06,2026-11-12,Mobile,LINE,Organizer + Participant,Tanitsorn,T2,Access Event,Success,3,exact,1,exact,0,0,Waited about 3 s to load,"Not instant, but acceptable"
+U06,2026-11-12,Mobile,LINE,Organizer + Participant,Tanitsorn,T3,Submit Availability,Partial,42,exact,1,exact,0,1,"Didn't select dates after creating the event, because they didn't realise the calendar is tappable",Couldn't tell the calendar was tappable. Suggested a grey highlight on selectable dates. (Fixed)
+U06,2026-11-12,Mobile,LINE,Organizer + Participant,Tanitsorn,T4,View Overview,Success,100,exact,1,exact,0,0,Understood the colours and their meaning,
+U06,2026-11-12,Mobile,LINE,Organizer + Participant,Tanitsorn,T5,Find Best Date,Success,25,exact,,missing,0,0,"Used the Find Best Date filter, but found no back button afterwards","""This feature is useful."""
+U06,2026-11-12,Mobile,LINE,Organizer + Participant,Tanitsorn,T6,Finalize Date,Success,25,exact,2,exact,0,0,Found the button alone,
+U07,2026-11-17,Mobile,LINE,Organizer,Didwarin Densupphakul,T1,Create Event,Success,23,exact,2,exact,0,0,Understood alone,
+U07,2026-11-17,Mobile,LINE,Organizer,Didwarin Densupphakul,T2,Access Event,Success,11,exact,6,exact,0,1,Asked where to tap,
+U07,2026-11-17,Mobile,LINE,Organizer,Didwarin Densupphakul,T3,Submit Availability,Success,10,exact,3,exact,0,1,Unsure what to do next,
+U07,2026-11-17,Mobile,LINE,Organizer,Didwarin Densupphakul,T4,View Overview,Success,6,exact,2,exact,0,0,Understood alone,
+U07,2026-11-17,Mobile,LINE,Organizer,Didwarin Densupphakul,T5,Find Best Date,Success,18,exact,2,exact,0,0,Understood alone,
+U07,2026-11-17,Mobile,LINE,Organizer,Didwarin Densupphakul,T6,Finalize Date,Success,10,exact,2,exact,0,0,Understood alone,
+U08,2026-11-15,Mobile,Safari,Organizer + Participant,Kanyanat Sawatdiwong,T1,Create Event,Success,50,exact,5,upper,0,1,"Filled in alone, but thought start & end date meant the meetup dates","Singto's message box makes it clear to tap to create an event, but start/end date was unclear"
+U08,2026-11-15,Mobile,Safari,Organizer + Participant,Kanyanat Sawatdiwong,T2,Access Event,Success,5,exact,5,upper,0,0,,"If a group has many events, older ones are hard to find without scrolling up the chat"
+U08,2026-11-15,Mobile,Safari,Organizer + Participant,Kanyanat Sawatdiwong,T3,Submit Availability,Success,10,upper,5,upper,1,0,Explored Quick Select and found a bug: it also selected dates outside the organizer's range (Fixed),Easy to pick dates
+U08,2026-11-15,Mobile,Safari,Organizer + Participant,Kanyanat Sawatdiwong,T4,View Overview,Success,6,exact,5,upper,0,1,"After participants submitted, the organizer had to refresh the browser manually to update the overview",Green / yellow / red is easy to understand
+U08,2026-11-15,Mobile,Safari,Organizer + Participant,Kanyanat Sawatdiwong,T5,Find Best Date,Success,5,upper,,missing,0,0,,Singto summarised everyone's free dates correctly and quickly
+U08,2026-11-15,Mobile,Safari,Organizer + Participant,Kanyanat Sawatdiwong,T6,Finalize Date,Success,15,exact,5,upper,0,1,Needed more explanation of single-day vs multi-day selection,
+U09,2026-11-15,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T1,Create Event,Success,35,exact,5,upper,0,0,,"Loading wasn't long, about 5 s"
+U09,2026-11-15,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T2,Access Event,Success,5,upper,5,upper,0,0,,Convenient
+U09,2026-11-15,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T3,Submit Availability,Success,10,exact,5,upper,0,0,,Syncing with Google Calendar would be very convenient for checking one's own free days
+U09,2026-11-15,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T4,View Overview,Success,5,upper,5,upper,0,0,,"The Busy → Free legend should be clearer, e.g. explain yellow"
+U09,2026-11-15,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T5,Find Best Date,Success,5,upper,5,upper,0,0,,Convenient and fast
+U09,2026-11-15,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T6,Finalize Date,Success,20,exact,5,upper,0,0,,Single-day vs multi-day choice is confusing. It would be clearer on the Create Event page
+U10,2026-11-17,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T1,Create Event,Success,75,exact,5,upper,0,0,,The fields are enough for arranging a meetup with friends
+U10,2026-11-17,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T2,Access Event,Success,5,upper,5,upper,0,0,,Convenient
+U10,2026-11-17,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T3,Submit Availability,Success,15,exact,5,upper,0,0,,"Easy to pick dates, the calendar is easy to read. Wants a ""clear all selections"" button"
+U10,2026-11-17,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T4,View Overview,Success,5,upper,5,upper,0,0,Needed an explanation of the yellow legend,A clearer explanation of yellow would help
+U10,2026-11-17,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T5,Find Best Date,Success,5,upper,5,upper,0,0,,Fast
+U10,2026-11-17,Mobile,Not recorded,Organizer + Participant,Kanyanat Sawatdiwong,T6,Finalize Date,Success,25,exact,5,upper,0,0,,"Convenient, easy to understand"
