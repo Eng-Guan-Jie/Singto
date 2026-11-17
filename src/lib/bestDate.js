@@ -1,4 +1,4 @@
-import { getAvailabilityStatus, isHoliday } from "./calendar";
+import { getAvailabilityStatus, isHoliday } from "./calendar.js";
 
 /*
  * Best Date calculation for the Participant page.

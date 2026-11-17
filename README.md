@@ -158,6 +158,7 @@ Every push to `main` deploys to production. GitHub Actions (`.github/workflows/c
 npm run dev       # web pages at http://localhost:5173
 npm run build     # production build into dist/
 npm run preview   # serve the production build
+npm test          # run the automated tests (no secrets needed)
 ```
 
 - In development mode the pages call the **deployed** API (`https://singto-eight.vercel.app`), so `npm run dev` needs no database or LINE secrets on your machine.
@@ -187,6 +188,7 @@ The `finalized_*` columns come from `db/migrations/001_event_finalization.sql`. 
 - Diagrams: [`docs/02-design/diagrams.md`](docs/02-design/diagrams.md)
 
 ### Testing
+- Automated tests (`npm test`, also run by GitHub Actions on every push): [`test/`](test/) — what each file checks is in [`test/README.md`](test/README.md)
 - Test Plan, session logs, before/after, issue log, questionnaire results: [`docs/test/`](docs/test/)
 
 ### Compliance and Security

@@ -1,0 +1,21 @@
+# Best Date evaluation run (docs/final/ai-logic.md §4)
+# Command: node --test --test-reporter=spec test/ai-eval.test.mjs
+# Date: 2026-11-18 01:19 +07  Node: v20.19.6  Commit base: 86e5509
+
+✔ §4.2 Single Date counts and recommendation (AI-01) (0.972709ms)
+✔ §4.2 Two Days counts and recommendation (AI-02) (0.11075ms)
+✔ §4.2 Three Days counts and recommendation (AI-03) (0.072667ms)
+✔ §4.2 Holiday filter: only the weekend is considered (AI-04) (0.762791ms)
+✔ AI-05 equal highest counts: every tied candidate is returned (0.120458ms)
+✔ AI-06 no available participants: empty recommendation list (0.048542ms)
+✔ AI-07 accepted participant without submitted days stays in the total (0.065042ms)
+✔ processing time: 30 people × 1 year, all four filters (4.516042ms)
+ℹ all four filters, 30 people x 366 days: 2.8 ms
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 49.935791
