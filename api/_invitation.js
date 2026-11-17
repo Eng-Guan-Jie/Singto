@@ -490,34 +490,75 @@ function buildDetailsUrl(eventId) {
   return url.toString();
 }
 
-// Round label, e.g. the green "เข้าร่วม" pill.
-function createPill(text, backgroundColor, color) {
+/*
+ * Tinted panel for one group on the "date confirmed" card:
+ * title on the left, "N คน" chip on the right, pictures
+ * below.
+ */
+function createResponsePanel(title, people, colors) {
   return {
     type: "box",
-    layout: "horizontal",
+    layout: "vertical",
+    spacing: "sm",
+    margin: "md",
+    backgroundColor: colors.panel,
+    cornerRadius: "8px",
+    paddingAll: "10px",
     contents: [
       {
         type: "box",
-        layout: "vertical",
-        flex: 0,
-        width: "150px",
-        backgroundColor,
-        cornerRadius: "12px",
-        paddingTop: "3px",
-        paddingBottom: "3px",
+        layout: "horizontal",
+        alignItems: "center",
         contents: [
           {
             type: "text",
-            text,
+            text: title,
+            weight: "bold",
             size: "md",
-            color,
-            align: "center",
+            color: "#111111",
+            flex: 1,
+          },
+          {
+            type: "box",
+            layout: "vertical",
+            flex: 0,
+            backgroundColor: colors.chip,
+            borderColor: colors.chipBorder,
+            borderWidth: "1px",
+            cornerRadius: "10px",
+            paddingStart: "8px",
+            paddingEnd: "8px",
+            paddingTop: "1px",
+            paddingBottom: "1px",
+            contents: [
+              {
+                type: "text",
+                text: `${people.length} คน`,
+                size: "xs",
+                color: colors.chipText,
+              },
+            ],
           },
         ],
       },
+      createPeopleRow(people),
     ],
   };
 }
+
+const ACCEPTED_COLORS = {
+  panel: "#E7F6EA",
+  chip: "#C9EED3",
+  chipBorder: "#8ED3A0",
+  chipText: "#2E7D45",
+};
+
+const DECLINED_COLORS = {
+  panel: "#FBE6E6",
+  chip: "#F6CACA",
+  chipBorder: "#E79C9C",
+  chipText: "#A93636",
+};
 
 // Grey circle with a number, e.g. "+1".
 function createCountCircle(text) {
@@ -645,26 +686,12 @@ function createConfirmationBubble(data) {
   // this card; the team chose to show both (privacy policy
   // v2, "Who can see your data").
   bodyContents.push(
-    {
-      type: "box",
-      layout: "vertical",
-      spacing: "sm",
-      margin: "md",
-      contents: [
-        createPill("เข้าร่วม", "#8EDBA2", "#1E6B30"),
-        createPeopleRow(data.accepted),
-      ],
-    },
-    {
-      type: "box",
-      layout: "vertical",
-      spacing: "sm",
-      margin: "md",
-      contents: [
-        createPill("ไม่เข้าร่วม", "#F58A86", "#7A1414"),
-        createPeopleRow(data.declined),
-      ],
-    },
+    createResponsePanel("เข้าร่วม", data.accepted, ACCEPTED_COLORS),
+    createResponsePanel(
+      "ไม่เข้าร่วม",
+      data.declined,
+      DECLINED_COLORS
+    ),
     {
       type: "text",
       text: "ดูรายละเอียดเพิ่มเติม →",
