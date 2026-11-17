@@ -377,6 +377,37 @@ function Participant() {
   }, [eventId, idToken, lineUser, refreshKey]);
 
   /*
+   * ================= WHO GOES =================
+   * Names and pictures of who joins / declined
+   * (GET /api/events/:id/responses). Only a one-line
+   * summary is shown here; the full lists are on the
+   * event details page, so big groups stay short.
+   */
+
+  const [responses, setResponses] = useState(null);
+
+  useEffect(() => {
+    const fetchResponses = async () => {
+      if (!eventId || !idToken) return;
+
+      try {
+        const response = await fetch(
+          `${API_BASE}/api/events/${eventId}/responses`,
+          { headers: authHeaders(idToken) }
+        );
+
+        if (!response.ok) return;
+
+        setResponses(await response.json());
+      } catch (error) {
+        console.error("Failed to load who goes:", error);
+      }
+    };
+
+    fetchResponses();
+  }, [eventId, idToken, refreshKey]);
+
+  /*
    * ================= CALENDAR =================
    */
 
@@ -944,6 +975,54 @@ function Participant() {
           <p className="participant-answer-note">
             {t("answerVisibleNote")}
           </p>
+
+          {/* Shown once the user has answered (guests get
+              no names from the API). */}
+          {responses && responses.role !== "guest" && (
+            <button
+              type="button"
+              className="participant-who-goes"
+              onClick={() =>
+                navigate(`/event-details?eventId=${eventId}`)
+              }
+            >
+              <span className="who-goes-avatars" aria-hidden="true">
+                {responses.accepted.slice(0, 5).map((person, index) =>
+                  person.picture_url ? (
+                    <img
+                      key={index}
+                      className="who-goes-avatar"
+                      src={person.picture_url}
+                      alt=""
+                      width="24"
+                      height="24"
+                    />
+                  ) : (
+                    <span key={index} className="who-goes-avatar">
+                      {(person.display_name || "?")
+                        .charAt(0)
+                        .toUpperCase()}
+                    </span>
+                  )
+                )}
+
+                {responses.accepted.length > 5 && (
+                  <span className="who-goes-avatar more">
+                    +{responses.accepted.length - 5}
+                  </span>
+                )}
+              </span>
+
+              <span className="who-goes-text">
+                {t("whoGoesSummary", {
+                  accepted: responses.accepted.length,
+                  declined: responses.declined.length,
+                })}
+              </span>
+
+              <span className="who-goes-link">{t("seeAll")} →</span>
+            </button>
+          )}
         </section>
 
         <div className="participant-tabs">

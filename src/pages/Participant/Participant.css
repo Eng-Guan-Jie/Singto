@@ -740,3 +740,67 @@
   color: #a8a8a8;
   font-size: 14px;
 }
+
+/* ================= WHO GOES (summary row) =================
+   One line however big the group; the full lists are on
+   the event details page. */
+
+.participant-page .participant-who-goes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  background: #f5f8fb;
+  color: #222222;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.participant-page .who-goes-avatars {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.participant-page .who-goes-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #f5f8fb;
+  border-radius: 50%;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  object-fit: cover;
+}
+
+.participant-page .who-goes-avatar + .who-goes-avatar {
+  margin-left: -7px;
+}
+
+.participant-page .who-goes-avatar.more {
+  background: #b5b5b5;
+  color: #222222;
+}
+
+.participant-page .who-goes-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.participant-page .who-goes-link {
+  flex: 0 0 auto;
+  color: #2a1e16;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+}

@@ -212,6 +212,8 @@ const messages = {
       "Everyone in this event can see whether you join or decline.",
     availabilityVisibleNote:
       "Everyone in this event can see which days you pick.",
+    whoGoesSummary: "{accepted} joining · {declined} not joining",
+    seeAll: "See all",
   },
 
   th: {
@@ -414,6 +416,8 @@ const messages = {
       "ทุกคนในนัดนี้จะเห็นว่าคุณเข้าร่วมหรือไม่เข้าร่วม",
     availabilityVisibleNote:
       "ทุกคนในนัดนี้จะเห็นว่าคุณว่างวันไหน",
+    whoGoesSummary: "เข้าร่วม {accepted} คน · ไม่เข้าร่วม {declined} คน",
+    seeAll: "ดูทั้งหมด",
   },
 };
 

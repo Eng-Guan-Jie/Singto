@@ -43,6 +43,18 @@
   margin: 16px;
 }
 
+.details-page .details-back {
+  align-self: flex-start;
+  margin: 0 17px 6px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #606060;
+  font-family: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
 /* ================= EVENT CARD ================= */
 
 .details-page .details-event-card {

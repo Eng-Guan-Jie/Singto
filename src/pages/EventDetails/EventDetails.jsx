@@ -8,6 +8,7 @@ import {
 import { useI18n } from "../../lib/i18n";
 import { apiErrorMessage } from "../../lib/apiError";
 import HeaderActions from "../../components/HeaderActions";
+import { goBack } from "../Privacy/Privacy";
 import "./EventDetails.css";
 
 const API_BASE = import.meta.env.DEV
@@ -37,7 +38,8 @@ function PersonAvatar({ person }) {
 
 /*
  * Who joins and who declined, opened from "ดูรายละเอียด
- * เพิ่มเติม" on the "date confirmed" card in the LINE group.
+ * เพิ่มเติม" on the "date confirmed" card in the LINE group
+ * and from the "who goes" row on the Participant page.
  * Design: Figma frames "accepted" / "declined".
  * Lists come from GET /api/events/:id/responses, which
  * only gives names to people in the event.
@@ -135,6 +137,14 @@ function EventDetails() {
       {header}
 
       <main className="details-container">
+        <button
+          type="button"
+          className="details-back"
+          onClick={() => goBack(navigate)}
+        >
+          ← {t("back")}
+        </button>
+
         <section className="details-event-card">
           <h2>{event.event_name}</h2>
 
