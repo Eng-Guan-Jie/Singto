@@ -1,0 +1,110 @@
+/* Shared by the Privacy and Delete Account pages. */
+
+.info-page {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #080808;
+}
+
+.info-page .info-header {
+  position: relative;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: #2a1e16;
+  color: #ffffff;
+}
+
+.info-page .info-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.info-page .info-container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 16px 20px 40px;
+  line-height: 1.6;
+}
+
+.info-page .back-button {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #606060;
+  font-family: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.info-page h2 {
+  margin: 12px 0 4px;
+  font-size: 22px;
+}
+
+.info-page h3 {
+  margin: 24px 0 6px;
+  font-size: 17px;
+}
+
+.info-page p,
+.info-page li {
+  font-size: 15px;
+}
+
+.info-page p {
+  margin: 0 0 8px;
+}
+
+.info-page ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.info-page li + li {
+  margin-top: 4px;
+}
+
+.info-page .info-meta {
+  color: #808080;
+  font-size: 13px;
+}
+
+.info-page .info-note {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f4f6f9;
+  color: #404040;
+}
+
+.info-page .danger-button,
+.info-page .plain-button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 24px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.info-page .danger-button {
+  border: 0;
+  background: #c0392b;
+  color: #ffffff;
+}
+
+.info-page .danger-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.info-page .plain-button {
+  border: 1px solid #2a1e16;
+  background: #ffffff;
+  color: #2a1e16;
+}

@@ -185,6 +185,26 @@
   opacity: 0.8;
 }
 
+/* Edit mode only. */
+.delete-event-button {
+  width: 100%;
+  min-height: 50px;
+  padding: 0;
+  border: 1px solid #c0392b;
+  border-radius: 14px;
+  background: transparent;
+  color: #c0392b;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.delete-event-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 /* =========================
    MOBILE
 ========================= */

@@ -141,6 +141,47 @@ const messages = {
     lineQuotaReached:
       "Singto has used up this month's LINE message quota, so the card could not be posted.",
     linePushFailed: "Singto could not post to the LINE group.",
+
+    // ---------- account menu / privacy / deletion ----------
+    accountMenu: "Account menu",
+    privacyPolicy: "Privacy policy",
+    deleteAccount: "Delete account",
+    back: "Back",
+    close: "Close",
+    noticeTitle: "Your privacy",
+    noticeBody:
+      "Singto uses your LINE name, profile picture and LINE ID, and the days you pick, only to find a date for your group. Events are deleted automatically 30 days after they end, and you can delete your data at any time from the profile menu.",
+    noticeReadPolicy: "Read the privacy policy",
+    noticeAcknowledge: "Got it",
+    deleteAccountIntro:
+      "You sign in to Singto with LINE, so deleting your account deletes everything Singto keeps about you:",
+    deleteAccountItemAnswers:
+      "Your answers (join or decline) and available days in every event",
+    deleteAccountItemProfile:
+      "Your LINE name and profile picture saved with those answers",
+    deleteAccountItemEvents:
+      "Events you created stay for the other members without your name, and nobody can edit them or confirm their date any more",
+    deleteAccountNoteCards:
+      "Cards Singto has already posted in LINE groups cannot be removed: LINE does not allow deleting sent messages.",
+    deleteAccountNoteAgain:
+      "If you open Singto again and answer an event, your new answer will be saved.",
+    deleteAccountNoteLogs:
+      "Usage records required by law are kept for at least 90 days.",
+    deleteAccountButton: "DELETE MY DATA",
+    deleteAccountConfirm:
+      "Delete all your Singto data? This cannot be undone.",
+    deletingAccount: "DELETING...",
+    deleteAccountDone: "Your data has been deleted.",
+    unlinkLineHint:
+      "To also disconnect Singto from your LINE account, remove Singto from the authorized apps in your LINE account settings.",
+    deleteAccountFailed: "Failed to delete your data.",
+    deleteEvent: "DELETE EVENT",
+    deleteEventConfirm:
+      "Delete this event with everyone's answers and available days? This cannot be undone.",
+    deletingEvent: "DELETING...",
+    eventDeleted: "The event has been deleted.",
+    deleteEventFailed: "Failed to delete the event.",
+    onlyOrganizerDelete: "Only the organizer can delete this event.",
   },
 
   th: {
@@ -274,6 +315,47 @@ const messages = {
     lineQuotaReached:
       "สิงโตใช้โควต้าข้อความ LINE ของเดือนนี้หมดแล้ว จึงส่งการ์ดเข้ากลุ่มไม่ได้",
     linePushFailed: "สิงโตส่งข้อความเข้ากลุ่ม LINE ไม่สำเร็จ",
+
+    // ---------- account menu / privacy / deletion ----------
+    accountMenu: "เมนูบัญชี",
+    privacyPolicy: "นโยบายความเป็นส่วนตัว",
+    deleteAccount: "ลบบัญชี",
+    back: "กลับ",
+    close: "ปิด",
+    noticeTitle: "ความเป็นส่วนตัวของคุณ",
+    noticeBody:
+      "สิงโตใช้ชื่อ รูปโปรไฟล์ และ LINE ID ของคุณ รวมถึงวันที่คุณเลือก เพื่อหาวันนัดของกลุ่มเท่านั้น นัดจะถูกลบอัตโนมัติ 30 วันหลังจบ และคุณลบข้อมูลของคุณได้ทุกเมื่อจากเมนูรูปโปรไฟล์",
+    noticeReadPolicy: "อ่านนโยบายฉบับเต็ม",
+    noticeAcknowledge: "รับทราบ",
+    deleteAccountIntro:
+      "คุณเข้าใช้สิงโตด้วยบัญชี LINE การลบบัญชีจึงเป็นการลบข้อมูลทั้งหมดที่สิงโตเก็บไว้เกี่ยวกับคุณ:",
+    deleteAccountItemAnswers:
+      "คำตอบเข้าร่วม/ไม่เข้าร่วม และวันว่างของคุณในทุกนัด",
+    deleteAccountItemProfile:
+      "ชื่อและรูปโปรไฟล์ LINE ที่บันทึกไว้กับคำตอบเหล่านั้น",
+    deleteAccountItemEvents:
+      "นัดที่คุณสร้างจะยังอยู่ให้สมาชิกคนอื่นใช้ แต่ไม่มีชื่อคุณเป็นผู้จัดแล้ว และจะไม่มีใครแก้ไขหรือยืนยันวันนัดนั้นได้อีก",
+    deleteAccountNoteCards:
+      "การ์ดที่สิงโตส่งเข้ากลุ่ม LINE ไปแล้วลบไม่ได้ เพราะ LINE ไม่อนุญาตให้ลบข้อความที่ส่งไปแล้ว",
+    deleteAccountNoteAgain:
+      "ถ้าเปิดสิงโตแล้วตอบนัดอีกครั้ง ระบบจะบันทึกคำตอบใหม่ของคุณ",
+    deleteAccountNoteLogs:
+      "บันทึกการใช้งานที่กฎหมายกำหนดจะเก็บไว้อย่างน้อย 90 วัน",
+    deleteAccountButton: "ลบข้อมูลของฉัน",
+    deleteAccountConfirm:
+      "ลบข้อมูลทั้งหมดของคุณในสิงโต? ย้อนกลับไม่ได้",
+    deletingAccount: "กำลังลบ...",
+    deleteAccountDone: "ลบข้อมูลของคุณแล้ว",
+    unlinkLineHint:
+      "ถ้าต้องการเลิกเชื่อมสิงโตกับบัญชี LINE ด้วย ให้ลบสิงโตออกจากรายการแอปที่อนุญาตในการตั้งค่าบัญชี LINE",
+    deleteAccountFailed: "ลบข้อมูลไม่สำเร็จ",
+    deleteEvent: "ลบนัดนี้",
+    deleteEventConfirm:
+      "ลบนัดนี้พร้อมคำตอบและวันว่างของทุกคน? ย้อนกลับไม่ได้",
+    deletingEvent: "กำลังลบ...",
+    eventDeleted: "ลบนัดแล้ว",
+    deleteEventFailed: "ลบนัดไม่สำเร็จ",
+    onlyOrganizerDelete: "เฉพาะผู้จัดเท่านั้นที่ลบนัดนี้ได้",
   },
 };
 

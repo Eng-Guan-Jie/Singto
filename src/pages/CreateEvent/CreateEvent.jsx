@@ -10,6 +10,7 @@ import { CalendarDays } from "lucide-react";
 import liff, {
   initLiff,
   getFreshIdToken,
+  authHeaders,
 } from "../../lib/liff";
 
 import { useI18n } from "../../lib/i18n";
@@ -39,6 +40,9 @@ function CreateEvent() {
     useState(true);
 
   const [isSaving, setIsSaving] =
+    useState(false);
+
+  const [isDeleting, setIsDeleting] =
     useState(false);
 
   const [eventName, setEventName] = useState(
@@ -273,6 +277,56 @@ function CreateEvent() {
     }
   };
 
+  /*
+   * DELETE EVENT (edit mode, organizer only)
+   * Removes the event with everyone's answers and
+   * available days (AGENTS.md 5.1).
+   */
+  const handleDeleteEvent = async () => {
+    if (!window.confirm(t("deleteEventConfirm"))) return;
+
+    const eventId =
+      searchParams.get("eventId") || existingEvent?.id;
+
+    const idToken = getFreshIdToken();
+
+    // Redirecting to LINE Login.
+    if (!idToken) return;
+
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(
+        `${API_BASE}/api/events/${eventId}`,
+        {
+          method: "DELETE",
+          headers: authHeaders(idToken),
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          apiErrorMessage(t, response, data, "deleteEventFailed")
+        );
+      }
+
+      alert(t("eventDeleted"));
+
+      if (liff.isInClient()) {
+        liff.closeWindow();
+      } else {
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      console.error("Delete event failed:", error);
+      alert(error.message || t("deleteEventFailed"));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="page">
       {/* Header */}
@@ -387,6 +441,17 @@ function CreateEvent() {
             ? t("updateEvent")
             : t("createEvent")}
         </button>
+
+        {isEditMode && (
+          <button
+            type="button"
+            className="delete-event-button"
+            onClick={handleDeleteEvent}
+            disabled={isDeleting || isSaving || isLiffLoading}
+          >
+            {isDeleting ? t("deletingEvent") : t("deleteEvent")}
+          </button>
+        )}
       </main>
     </div>
   );

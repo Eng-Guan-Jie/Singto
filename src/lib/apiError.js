@@ -17,6 +17,7 @@ const SERVER_MESSAGES = {
   "Only the organizer can edit this event.": "onlyOrganizerEdit",
   "Only the organizer can share this event.": "onlyOrganizerShare",
   "Only the organizer can confirm the date.": "onlyOrganizerConfirm",
+  "Only the organizer can delete this event.": "onlyOrganizerDelete",
   "You must accept the event before submitting availability.":
     "acceptFirst",
   "Dates must be within the event's scheduling period.":
