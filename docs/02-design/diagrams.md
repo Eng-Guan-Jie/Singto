@@ -1,6 +1,6 @@
 # System Diagrams — Singto
 
-This document presents the main system diagrams for the Singto scheduling assistant, including the system context, use cases, system architecture, core scheduling workflow, and sequence diagrams for the three core flows.
+This document presents the main system diagrams for the Singto scheduling assistant, including the system context, use cases, system architecture, core scheduling workflow, sequence diagrams for the three core flows, and the database (ER) diagram.
 
 ---
 
@@ -206,6 +206,76 @@ sequenceDiagram
 
 ---
 
+# D6. ER Diagram — Database
+
+The three tables in Neon PostgreSQL that the API reads and writes, and how they link. `LINE_USER` is not a table: people sign in with LINE, and their LINE user ID, name and picture are copied into `participants` (and the organizer's ID into `events`).
+
+```mermaid
+erDiagram
+    LINE_USER |o--o{ EVENTS : "organizes"
+    LINE_USER ||--o{ PARTICIPANTS : "answers as"
+    EVENTS ||--o{ PARTICIPANTS : "has"
+    EVENTS ||--o{ AVAILABILITY : "collects"
+    PARTICIPANTS ||--o{ AVAILABILITY : "is free on"
+
+    LINE_USER {
+        text line_user_id PK "from LINE Login, not stored as its own table"
+        text display_name "copied into participants"
+        text picture_url "copied into participants"
+    }
+
+    EVENTS {
+        uuid id PK
+        text event_name "max 100 characters"
+        text description "max 500 characters, nullable"
+        date start_date
+        date end_date "start_date to end_date is at most 1 year"
+        text line_chat_id "LINE group the event was created in"
+        text organizer_line_user_id FK "NULL after the organizer deletes their account"
+        text status
+        timestamptz created_at
+        date finalized_date "first confirmed day, NULL until confirmed"
+        date_array finalized_dates "every confirmed day"
+        text finalization_note "max 500 characters"
+        timestamptz finalized_at
+        text finalized_by "user or system_auto"
+    }
+
+    PARTICIPANTS {
+        int id PK
+        uuid event_id FK
+        text line_user_id FK "unique together with event_id"
+        text display_name
+        text picture_url "LINE profile picture link"
+        text status "accepted or declined"
+        timestamptz submitted_at
+        timestamptz joined_at
+    }
+
+    AVAILABILITY {
+        uuid event_id FK
+        int participant_id FK
+        date available_date "inside the event period"
+    }
+```
+
+### Keys and Rules
+
+| Rule | Where it is enforced |
+|---|---|
+| One answer per person per event: `participants` is unique on (`event_id`, `line_user_id`) | `ON CONFLICT (event_id, line_user_id)` in `api/events.js` and `api/events/[id]/participants.js` |
+| `availability.participant_id` → `participants.id` | join in `api/events/[id]/availability.js` |
+| Deleting an event removes `availability`, then `participants`, then `events` | `api/_deleteData.js` (works with or without `ON DELETE CASCADE`) |
+| `organizer_line_user_id` may be NULL after "Delete account" | `db/migrations/002_allow_no_organizer.sql` |
+| `finalized_*` columns and `finalized_by` in ('user', 'system_auto') | `db/migrations/001_event_finalization.sql` (AGENTS.md 5.6) |
+| Name ≤ 100, description ≤ 500 characters, period ≤ 1 year, real dates only | `api/_validate.js` |
+| Available days must be inside the event period | `api/events/[id]/availability.js` |
+| Events are deleted 30 days after the period ends | `api/cron/cleanup.js` |
+
+**Limits of this diagram:** the SQL that creates the three base tables is not in the repository yet, so column types and the primary keys of `participants` and `availability` are inferred from the queries in `api/`. Check them against the Neon schema (`pg_dump --schema-only`). Tables that the API code does not use (for example an audit log kept only in Neon) are not shown.
+
+---
+
 # Diagram Relationships
 
 | Diagram | Focus | Main Question |
@@ -215,5 +285,6 @@ sequenceDiagram
 | **D3 Architecture** | System structure | How are the technical components connected? |
 | **D4 Activity** | Process flow | How does the scheduling process work step by step? |
 | **D5 Sequence** | Message order between components | Which part calls which, in what order, for each core flow? |
+| **D6 ER** | Stored data | Which tables hold Singto's data and how are they linked? |
 
 Together, these diagrams provide a consistent view of Singto from the external system context to the internal architecture and core user workflow.

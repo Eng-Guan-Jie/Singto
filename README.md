@@ -61,7 +61,7 @@ Singto has **no usernames or passwords**. Everyone signs in with their own LINE 
 
 To try the system with any LINE account:
 
-1. Add the Singto bot as a friend: **LINE ID `@TODO`** (or scan the QR code in LINE Developers Console → Messaging API tab).
+1. Add the Singto bot as a friend: search **LINE ID `@107ygilw`** in LINE, or open https://line.me/R/ti/p/@107ygilw on your phone.
 2. Create a LINE group with at least one other person and invite the bot. It greets the group.
 3. Type **สิงโต** (or `singto`) in the group. The bot replies with a **สร้างนัด** (Create event) card.
 4. Create an event. Its card is posted in the group; members tap **เลือกวันที่ว่าง** to join and pick their free days.
@@ -172,7 +172,7 @@ npm test          # run the automated tests (no secrets needed)
 | `participants` | `id`, `event_id`, `line_user_id`, `display_name`, `picture_url`, `status` (`accepted` / `declined`), `submitted_at`, `joined_at`; unique (`event_id`, `line_user_id`) | who answered the invitation |
 | `availability` | `event_id`, `participant_id`, `available_date` | the days each person is free |
 
-The `finalized_*` columns come from `db/migrations/001_event_finalization.sql`. The SQL that creates the three base tables is not in this repository yet; export it from Neon (`pg_dump --schema-only`) into `db/schema.sql`.
+Diagram: [D6 ER Diagram](docs/02-design/diagrams.md#d6-er-diagram--database). The `finalized_*` columns come from `db/migrations/001_event_finalization.sql`. The SQL that creates the three base tables is not in this repository yet; export it from Neon (`pg_dump --schema-only`) into `db/schema.sql`.
 
 ## Documentation
 
