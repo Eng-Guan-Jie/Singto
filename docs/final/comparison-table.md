@@ -1,83 +1,92 @@
-# Singto – Before and After Comparison
+# Singto – Project Comparison Table
 
-## 1. Comparison Table
+## 1. Project Overview
 
-| Item | Before | After | Change | Measured with | Evidence |
-|---|---|---|---|---|---|
-| Appointment Creation | Organizers coordinate appointment details through group chat and communicate the scheduling period manually. | Organizers can create an appointment and define its scheduling period through Singto. | Provides a centralized appointment creation process instead of relying entirely on chat messages. | Task Completion Rate, Task Completion Time, Task Error Rate. | `src/pages/CreateEvent/CreateEvent.jsx`; `api/events.js`; `test/validate.test.mjs` |
-| Availability Collection | Organizers ask participants to provide their available dates through group chat. Responses may be scattered across messages or delayed. | Participants access the shared event link and submit their available dates through Singto. | Centralizes availability submissions in one event. | Availability Submission Completion Rate, Task Completion Time, Error Count. | `src/pages/Participant/Participant.jsx`; `api/events/[id]/availability.js`; `test/api-access.test.mjs`; `test/api-locks.test.mjs` |
-| Availability Overview | Organizers manually review and compare participants' responses. | Singto provides an availability summary and visual overview of participants' availability. | Reduces the need to manually organize and compare individual responses. | Task Completion Time, Task Error Rate, User Feedback. | `src/pages/Overview/Overview.jsx`; `src/components/ColorLegend.jsx`; `api/events/[id]/availability.js`; `test/calendar.test.mjs` |
-| Best Date Suggestion (Algorithmic Scheduling) | Organizers manually compare available dates to identify dates that accommodate the group. | Singto calculates availability counts and suggests the date or consecutive date ranges with the highest number of available accepted participants. | Automates availability comparison and candidate ranking using deterministic, rule-based logic. | Availability Calculation Correctness, Recommendation Rule Conformance, Test Case Pass Rate, Processing Time. | `src/lib/bestDate.js`; `src/pages/Overview/Overview.jsx`; `src/lib/calendar.js`; `test/best-date.test.mjs`; `test/ai-eval.test.mjs` |
-| Appointment Confirmation | The organizer communicates the selected date through group chat and waits for the group to acknowledge it. | The organizer can review and confirm the selected date through Singto. Confirmed events are protected against further availability and scheduling changes. | Provides a dedicated confirmation step and locks relevant event information after confirmation. | Finalization Task Completion Rate, Task Completion Time, API Test Results. | `src/pages/ConfirmDate/ConfirmDate.jsx`; `api/events/[id]/confirm.js`; `test/api-locks.test.mjs` |
-| LINE Integration | Scheduling discussions and updates take place in LINE, but availability information is handled manually through messages. | Singto integrates with LINE and provides a web-based scheduling workflow connected to the LINE platform. | Connects the scheduling process with the group's existing communication platform. | Event Sharing Success Rate, Access Success Rate, Integration Test Results. | `src/lib/liff.js`; `api/line-webhook.js`; `api/line-push-event.js`; `test/webhook-and-cron.test.mjs` |
-| User Interface | Participants and organizers rely on chat messages to communicate and track scheduling information. | Singto provides dedicated organizer and participant interfaces with a responsive web layout. | Provides a more structured interface for managing scheduling activities. | SUS, TAM Perceived Ease of Use, Navigation Confusion, User Feedback. | `src/pages/`; `src/components/`; `src/index.css`; manual UI testing and UAT evidence pending |
-| Security and Data Protection | Scheduling information is communicated through group messages without a centralized application-level access-control workflow. | Singto implements authentication and authorization checks, participant data restrictions, event ownership rules, and API validation. | Adds application-level controls to protect event information and restrict unauthorized actions. | Authentication and Authorization Test Pass Rate, Input Validation Test Results, Security Test Results. | `test/api-access.test.mjs`; `test/api-locks.test.mjs`; `test/validate.test.mjs`; `test/webhook-and-cron.test.mjs` |
-| Automated Quality Testing | Scheduling operations and comparisons are performed manually by organizers. | Singto includes an automated test suite covering scheduling logic, calendar rules, validation, API access, event locking, LINE webhook signatures, and scheduled cleanup. | Introduces repeatable automated verification of core application rules and API behavior. | Automated Test Pass Rate, Test Coverage by Feature, Regression Test Results. | `test/`; `test/README.md`; `.github/workflows/ci.yml` |
+**Project:** Singto – LINE-Integrated Group Scheduling Assistant  
+**Live LINE Integration:** https://lin.ee/ob6Q2Yw
 
-## 2. AI / Algorithm Comparison
+Singto addresses the difficulty of coordinating group schedules through LINE or Messenger. In a conventional group chat, participants share their availability across multiple messages, requiring the organizer to manually compare responses, follow up with people, and repeat discussions when no suitable date is found. This process can take several days or multiple rounds of discussion.
 
-Singto's Best Date feature is a deterministic, rule-based scheduling function rather than a machine-learning or generative AI model.
+Singto provides a centralized scheduling workflow through LINE without requiring users to install another application.
 
-| Item | Before | After | Change | Measured with | Evidence |
-|---|---|---|---|---|---|
-| AI-assisted Scheduling / Best Date Algorithm | The organizer manually compares participants' availability to find suitable dates. | Singto uses deterministic rules to calculate availability counts, evaluate single-day and consecutive date ranges, apply holiday filtering, and return all candidates with the highest availability count. | Automates the comparison and ranking process. It does not use model training or LLM inference. | Availability Calculation Correctness, Recommendation Rule Conformance, Test Case Pass Rate, Processing Time. | `src/lib/bestDate.js`; `src/pages/Overview/Overview.jsx`; `test/best-date.test.mjs`; `test/ai-eval.test.mjs` |
+**Core workflow:**
 
-### Algorithm Evaluation Results
+Create → Collect → Analyze → Confirm → Notify
 
-The automated evaluation includes a controlled dataset with four accepted participants (P01–P04) over 7–17 November 2026.
+A key design principle is that **Singto suggests suitable dates, but the organizer makes the final decision.** The system does not automatically confirm an event.
 
-The evaluation checks:
-- Single-date availability counts and recommendations.
-- Consecutive two-day and three-day recommendations.
-- Holiday filtering.
-- Equal highest availability counts.
-- No-availability scenarios.
-- Accepted participants who have not submitted availability.
-- Processing time for 30 participants across 366 days using all four filters.
+## 2. Feature Comparison
 
-According to `test/README.md`, the automated evaluation is included in the project's 49-test suite, with the documented run reporting **49 passed and 0 failed**.
+| Feature | Conventional Group Chat Scheduling | Singto |
+|---|---|---|
+| Event Creation | Event details are shared manually in chat messages. | Organizers create structured events through the web interface. |
+| Availability Collection | Participants reply through separate messages, which may be delayed or overlooked. | Participants submit their availability through a shared event link. |
+| Availability Overview | Organizers manually review and compare messages. | Availability is presented in a centralized calendar view. |
+| Best Date Suggestion | Organizers manually compare participants' schedules. | A rule-based algorithm identifies dates with the highest participant availability. |
+| Appointment Confirmation | The organizer announces the selected date in the group chat. | The organizer reviews the suggested date and confirms the final date. |
+| Participant Notification | Organizers manually send updates to the group. | The system supports LINE-based event communication. |
+| Application Accessibility | Participants can coordinate directly in the existing group chat. | Participants access the scheduling interface through a shared link without installing a separate application. |
+| Availability Visibility | Information can become scattered across messages. | Participants and organizers can view submitted availability in a structured format. |
 
-Evidence: `test/ai-eval.test.mjs`; `test/README.md`.
+## 3. Best Date Algorithm Comparison
 
-## 3. Measurement and Evidence Status
+| Aspect | Manual Scheduling | Singto Best Date Algorithm |
+|---|---|---|
+| Availability Comparison | Organizer checks each participant's response manually. | The algorithm evaluates submitted availability programmatically. |
+| Participant Eligibility | Depends on the organizer's manual interpretation. | Only participants with accepted status are included. |
+| Multi-day Events | Organizer must check whether participants are available across the entire period. | A participant is counted only when available on every day in the consecutive date range. |
+| Holiday Consideration | Depends on the organizer's awareness and manual checking. | Supports weekends and the fixed-date Thai public holidays defined in the calendar logic. |
+| Multiple Suitable Dates | Organizer decides which dates appear suitable. | Returns all candidate dates tied for the highest availability count. |
+| Final Decision | Organizer selects the date. | Organizer retains responsibility for selecting and confirming the date. |
 
-The comparison describes the intended improvement from manual group scheduling to the Singto-assisted workflow. Functional implementation and automated test results provide evidence of system behavior, while user testing is needed to establish actual improvements in usability and scheduling efficiency.
+**Algorithm classification:** Singto uses deterministic, rule-based scheduling logic. It does not use machine learning or a generative AI model to predict or select dates.
 
-The project evaluation uses the following measures:
+## 4. Testing and Evidence Comparison
 
-- **Task Performance:** Task Completion Rate, Task Completion Time, Task Error Rate, and Assistance Requests.
-- **Usability:** System Usability Scale (SUS).
-- **User Acceptance:** Technology Acceptance Model (TAM), including Perceived Usefulness and Perceived Ease of Use.
-- **Comparative Evaluation:** Manual scheduling versus Singto-assisted scheduling using the same scenario and availability information.
-- **Algorithm Evaluation:** Compare actual Best Date outputs with independently calculated expected results using a controlled test dataset.
-- **Automated Testing:** Test Pass Rate and regression test results.
+| Testing Area | Evidence / Implementation | Status |
+|---|---|---|
+| Best Date Logic | Automated tests cover single-day and consecutive multi-day scheduling, holiday filtering, ties, and cases with no available participants. | Implemented and tested |
+| Calendar Logic | Automated tests cover calendar-related date and holiday behavior. | Implemented and tested |
+| Input Validation | Automated tests check validation behavior. | Implemented and tested |
+| API Access Control | Tests cover access and authorization behavior. | Implemented and tested |
+| Event Locking | Automated tests cover event locking behavior. | Implemented and tested |
+| LINE Webhook and Cron | Tests cover webhook signature and scheduled cleanup behavior. | Implemented and tested |
+| User Interface | The test documentation reports manual checks in a phone-sized browser and during user sessions. | Reported completed |
+| LINE and Database Integration | The test documentation reports end-to-end testing with real LINE and Neon services in LINE groups. | Reported completed |
+| User Evaluation | User sessions are mentioned, but individual session records and quantitative results are not included in the supplied test files. | Detailed evidence unavailable |
+| SUS / TAM Evaluation | Completed questionnaire scores are not included in the supplied test files. | Results not documented |
 
-### Current Evidence Status
+According to `test/README.md`, the automated test suite contains **49 tests across seven test files**, with a reported result of **49 passed and 0 failed on 18 November 2026**. The README references an `npm-test.log`, but that log was not included in the supplied test ZIP.
 
-| Evidence | Status |
+These results demonstrate that the documented automated test cases passed. They do not, by themselves, establish improvements in real-world scheduling time or user satisfaction.
+
+## 5. Product Development and User Feedback
+
+| Challenge / Feedback | Product Decision or Improvement |
 |---|---|
-| Source code for appointment creation and availability submission | Available in the submitted project source |
-| Source code for availability overview and Best Date calculation | Available in the submitted project source |
-| Source code for appointment confirmation | Available in the submitted project source |
-| LINE integration source code | Available in the submitted project source |
-| Controlled Best Date evaluation dataset | Implemented in `test/ai-eval.test.mjs` |
-| Best Date algorithm test cases | Implemented in `test/best-date.test.mjs` and `test/ai-eval.test.mjs` |
-| Automated test suite | 49 tests across 7 test files, according to `test/README.md` |
-| Last documented automated test run | 18 November 2026: 49 passed, 0 failed, according to `test/README.md` |
-| Automated test execution log (`npm-test.log`) | Referenced by README; include the actual log in the final evidence folder |
-| GitHub Actions CI integration | Documented in `test/README.md`; workflow file referenced at `.github/workflows/ci.yml` |
-| Manual-versus-Singto user testing results | Pending UAT |
-| SUS and TAM results | Pending UAT |
-| Scheduled reminder implementation and delivery evidence | Not established by the submitted source ZIP |
+| Calendar colors were not sufficiently clear to users. | Added explanatory labels to make availability states easier to understand. |
+| Participants wanted more visibility into other participants' availability. | Improved the participant view to provide more detailed daily availability information. |
+| LINE Official Account message limitations affected the development and testing process. | Considered alternative account arrangements and selected a new account to continue without additional premium costs. |
 
-**Important:** The automated test results demonstrate that the documented test cases passed in the recorded run. They do not establish improvements in real-world scheduling time, user satisfaction, or usability. Those outcomes must be measured through UAT.
+These decisions reflect the project's focus on usability, accessibility, and practical implementation within the LINE ecosystem.
 
-## 4. Overall Comparison
+## 6. Development Deliverables
 
-Singto transforms group scheduling from a largely manual, chat-based process into a more structured workflow. It centralizes appointment creation, availability submission, availability comparison, date suggestions, and appointment confirmation.
+| Deliverable | Description |
+|---|---|
+| LINE Integration | LINE-based entry point and group communication. |
+| Web Application | Interfaces for creating events, submitting availability, viewing schedules, and confirming dates. |
+| Backend and Database | API endpoints and database integration for event and participant information. |
+| Best Date Algorithm | Rule-based logic for identifying suitable dates based on participant availability. |
+| UI/UX Design | Interface and calendar presentation designed around the scheduling workflow. |
+| Testing | Automated test suite and documented manual and integration testing activities. |
+| Documentation | Project proposal, testing documentation, and supporting project materials. |
+| User Guide | Instructions to help users operate the scheduling assistant. |
 
-Its Best Date feature automates availability comparison through deterministic scheduling rules. The controlled evaluation and automated test suite provide evidence that the implemented recommendation rules behave as expected in the tested scenarios.
+## 7. Overall Comparison
 
-The project also includes automated checks for API access control, event locking, input validation, calendar rules, and LINE webhook behavior.
+Compared with conventional group-chat scheduling, Singto provides a more structured way to create events, collect participant availability, review suitable dates, and confirm appointments. It reduces the need for organizers to manually gather and compare availability scattered across chat messages.
 
-The organizer remains responsible for reviewing and confirming the final date. The effectiveness of Singto in improving real-world scheduling efficiency and user experience will be evaluated through manual-versus-Singto user testing, SUS, and TAM.
+Its main contribution is not fully automated decision-making, but rather the organization and analysis of scheduling information while keeping the final decision under human control.
+
+The project combines LINE integration, a web-based interface, backend services, and deterministic scheduling logic to support a more convenient group scheduling process. Although the documented automated tests provide evidence of functional correctness for the tested cases, further quantitative user-evaluation evidence would be needed to demonstrate measurable improvements in scheduling efficiency and user satisfaction.

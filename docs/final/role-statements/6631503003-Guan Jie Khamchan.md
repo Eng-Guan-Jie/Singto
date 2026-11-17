@@ -4,15 +4,17 @@
 **Name:** Guan Jie Khamchan  
 **Role:** Product Owner
 
-As the Product Owner of Singto, I was responsible for defining the product direction and ensuring that the system addressed the scheduling problems experienced by its intended users. My responsibilities included gathering and organizing user requirements, identifying key problems in group scheduling, defining the project scope, and prioritizing features based on user needs and project objectives.
+As the Product Owner of Singto, I was responsible for defining the product vision, gathering user requirements, prioritizing features, and ensuring that the final solution addressed real group scheduling problems. Through user research, I identified that coordinating suitable dates through LINE or Messenger often required several days or multiple rounds of discussion because availability was scattered across messages and organizers had to compare responses manually.
 
-I contributed to translating stakeholder feedback into functional requirements and helping the team maintain a clear understanding of the product's expected behavior. Key priorities included simplifying event creation, centralizing participant availability, providing useful date suggestions, and allowing organizers to confirm the final schedule.
+I translated these findings into the product requirements and prioritized a LINE-integrated scheduling assistant that would not require users to install another application. I defined the core workflow around five stages: creating an event, collecting availability, analyzing suitable dates, confirming the appointment, and notifying participants. An important product principle was that Singto suggests suitable dates, but the organizer makes the final decision.
 
-I also coordinated with team members to ensure that development activities remained aligned with the project's objectives and that implemented features addressed the identified requirements.
+I also used user feedback to guide product improvements. When participants found calendar colors unclear, we added explanatory labels. When they requested better visibility of other participants' availability, we improved the participant view. I also helped make product decisions when LINE Official Account message limitations affected development and testing.
 
 **Evidence:**
-- Project proposal and requirements documentation: `docs/00-proposal.md`
-- Product workflow and implemented features: [Insert relevant documentation or screenshots]
-- User testing and feedback: [Insert UAT evidence]
+- Project proposal and product requirements: `docs/00-proposal.md`
+- Live LINE integration: https://lin.ee/ob6Q2Yw
+- Implemented product workflow: `src/pages/`
+- Best Date functionality: `src/lib/bestDate.js`
+- Testing documentation: `test/README.md`
 
-**AI Disclosure:** AI tools were used as supporting tools for brainstorming, organizing requirements, and improving documentation where applicable. Product decisions, requirement prioritization, and final validation were reviewed and determined by the project team.
+**AI Disclosure:** AI tools were used to support brainstorming, requirement organization, and documentation. Product direction, feature prioritization, stakeholder considerations, and final decisions were reviewed and determined by me and the project team.
