@@ -1,4 +1,4 @@
-# Individual Role Statement
+# UXUI Design - Role Statement
 
 **Name:** Chayanit Triroj  
 **Student ID:** 6631503010  
