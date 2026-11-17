@@ -129,11 +129,21 @@
   appearance: none;
   text-align: left;
   color: #080808;
+  /* Without the native look, iOS puts the date at the top
+     of the box. A 24px line with equal padding above and
+     below centres it whatever iOS does:
+     (52px - 2px border - 24px) / 2 = 13px. */
+  padding-top: 13px;
+  padding-bottom: 13px;
+  line-height: 24px;
 }
 
-/* iOS centres the chosen date; keep it on the left. */
+/* iOS centres the chosen date horizontally and adds its
+   own spacing; keep it on the left, on the same line. */
 .date-input input::-webkit-date-and-time-value {
+  margin: 0;
   text-align: left;
+  line-height: 24px;
 }
 
 /* Hide browser calendar icon */
@@ -236,6 +246,12 @@
   .form-group input {
     height: 50px;
     font-size: 16px;
+  }
+
+  /* (50px - 2px border - 24px) / 2 */
+  .date-input input {
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   .create-button {
