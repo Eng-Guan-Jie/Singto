@@ -44,6 +44,7 @@
 
 .form-group {
   width: 100%;
+  min-width: 0;
 }
 
 .form-group label,
@@ -114,8 +115,25 @@
   width: 100%;
 }
 
+/* iOS Safari gives date inputs a fixed minimum width and
+   ignores width: 100%, so on a phone they stuck out past
+   the screen and the whole page could scroll sideways.
+   Dropping the native look lets them fit like the other
+   inputs. */
 .date-input input {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
   padding-right: 54px;
+  -webkit-appearance: none;
+  appearance: none;
+  text-align: left;
+  color: #080808;
+}
+
+/* iOS centres the chosen date; keep it on the left. */
+.date-input input::-webkit-date-and-time-value {
+  text-align: left;
 }
 
 /* Hide browser calendar icon */
@@ -193,24 +211,15 @@
     font-size: 1rem;
   }
 
+  /* 16px or more: iOS zooms the page in when a smaller
+     input is tapped, and does not zoom back out. */
   .form-group input {
     height: 50px;
-    font-size: 0.95rem;
+    font-size: 16px;
   }
 
   .create-button {
     min-height: 52px;
     border-radius: 14px;
   }
-  /* media */
-  @media (max-width: 600px) {
-  .header {
-    min-height: 64px;
-    height: 10vh;
-  }
-
-  .header h1 {
-    font-size: 1.7rem;
-  }
-}
 }
