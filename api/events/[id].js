@@ -7,6 +7,7 @@ const {
   sendError,
   setCorsHeaders,
 } = require("../_auth");
+const { validateEventInput } = require("../_validate");
 
 // DATE values come back as Date objects at UTC midnight.
 const toDateKey = (value) =>
@@ -89,28 +90,19 @@ module.exports = async function handler(req, res) {
      * Organizer edits the event details.
      */
     if (req.method === "PATCH") {
-      const {
-        idToken,
-        eventName,
-        description,
-        startDate,
-        endDate,
-      } = req.body || {};
+      const { idToken } = req.body || {};
 
-      if (!eventName || !startDate || !endDate) {
-        res.status(400).json({
-          message:
-            "eventName, startDate, and endDate are required",
-        });
+      const { error: invalid, value } = validateEventInput(
+        req.body
+      );
+
+      if (invalid) {
+        res.status(400).json({ message: invalid });
         return;
       }
 
-      if (endDate < startDate) {
-        res.status(400).json({
-          message: "endDate must be on or after startDate",
-        });
-        return;
-      }
+      const { eventName, description, startDate, endDate } =
+        value;
 
       const lineUser = await verifyLineIdToken(idToken);
 
@@ -125,12 +117,15 @@ module.exports = async function handler(req, res) {
 
       // Availability outside a shortened period no longer
       // applies, so remove it together with the update.
+      // A confirmed date that now falls outside the period
+      // is cleared too, so the organizer confirms again.
+      // (Needs db/migrations/001_event_finalization.sql.)
       const [rows] = await sql.transaction([
         sql`
           UPDATE events
           SET
             event_name = ${eventName},
-            description = ${description || null},
+            description = ${description},
             start_date = ${startDate},
             end_date = ${endDate}
           WHERE id = ${id}
@@ -148,6 +143,26 @@ module.exports = async function handler(req, res) {
             AND (
               available_date < ${startDate}
               OR available_date > ${endDate}
+            )
+        `,
+        sql`
+          UPDATE events
+          SET
+            finalized_date = NULL,
+            finalized_dates = NULL,
+            finalization_note = NULL,
+            finalized_at = NULL,
+            finalized_by = NULL
+          WHERE id = ${id}
+            AND (
+              finalized_date < ${startDate}
+              OR finalized_date > ${endDate}
+              OR EXISTS (
+                SELECT 1
+                FROM unnest(finalized_dates) AS confirmed(day)
+                WHERE confirmed.day < ${startDate}
+                  OR confirmed.day > ${endDate}
+              )
             )
         `,
       ]);

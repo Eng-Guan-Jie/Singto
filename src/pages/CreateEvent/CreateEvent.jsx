@@ -13,6 +13,7 @@ import liff, {
 } from "../../lib/liff";
 
 import { useI18n } from "../../lib/i18n";
+import { apiErrorMessage } from "../../lib/apiError";
 import LanguageToggle from "../../components/LanguageToggle";
 import "./CreateEvent.css";
 
@@ -70,11 +71,6 @@ function CreateEvent() {
         const profile = await liff.getProfile();
 
         setOrganizerLineUserId(profile.userId);
-
-        console.log(
-          "Organizer LINE User ID:",
-          profile.userId
-        );
       } catch (error) {
         console.error(
           "LIFF initialization failed:",
@@ -88,15 +84,8 @@ function CreateEvent() {
     initializeLiff();
   }, []);
 
-  console.log("lineChatId:", lineChatId);
-  console.log(
-    "organizerLineUserId:",
-    organizerLineUserId
-  );
-  console.log("API_BASE:", API_BASE);
-
   const handleSaveEvent = async () => {
-    if (!eventName || !startDate || !endDate) {
+    if (!eventName.trim() || !startDate || !endDate) {
       alert(
         t("fillRequired")
       );
@@ -107,6 +96,17 @@ function CreateEvent() {
       alert(
         t("endAfterStart")
       );
+      return;
+    }
+
+    // Same limit as the API (api/_validate.js): one year.
+    const periodDays =
+      (new Date(`${endDate}T00:00:00Z`) -
+        new Date(`${startDate}T00:00:00Z`)) /
+      (24 * 60 * 60 * 1000);
+
+    if (periodDays > 365) {
+      alert(t("periodTooLong"));
       return;
     }
 
@@ -153,17 +153,11 @@ function CreateEvent() {
 
         if (!response.ok) {
           throw new Error(
-            data.message ||
-              t("unableCreateEvent")
+            apiErrorMessage(t, response, data, "unableCreateEvent")
           );
         }
 
         const createdEvent = data.event;
-
-        console.log(
-          "Created Event:",
-          createdEvent
-        );
 
         /*
          * Send event information to LINE
@@ -192,8 +186,7 @@ function CreateEvent() {
                 .catch(() => ({}));
 
               throw new Error(
-                lineData.message ||
-                  t("somethingWrong")
+                apiErrorMessage(t, lineResponse, lineData, "somethingWrong")
               );
             }
           } catch (error) {
@@ -255,8 +248,7 @@ function CreateEvent() {
 
       if (!updateResponse.ok) {
         throw new Error(
-          updateData.message ||
-            t("unableUpdateEvent")
+          apiErrorMessage(t, updateResponse, updateData, "unableUpdateEvent")
         );
       }
 
@@ -300,6 +292,7 @@ function CreateEvent() {
           <input
             id="eventName"
             type="text"
+            maxLength={100}
             placeholder={t("eventNamePlaceholder")}
             value={eventName}
             onChange={(e) =>
@@ -317,6 +310,7 @@ function CreateEvent() {
           <input
             id="description"
             type="text"
+            maxLength={500}
             placeholder={t("descriptionPlaceholder")}
             value={description}
             onChange={(e) =>

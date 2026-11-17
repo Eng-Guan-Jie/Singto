@@ -12,6 +12,7 @@ import {
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
+import { apiErrorMessage } from "../../lib/apiError";
 import LanguageToggle from "../../components/LanguageToggle";
 import "./Participant.css";
 
@@ -115,11 +116,6 @@ function Participant() {
               ).get("eventId")
             : null);
 
-        console.log(
-          "Event ID after LIFF init:",
-          currentEventId
-        );
-
         if (!currentEventId) {
           throw new Error(
             t("eventIdMissing")
@@ -189,8 +185,7 @@ function Participant() {
 
         if (!response.ok) {
           throw new Error(
-            data.message ||
-              t("failedLoadEvent")
+            apiErrorMessage(t, response, data, "failedLoadEvent")
           );
         }
 
@@ -239,8 +234,7 @@ function Participant() {
 
           if (!response.ok) {
             throw new Error(
-              data.message ||
-                t("failedLoadParticipants")
+              apiErrorMessage(t, response, data, "failedLoadParticipants")
             );
           }
 
@@ -304,8 +298,7 @@ function Participant() {
 
           if (!response.ok) {
             throw new Error(
-              data.message ||
-                t("failedLoadAvailability")
+              apiErrorMessage(t, response, data, "failedLoadAvailability")
             );
           }
 
@@ -433,8 +426,7 @@ function Participant() {
 
         if (!response.ok) {
           throw new Error(
-            data.message ||
-              t("failedUpdateParticipation")
+            apiErrorMessage(t, response, data, "failedUpdateParticipation")
           );
         }
 
@@ -600,8 +592,7 @@ function Participant() {
 
         if (!response.ok) {
           throw new Error(
-            data.message ||
-              t("failedSaveAvailability")
+            apiErrorMessage(t, response, data, "failedSaveAvailability")
           );
         }
 
@@ -658,6 +649,7 @@ function Participant() {
       <div className="participant-page">
         <header className="participant-header">
           <h1>Singto</h1>
+          <LanguageToggle />
         </header>
 
         <main className="participant-container">
@@ -675,6 +667,7 @@ function Participant() {
       <div className="participant-page">
         <header className="participant-header">
           <h1>Singto</h1>
+          <LanguageToggle />
         </header>
 
         <main className="participant-container">
@@ -689,6 +682,7 @@ function Participant() {
       <div className="participant-page">
         <header className="participant-header">
           <h1>Singto</h1>
+          <LanguageToggle />
         </header>
 
         <main className="participant-container">

@@ -4,6 +4,7 @@ const {
   sendError,
   setCorsHeaders,
 } = require("./_auth");
+const { validateEventInput } = require("./_validate");
 
 module.exports = async function handler(req, res) {
   setCorsHeaders(res, "POST, OPTIONS");
@@ -23,30 +24,19 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const {
-      eventName,
-      description,
-      startDate,
-      endDate,
-      lineChatId,
-      idToken,
-    } = req.body || {};
+    const { lineChatId, idToken } = req.body || {};
 
-    if (!eventName || !startDate || !endDate) {
-      res.status(400).json({
-        message:
-          "eventName, startDate, and endDate are required",
-      });
+    const { error: invalid, value } = validateEventInput(
+      req.body
+    );
+
+    if (invalid) {
+      res.status(400).json({ message: invalid });
       return;
     }
 
-    if (endDate < startDate) {
-      res.status(400).json({
-        message:
-          "endDate must be on or after startDate",
-      });
-      return;
-    }
+    const { eventName, description, startDate, endDate } =
+      value;
 
     // The organizer is whoever LINE verified, not an
     // ID the client claims.
@@ -63,10 +53,10 @@ module.exports = async function handler(req, res) {
       )
       VALUES (
         ${eventName},
-        ${description || null},
+        ${description},
         ${startDate},
         ${endDate},
-        ${lineChatId || null},
+        ${typeof lineChatId === "string" && lineChatId ? lineChatId : null},
         ${organizer.sub}
       )
       RETURNING

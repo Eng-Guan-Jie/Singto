@@ -16,6 +16,10 @@ import {
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
+import {
+  apiErrorMessage,
+  translateServerMessage,
+} from "../../lib/apiError";
 import LanguageToggle from "../../components/LanguageToggle";
 import "./ConfirmDate.css";
 
@@ -104,7 +108,15 @@ function ConfirmDate() {
         const availabilityData = await availabilityResponse.json();
 
         if (!eventResponse.ok) {
-          throw new Error(eventData.message || t("failedLoadEvent"));
+          throw new Error(apiErrorMessage(t, eventResponse, eventData, "failedLoadEvent"));
+        }
+
+        // An expired login also fails here; report that
+        // instead of "only the organizer can confirm".
+        if (!participantsResponse.ok) {
+          throw new Error(
+            apiErrorMessage(t, participantsResponse, participantsData, "failedLoadParticipants")
+          );
         }
 
         if (participantsData.role !== "organizer") {
@@ -115,7 +127,7 @@ function ConfirmDate() {
 
         if (!availabilityResponse.ok) {
           throw new Error(
-            availabilityData.message || t("failedLoadAvailability")
+            apiErrorMessage(t, availabilityResponse, availabilityData, "failedLoadAvailability")
           );
         }
 
@@ -232,12 +244,16 @@ function ConfirmDate() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || t("failedConfirm"));
+        throw new Error(apiErrorMessage(t, response, data, "failedConfirm"));
       }
 
       if (data.notifyError) {
         alert(
-          t("confirmedNotPosted", { reason: data.notifyError })
+          t("confirmedNotPosted", {
+            reason:
+              translateServerMessage(t, data.notifyError) ||
+              data.notifyError,
+          })
         );
       } else {
         alert(
@@ -265,6 +281,7 @@ function ConfirmDate() {
       <div className="confirm-page">
         <header className="confirm-header">
           <h1>Singto</h1>
+          <LanguageToggle />
         </header>
 
         <main className="confirm-container">
