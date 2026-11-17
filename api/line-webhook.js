@@ -143,7 +143,9 @@ async function handleEvent(event) {
     sourceType: event.source?.type,
     hasReplyToken: Boolean(event.replyToken),
     messageType: event.message?.type,
-    text: event.message?.type === "text" ? event.message.text : undefined,
+    // Never log the message text: it is the group's
+    // private chat, mostly not meant for the bot
+    // (AGENTS.md 5.1).
   });
 
   if (!event.replyToken) return;

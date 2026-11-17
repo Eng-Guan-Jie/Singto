@@ -22,6 +22,7 @@ import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
 import ColorLegend from "../../components/ColorLegend";
 import HeaderActions from "../../components/HeaderActions";
+import { apiErrorMessage } from "../../lib/apiError";
 import "./Overview.css";
 
 const API_BASE = import.meta.env.DEV
@@ -195,21 +196,19 @@ function Overview() {
 
         if (!eventResponse.ok) {
           throw new Error(
-            eventData.message || t("failedLoadEvent")
+            apiErrorMessage(t, eventResponse, eventData, "failedLoadEvent")
           );
         }
 
         if (!participantsResponse.ok) {
           throw new Error(
-            participantsData.message ||
-              t("failedLoadParticipants")
+            apiErrorMessage(t, participantsResponse, participantsData, "failedLoadParticipants")
           );
         }
 
         if (!availabilityResponse.ok) {
           throw new Error(
-            availabilityData.message ||
-              t("failedLoadAvailability")
+            apiErrorMessage(t, availabilityResponse, availabilityData, "failedLoadAvailability")
           );
         }
 
@@ -607,8 +606,7 @@ function Overview() {
 
       if (!response.ok) {
         throw new Error(
-          data.message ||
-            t("reminderFailed")
+          apiErrorMessage(t, response, data, "reminderFailed")
         );
       }
 
@@ -671,8 +669,7 @@ function Overview() {
 
       if (!response.ok) {
         throw new Error(
-          data.message ||
-            t("failedSaveAvailability")
+          apiErrorMessage(t, response, data, "failedSaveAvailability")
         );
       }
 
@@ -708,6 +705,7 @@ function Overview() {
       <div className="overview-page">
         <div className="overview-header">
           <h1>Singto</h1>
+          <HeaderActions />
         </div>
 
         <main className="overview-container">
@@ -722,6 +720,7 @@ function Overview() {
       <div className="overview-page">
         <div className="overview-header">
           <h1>Singto</h1>
+          <HeaderActions />
         </div>
 
         <main className="overview-container">
@@ -736,6 +735,7 @@ function Overview() {
       <div className="overview-page">
         <div className="overview-header">
           <h1>Singto</h1>
+          <HeaderActions />
         </div>
 
         <main className="overview-container">

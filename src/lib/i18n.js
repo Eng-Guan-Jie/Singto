@@ -126,6 +126,21 @@ const messages = {
     unableUpdateEvent: "Unable to update the event.",
     saveEventFailed: "Something went wrong while saving the event.",
     language: "Language",
+
+    // ---------- server errors (src/lib/apiError.js) ----------
+    sessionExpired:
+      "Your LINE session has expired. Please close this page and open it again from LINE.",
+    eventNameTooLong: "Event name must be 100 characters or fewer.",
+    descriptionTooLong: "Description must be 500 characters or fewer.",
+    invalidDates: "Please choose valid dates.",
+    periodTooLong: "The scheduling period can be at most one year.",
+    onlyOrganizerEdit: "Only the organizer can edit this event.",
+    onlyOrganizerShare: "Only the organizer can send this event to the group.",
+    datesOutOfRange: "Please choose dates within the scheduling period.",
+    notFromLineChat: "This event was not created from a LINE group.",
+    lineQuotaReached:
+      "Singto has used up this month's LINE message quota, so the card could not be posted.",
+    linePushFailed: "Singto could not post to the LINE group.",
   },
 
   th: {
@@ -244,6 +259,21 @@ const messages = {
     unableUpdateEvent: "แก้ไขนัดไม่สำเร็จ",
     saveEventFailed: "บันทึกนัดไม่สำเร็จ",
     language: "ภาษา",
+
+    // ---------- server errors (src/lib/apiError.js) ----------
+    sessionExpired:
+      "การเข้าสู่ระบบ LINE หมดอายุแล้ว กรุณาปิดหน้านี้แล้วเปิดใหม่จาก LINE",
+    eventNameTooLong: "ชื่อนัดต้องยาวไม่เกิน 100 ตัวอักษร",
+    descriptionTooLong: "รายละเอียดต้องยาวไม่เกิน 500 ตัวอักษร",
+    invalidDates: "กรุณาเลือกวันที่ให้ถูกต้อง",
+    periodTooLong: "ช่วงวันที่นัดได้ต้องไม่เกิน 1 ปี",
+    onlyOrganizerEdit: "เฉพาะผู้จัดเท่านั้นที่แก้ไขนัดนี้ได้",
+    onlyOrganizerShare: "เฉพาะผู้จัดเท่านั้นที่ส่งนัดนี้เข้ากลุ่มได้",
+    datesOutOfRange: "กรุณาเลือกวันที่อยู่ในช่วงวันที่นัดได้",
+    notFromLineChat: "นัดนี้ไม่ได้สร้างจากกลุ่ม LINE",
+    lineQuotaReached:
+      "สิงโตใช้โควต้าข้อความ LINE ของเดือนนี้หมดแล้ว จึงส่งการ์ดเข้ากลุ่มไม่ได้",
+    linePushFailed: "สิงโตส่งข้อความเข้ากลุ่ม LINE ไม่สำเร็จ",
   },
 };
 
