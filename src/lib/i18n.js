@@ -182,6 +182,19 @@ const messages = {
     eventDeleted: "The event has been deleted.",
     deleteEventFailed: "Failed to delete the event.",
     onlyOrganizerDelete: "Only the organizer can delete this event.",
+
+    // ---------- my events ----------
+    ongoingEvents: "On-going events",
+    archivedEvents: "Archived events",
+    noOngoingEvents: "You have no on-going events.",
+    noArchivedEvents: "You have no archived events.",
+    archivedNote:
+      "Events are deleted automatically 30 days after their scheduling period ends.",
+    roleOrganizer: "Organizer",
+    statusAccepted: "Joining",
+    statusDeclined: "Not joining",
+    notConfirmedYet: "Date not confirmed yet",
+    failedLoadMyEvents: "Failed to load your events.",
   },
 
   th: {
@@ -356,6 +369,19 @@ const messages = {
     eventDeleted: "ลบนัดแล้ว",
     deleteEventFailed: "ลบนัดไม่สำเร็จ",
     onlyOrganizerDelete: "เฉพาะผู้จัดเท่านั้นที่ลบนัดนี้ได้",
+
+    // ---------- my events ----------
+    ongoingEvents: "นัดที่ยังไม่จบ",
+    archivedEvents: "นัดที่จบแล้ว",
+    noOngoingEvents: "ตอนนี้ยังไม่มีนัดที่ยังไม่จบ",
+    noArchivedEvents: "ยังไม่มีนัดที่จบแล้ว",
+    archivedNote:
+      "นัดที่จบแล้วจะถูกลบอัตโนมัติ 30 วันหลังวันสุดท้ายของช่วงวันที่นัดได้",
+    roleOrganizer: "ผู้จัด",
+    statusAccepted: "เข้าร่วม",
+    statusDeclined: "ไม่เข้าร่วม",
+    notConfirmedYet: "ยังไม่ได้ยืนยันวัน",
+    failedLoadMyEvents: "โหลดรายการนัดไม่สำเร็จ",
   },
 };
 

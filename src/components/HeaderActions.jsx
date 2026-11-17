@@ -25,8 +25,9 @@ const loadPictureUrl = () => {
 
 /*
  * Right side of every page header: the TH/EN switch and
- * the user's LINE picture, which opens a menu with the
- * privacy policy and "Delete account". (Singto has no
+ * the user's LINE picture, which opens a menu with their
+ * archived and on-going events, the privacy policy and
+ * "Delete account". (Singto has no
  * profile page: people sign in with LINE.)
  */
 export default function HeaderActions() {
@@ -94,6 +95,22 @@ export default function HeaderActions() {
 
         {isOpen && (
           <div className="profile-dropdown" role="menu">
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => goTo("/my-events?tab=archived")}
+            >
+              {t("archivedEvents")}
+            </button>
+
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => goTo("/my-events?tab=ongoing")}
+            >
+              {t("ongoingEvents")}
+            </button>
+
             <button
               type="button"
               role="menuitem"

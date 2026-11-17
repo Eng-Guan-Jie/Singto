@@ -16,6 +16,7 @@ import ConfirmDate from "./pages/ConfirmDate/ConfirmDate";
 import Participant from "./pages/Participant/Participant";
 import Privacy from "./pages/Privacy/Privacy";
 import DeleteAccount from "./pages/DeleteAccount/DeleteAccount";
+import MyEvents from "./pages/MyEvents/MyEvents";
 import PrivacyNotice from "./components/PrivacyNotice";
 
 // The LIFF Endpoint URL is the site root, so LIFF links
@@ -77,6 +78,7 @@ const PAGES = [
   "participant",
   "privacy",
   "delete-account",
+  "my-events",
 ];
 
 // Any URL without a route. If the LIFF Endpoint URL is a
@@ -114,6 +116,7 @@ function App() {
         <Route path="/participant" element={<Participant />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/delete-account" element={<DeleteAccount />} />
+        <Route path="/my-events" element={<MyEvents />} />
         <Route path="*" element={<Fallback />} />
       </Routes>
 
