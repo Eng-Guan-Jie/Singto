@@ -264,7 +264,11 @@ function ConfirmDate() {
         );
       }
 
-      navigate(`/overview?eventId=${eventId}`);
+      // Straight to the details page, replacing this one so
+      // Back does not reopen Confirm Date.
+      navigate(`/event-details?eventId=${eventId}`, {
+        replace: true,
+      });
     } catch (error) {
       console.error("Confirm date failed:", error);
       alert(error.message || t("failedConfirm"));

@@ -213,56 +213,25 @@
 
 /* ================= ANSWER / MANAGE ================= */
 
-.details-page .details-answer {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.details-page .details-question {
-  margin: 0;
-  color: #222222;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.details-page .details-answer-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.details-page .details-answer-buttons button {
-  height: 44px;
-  border: 1px solid #2a1e16;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #2a1e16;
-  font-family: inherit;
-  font-size: 15px;
+/* "Your answer: Joining" (read-only). */
+.details-page .details-my-answer {
+  align-self: flex-start;
+  margin: 4px 0 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #e7f6ea;
+  color: #1e6b30;
+  font-size: 13px;
   font-weight: 700;
-  cursor: pointer;
 }
 
-.details-page .details-answer-buttons button.active {
-  background: #2a1e16;
-  color: #ffffff;
-}
-
-.details-page .details-answer-buttons button:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-.details-page .details-answer-note {
-  margin: 0;
-  color: #808080;
-  font-size: 12px;
-  line-height: 18px;
+.details-page .details-my-answer.declined {
+  background: #fbe6e6;
+  color: #9b2c27;
 }
 
 .details-page .details-manage-button {
+  width: 100%;
   margin-top: 6px;
   height: 44px;
   border: 0;

@@ -205,7 +205,7 @@ const messages = {
       "These people have declined the invitation and will not be joining the event.",
     noAcceptedYet: "No one has accepted yet.",
     noDeclinedYet: "No one has declined.",
-    answerToSeeList: "Answer above to see who is joining.",
+    answerToSeeList: "Answer the invitation to see who is joining.",
     failedLoadResponses: "Failed to load who is joining.",
     answerVisibleNote:
       "Everyone in this event can see whether you join or decline.",
@@ -215,6 +215,10 @@ const messages = {
     whoGoesNotJoining: "{count} not joining",
     seeAll: "See all",
     manageEvent: "MANAGE EVENT",
+    myEventsBack: "My events",
+    yourAnswer: "Your answer: {answer}",
+    confirmedGuestNote: "The date for this event has been confirmed.",
+    answerInvitation: "ANSWER THE INVITATION",
   },
 
   th: {
@@ -410,7 +414,7 @@ const messages = {
     declinedListNote: "คนเหล่านี้ตอบว่าจะไม่มาร่วมนัด",
     noAcceptedYet: "ยังไม่มีใครตอบรับ",
     noDeclinedYet: "ไม่มีใครตอบปฏิเสธ",
-    answerToSeeList: "ตอบนัดด้านบนก่อน ถึงจะเห็นว่าใครมาบ้าง",
+    answerToSeeList: "ตอบนัดก่อน ถึงจะเห็นว่าใครมาบ้าง",
     failedLoadResponses: "โหลดรายชื่อไม่สำเร็จ",
     answerVisibleNote:
       "ทุกคนในนัดนี้จะเห็นว่าคุณเข้าร่วมหรือไม่เข้าร่วม",
@@ -420,6 +424,10 @@ const messages = {
     whoGoesNotJoining: "ไม่เข้าร่วม {count} คน",
     seeAll: "ดูทั้งหมด",
     manageEvent: "จัดการนัด",
+    myEventsBack: "นัดของฉัน",
+    yourAnswer: "คำตอบของคุณ: {answer}",
+    confirmedGuestNote: "นัดนี้ยืนยันวันแล้ว",
+    answerInvitation: "ไปตอบนัด",
   },
 };
 
