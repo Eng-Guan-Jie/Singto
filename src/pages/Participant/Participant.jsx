@@ -19,6 +19,7 @@ import {
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
 import ColorLegend from "../../components/ColorLegend";
+import WhoGoesRow from "../../components/WhoGoesRow";
 import HeaderActions from "../../components/HeaderActions";
 import { apiErrorMessage } from "../../lib/apiError";
 import "./Participant.css";
@@ -988,49 +989,11 @@ function Participant() {
           {/* Shown once the user has answered (guests get
               no names from the API). */}
           {responses && responses.role !== "guest" && (
-            <button
-              type="button"
-              className="participant-who-goes"
-              onClick={() =>
-                navigate(`/event-details?eventId=${eventId}`)
-              }
-            >
-              <span className="who-goes-avatars" aria-hidden="true">
-                {responses.accepted.slice(0, 5).map((person, index) =>
-                  person.picture_url ? (
-                    <img
-                      key={index}
-                      className="who-goes-avatar"
-                      src={person.picture_url}
-                      alt=""
-                      width="24"
-                      height="24"
-                    />
-                  ) : (
-                    <span key={index} className="who-goes-avatar">
-                      {(person.display_name || "?")
-                        .charAt(0)
-                        .toUpperCase()}
-                    </span>
-                  )
-                )}
-
-                {responses.accepted.length > 5 && (
-                  <span className="who-goes-avatar more">
-                    +{responses.accepted.length - 5}
-                  </span>
-                )}
-              </span>
-
-              <span className="who-goes-text">
-                {t("whoGoesSummary", {
-                  accepted: responses.accepted.length,
-                  declined: responses.declined.length,
-                })}
-              </span>
-
-              <span className="who-goes-link">{t("seeAll")} →</span>
-            </button>
+            <WhoGoesRow
+              eventId={eventId}
+              accepted={responses.accepted}
+              declined={responses.declined}
+            />
           )}
         </section>
 

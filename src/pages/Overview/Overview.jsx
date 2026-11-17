@@ -21,6 +21,7 @@ import {
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
 import ColorLegend from "../../components/ColorLegend";
+import WhoGoesRow from "../../components/WhoGoesRow";
 import HeaderActions from "../../components/HeaderActions";
 import { apiErrorMessage } from "../../lib/apiError";
 import "./Overview.css";
@@ -802,23 +803,15 @@ function Overview() {
               })}
             </p>
 
-            <div className="participants">
-              {responders
-                .slice(0, 3)
-                .map((participant) => (
-                  <Avatar
-                    className="participant-avatar"
-                    key={participant.id}
-                    participant={participant}
-                  />
-                ))}
-
-              {responders.length > 3 && (
-                <div className="more-participants">
-                  +{responders.length - 3}
-                </div>
+            {/* Who joins / declined, with a link to the full
+                lists (same row as the Participant page). */}
+            <WhoGoesRow
+              eventId={eventId}
+              accepted={acceptedParticipants}
+              declined={participants.filter(
+                (participant) => participant.status === "declined"
               )}
-            </div>
+            />
           </div>
 
           <div className="event-actions">
