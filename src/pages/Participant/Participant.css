@@ -315,35 +315,6 @@
 
 /* ================= LEGEND ================= */
 
-.participant-page .participant-legend {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-top: 2px;
-  padding: 0 8px;
-  color: #a8a8a8;
-  font-size: 12px;
-}
-
-.participant-page .legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.participant-page .legend-dot.busy {
-  background: #db7370;
-}
-
-.participant-page .legend-dot.partial {
-  background: #e7c455;
-}
-
-.participant-page .legend-dot.free {
-  background: #74ce86;
-}
-
 /* ================= AVAILABILITY ================= */
 
 .participant-page .availability-heading {

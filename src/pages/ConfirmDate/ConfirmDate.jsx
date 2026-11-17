@@ -16,6 +16,7 @@ import {
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
+import ColorLegend from "../../components/ColorLegend";
 import LanguageToggle from "../../components/LanguageToggle";
 import "./ConfirmDate.css";
 
@@ -369,6 +370,8 @@ function ConfirmDate() {
               ))}
             </div>
           </div>
+
+          <ColorLegend tinted />
         </section>
 
         <section className="confirm-note-section">

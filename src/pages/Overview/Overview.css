@@ -383,37 +383,6 @@
   line-height: 1;
 }
 
-/* ================= LEGEND ================= */
-
-.overview-page .legend {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-top: 2px;
-  padding: 0 8px;
-  color: #a8a8a8;
-  font-size: 12px;
-}
-
-.overview-page .legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.overview-page .busy-dot {
-  background: #db7370;
-}
-
-.overview-page .partial-dot {
-  background: #e7c455;
-}
-
-.overview-page .free-dot {
-  background: #74ce86;
-}
-
 /* ================= BEST DATE ================= */
 
 .overview-page .best-date-section {

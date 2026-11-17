@@ -20,6 +20,7 @@ import {
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
+import ColorLegend from "../../components/ColorLegend";
 import LanguageToggle from "../../components/LanguageToggle";
 import "./Overview.css";
 
@@ -1010,21 +1011,10 @@ function Overview() {
 
             {/* ================= LEGEND ================= */}
 
-            {hasAvailability && (
-              <div className="legend">
-                <span className="legend-label">
-                  {t("legendBusy")}
-                </span>
-
-                <span className="legend-dot busy-dot" />
-                <span className="legend-dot partial-dot" />
-                <span className="legend-dot free-dot" />
-
-                <span className="legend-label">
-                  {t("legendFree")}
-                </span>
-              </div>
-            )}
+            <ColorLegend
+              pending={!hasAvailability}
+              showCounts
+            />
 
             {/* ================= BEST DATE ================= */}
 

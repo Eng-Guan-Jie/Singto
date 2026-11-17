@@ -12,6 +12,7 @@ import {
 } from "../../lib/calendar";
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
+import ColorLegend from "../../components/ColorLegend";
 import LanguageToggle from "../../components/LanguageToggle";
 import "./Participant.css";
 
@@ -933,13 +934,10 @@ function Participant() {
               </div>
             </div>
 
-            <div className="participant-legend">
-              <span>{t("legendBusy")}</span>
-              <span className="legend-dot busy" />
-              <span className="legend-dot partial" />
-              <span className="legend-dot free" />
-              <span>{t("legendFree")}</span>
-            </div>
+            <ColorLegend
+              pending={!hasAvailability}
+              showCounts={acceptedCount > 0}
+            />
           </section>
         )}
 
