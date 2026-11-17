@@ -14,9 +14,9 @@ Additionally, I participated in user testing to evaluate the usability of the sy
 
 ## Evidence
 
-- **Figma Design & Prototype:** [Figma Link](https://www.figma.com/design/V6SsCpvzP8oHiIMLUymboC/Sync-Solution?node-id=0-1&t=bVzoFPkRzM8neuLv-1)
+- **Figma Design & Prototype:** [Figma link](https://www.figma.com/design/V6SsCpvzP8oHiIMLUymboC/Sync-Solution?node-id=0-1&t=bVzoFPkRzM8neuLv-1)
 - **User Survey:** [Survey response link](https://docs.google.com/spreadsheets/d/1VK0_7mImq6vKJGHI_7moQkCXQHeb8O_vOP1BxDLb0DU/edit?usp=sharing)
-- **User Persona:** [User Persona](https://canva.link/Singto-UserPersona)
+- **User Persona:** [User Persona link](https://canva.link/Singto-UserPersona)
 
 ## AI Disclosure
 
