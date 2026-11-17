@@ -1,19 +1,22 @@
 # Quality Assurance (QA) – Role Statement
 
-**Student ID:** 6631503006 
-**Name:** Didwarin Densupphakul  
+**Student ID:** [Student ID]  
+**Name:** [Full Name]  
 **Role:** Quality Assurance (QA)
 
-As the QA member of Singto, I was responsible for planning and coordinating testing activities to evaluate whether the system met its functional requirements and provided a usable scheduling experience. My responsibilities included preparing test scenarios, defining expected outcomes, identifying potential failure cases, and documenting testing procedures.
+As the QA member of Singto, I was responsible for ensuring the system's reliability and verifying that its core functionalities behaved as expected. My contributions included preparing and maintaining automated test cases, defining expected outcomes, and checking the application's scheduling logic, API behavior, input validation, and access control.
 
-Testing focused on the main scheduling workflow, including creating events, accessing event links, submitting participant availability, viewing the availability overview, finding suitable dates, and confirming the final schedule. I also contributed to identifying edge cases, such as invalid inputs, incomplete availability submissions, participants without submitted responses, and unauthorized actions.
+I contributed to the automated testing suite using Node.js's built-in test runner. The suite contains 49 test cases across seven test files, covering Best Date recommendations, calendar and holiday calculations, event input validation, API authentication and authorization, event locking after confirmation, LINE webhook signature verification, and scheduled event cleanup.
 
-For user acceptance testing, I helped establish a consistent reporting approach using participant IDs, task completion status, completion time, discovery time, errors, assistance requests, and post-test usability and acceptance questionnaires.
+For the Best Date functionality, I worked with a controlled test dataset to verify availability calculations, consecutive-day recommendations, holiday filtering, tie handling, and cases where no participants are available. The tests use mock database and LINE services to support isolated execution without accessing real user data.
+
+The test suite is also integrated into the project's GitHub Actions workflow to run during pushes and pull requests.
 
 **Evidence:**
-- Test Plan: [Insert test plan path]
-- Security checklist: [Insert security checklist path]
-- UAT measurement template: [Insert template path]
-- Test execution records and findings: [Insert actual test results]
+- Automated test suite: `test/`
+- Test overview and recorded results: `test/README.md`
+- Best Date evaluation: `test/ai-eval.test.mjs`
+- API and security tests: `test/api-access.test.mjs`, `test/webhook-and-cron.test.mjs`
+- CI workflow: `.github/workflows/ci.yml`
 
-**AI Disclosure:** AI tools may have been used to assist with drafting test scenarios, organizing test documentation, and refining test descriptions. Test execution, observations, and final evaluation results must be based on actual testing activities.
+**AI Disclosure:** AI tools may have been used to assist with test development, debugging, and documentation. Test scenarios, expected outcomes, and final test results were reviewed by the project team.
