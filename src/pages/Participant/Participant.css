@@ -534,3 +534,209 @@
   font-size: 12px;
   line-height: 18px;
 }
+
+/* Under the hint on MY AVAILABILITY: who can see the days. */
+.participant-page .availability-visible-note {
+  margin: 0 0 12px;
+  color: #808080;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* ================= OVERVIEW: TAPPABLE DAYS =================
+   Same as the organizer's Overview: tapping a day shows
+   who is free on it, and the other days fade. */
+
+.participant-page button.participant-calendar-date:not(:disabled) {
+  cursor: pointer;
+}
+
+.participant-page
+  .participant-calendar.has-selection
+  .participant-calendar-date.free:not(.selected) {
+  background: rgba(116, 206, 134, 0.3);
+}
+
+.participant-page
+  .participant-calendar.has-selection
+  .participant-calendar-date.partial:not(.selected) {
+  background: rgba(231, 196, 85, 0.3);
+}
+
+.participant-page
+  .participant-calendar.has-selection
+  .participant-calendar-date.busy:not(.selected) {
+  background: rgba(219, 115, 112, 0.3);
+}
+
+/* ================= BEST DATE =================
+   Copied from Overview.css so both pages look the same. */
+
+.participant-page .best-date-section {
+  margin-top: 20px;
+}
+
+.participant-page .best-date-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.participant-page .best-date-header h2 {
+  margin: 0;
+  color: #000000;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.participant-page .best-date-header p {
+  margin: 0;
+  color: #606060;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.participant-page .filter-wrapper {
+  position: relative;
+}
+
+.participant-page .filter-button {
+  width: 80px;
+  padding: 8px;
+  border: none;
+  border-radius: 50px;
+  background: #2a1e16;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.participant-page .filter-menu {
+  width: auto;
+  min-width: 165px;
+  white-space: nowrap;
+}
+
+.participant-page .filter-menu .quick-select-option.active {
+  font-weight: 700;
+}
+
+.participant-page .best-date-list,
+.participant-page .selected-date-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.participant-page .best-date-list > p {
+  margin: 0;
+  color: #606060;
+  font-size: 14px;
+}
+
+/* Result card: 7px status bar on the left */
+.participant-page .best-date-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 54px;
+  padding: 8px 8px 8px 11px;
+  border: 1px solid #a8a8a8;
+  border-left: 7px solid #d9d9d9;
+  border-radius: 0 8px 8px 0;
+  background: #ffffff;
+  color: #000000;
+  font-family: inherit;
+  text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.participant-page .best-date-card.free {
+  border-left-color: #11e207;
+}
+
+.participant-page .best-date-card.partial {
+  border-left-color: #e7c455;
+}
+
+.participant-page .best-date-card.busy {
+  border-left-color: #db7370;
+}
+
+.participant-page .best-date-top {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.participant-page .best-date-day {
+  font-weight: 500;
+}
+
+.participant-page .availability-breakdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.participant-page .respondent-group h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px;
+  color: #000000;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.participant-page .status-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.participant-page .available-dot {
+  background: #74ce86;
+}
+
+.participant-page .unavailable-dot {
+  background: #db7370;
+}
+
+.participant-page .respondent-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 8px 8px 24px;
+  color: #000000;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.participant-page .respondent-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  object-fit: cover;
+}
+
+.participant-page .empty-respondent-list {
+  margin: 0;
+  padding: 8px 8px 8px 24px;
+  color: #a8a8a8;
+  font-size: 14px;
+}

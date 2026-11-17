@@ -36,8 +36,13 @@ module.exports = async function handler(req, res) {
     /*
      * ================= GET =================
      * Organizer: who is free on each date.
-     * Participant: their own dates + how many people
-     * are free per date, without names (AGENTS.md 5.3).
+     * Participant: their own dates, how many people are
+     * free per date, and (for Best Date) who is free on
+     * each date by name. The team chose to show this to
+     * everyone in the event; the privacy policy (v3) and
+     * the My Availability tab say so. Others are keyed by
+     * their participant row id, never their LINE user ID
+     * (AGENTS.md 5.3).
      * Guest: only their own dates (none yet).
      */
     if (req.method === "GET") {
@@ -53,6 +58,7 @@ module.exports = async function handler(req, res) {
       const rows = await sql`
         SELECT
           a.available_date,
+          p.id AS participant_id,
           p.line_user_id
         FROM availability a
         INNER JOIN participants p
@@ -64,11 +70,19 @@ module.exports = async function handler(req, res) {
 
       const availability = {};
       const counts = {};
+      // Same as availability, but keyed by participant id.
+      const availabilityByKey = {};
 
       rows.forEach((row) => {
         const date = toDateKey(row.available_date);
 
         counts[date] = (counts[date] || 0) + 1;
+
+        if (!availabilityByKey[date]) {
+          availabilityByKey[date] = [];
+        }
+
+        availabilityByKey[date].push(String(row.participant_id));
 
         if (
           role === "organizer" ||
@@ -90,18 +104,27 @@ module.exports = async function handler(req, res) {
         return;
       }
 
+      // Everyone who accepted, including those who have not
+      // picked days yet (they count as not free).
       const acceptedRows = await sql`
-        SELECT COUNT(*)::int AS count
+        SELECT id, display_name, picture_url
         FROM participants
         WHERE event_id = ${eventId}
           AND status = 'accepted'
+        ORDER BY joined_at ASC
       `;
 
       res.status(200).json({
         role,
         availability,
         counts,
-        acceptedCount: acceptedRows[0].count,
+        acceptedCount: acceptedRows.length,
+        availabilityByKey,
+        acceptedPeople: acceptedRows.map((row) => ({
+          key: String(row.id),
+          display_name: row.display_name,
+          picture_url: row.picture_url,
+        })),
       });
       return;
     }

@@ -9,7 +9,13 @@ import {
   generateCalendarWeeks,
   getCalendarMonths,
   getAvailabilityStatus,
+  findMonthIndex,
 } from "../../lib/calendar";
+import {
+  BEST_DATE_FILTERS,
+  summarizeDates,
+  findBestOptions,
+} from "../../lib/bestDate";
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
 import ColorLegend from "../../components/ColorLegend";
@@ -27,6 +33,8 @@ function Participant() {
     formatDate,
     weekdaysShort,
     weekdaysLong,
+    formatDayLabel,
+    formatWeekday,
   } = useI18n();
   const navigate = useNavigate();
   const [eventId, setEventId] = useState(null);
@@ -74,6 +82,25 @@ function Participant() {
 
   const [acceptedCount, setAcceptedCount] =
     useState(0);
+
+  // Best Date: who is free on each date, keyed by an
+  // opaque participant key (not a LINE user ID), and
+  // everyone who accepted.
+  const [availabilityByKey, setAvailabilityByKey] =
+    useState({});
+
+  const [acceptedPeople, setAcceptedPeople] =
+    useState([]);
+
+  // Day(s) picked on the Overview calendar or from a
+  // Best Date card; shows who is free on them.
+  const [pickedDates, setPickedDates] = useState([]);
+
+  const [bestDateFilter, setBestDateFilter] =
+    useState("single");
+
+  const [showFilterMenu, setShowFilterMenu] =
+    useState(false);
 
   // Bumped after accept/decline/save to reload counts.
   const [refreshKey, setRefreshKey] =
@@ -329,6 +356,14 @@ function Participant() {
 
           setAcceptedCount(
             data.acceptedCount || 0
+          );
+
+          setAvailabilityByKey(
+            data.availabilityByKey || {}
+          );
+
+          setAcceptedPeople(
+            data.acceptedPeople || []
           );
         } catch (error) {
           console.error(
@@ -639,6 +674,101 @@ function Participant() {
       : "pending";
 
   /*
+   * ================= BEST DATE =================
+   * Same rules as the organizer's Overview
+   * (src/lib/bestDate.js).
+   */
+
+  const activeFilter = BEST_DATE_FILTERS.find(
+    (filter) => filter.value === bestDateFilter
+  );
+
+  // Every day of the scheduling period, in order.
+  const rangeDates = useMemo(
+    () =>
+      weeks
+        .flat()
+        .filter(
+          (date) =>
+            !date.muted &&
+            date.date >= eventStartDate &&
+            date.date <= eventEndDate
+        )
+        .map((date) => date.date),
+    [weeks, eventStartDate, eventEndDate]
+  );
+
+  const bestOptions = useMemo(
+    () =>
+      findBestOptions(
+        rangeDates,
+        activeFilter,
+        availabilityByKey,
+        acceptedPeople
+      ),
+    [rangeDates, activeFilter, availabilityByKey, acceptedPeople]
+  );
+
+  const pickedSummary =
+    pickedDates.length > 0
+      ? summarizeDates(
+          pickedDates,
+          availabilityByKey,
+          acceptedPeople
+        )
+      : null;
+
+  // "12 ต.ค. 2569 – 13 ต.ค. 2569" / "วันจันทร์ – วันอังคาร"
+  const datesLabel = (dates) =>
+    dates.length > 1
+      ? `${formatDayLabel(dates[0])} – ${formatDayLabel(
+          dates[dates.length - 1]
+        )}`
+      : formatDayLabel(dates[0]);
+
+  const weekdaysLabel = (dates) =>
+    dates.length > 1
+      ? `${formatWeekday(dates[0])} – ${formatWeekday(
+          dates[dates.length - 1]
+        )}`
+      : formatWeekday(dates[0]);
+
+  const handleFilterChange = (value) => {
+    setBestDateFilter(value);
+    setPickedDates([]);
+    setShowFilterMenu(false);
+  };
+
+  const renderPeople = (people, emptyKey) =>
+    people.length > 0 ? (
+      people.map((person) => (
+        <div className="respondent-row" key={person.key}>
+          {person.picture_url ? (
+            <img
+              className="respondent-avatar"
+              src={person.picture_url}
+              alt=""
+              width="24"
+              height="24"
+            />
+          ) : (
+            <span className="respondent-avatar">
+              {(person.display_name || "?")
+                .charAt(0)
+                .toUpperCase()}
+            </span>
+          )}
+
+          <span>
+            {(person.display_name || "UNKNOWN").toUpperCase()}
+          </span>
+        </div>
+      ))
+    ) : (
+      <p className="empty-respondent-list">{t(emptyKey)}</p>
+    );
+
+  /*
    * ================= LOADING =================
    */
 
@@ -865,7 +995,11 @@ function Participant() {
               onChange={setMonthIndex}
             />
 
-            <div className="participant-calendar">
+            <div
+              className={`participant-calendar ${
+                pickedDates.length > 0 ? "has-selection" : ""
+              }`}
+            >
               <div className="participant-weekday-row">
                 {weekdaysShort.map(
                   (day) => (
@@ -903,14 +1037,22 @@ function Participant() {
                                   date.date
                                 );
 
+                          const isPicked =
+                            pickedDates.includes(date.date);
+
                           return (
-                            <div
+                            <button
+                              type="button"
                               key={`${weekIndex}-${index}`}
                               className={`participant-calendar-date ${
                                 date.muted
                                   ? `muted ${date.otherMonth ? "other-month" : ""}`
                                   : ""
-                              } ${status}`}
+                              } ${status} ${isPicked ? "selected" : ""}`}
+                              disabled={date.muted}
+                              onClick={() =>
+                                setPickedDates([date.date])
+                              }
                             >
                               <span>{date.day}</span>
 
@@ -924,7 +1066,7 @@ function Participant() {
                                     /{acceptedCount}
                                   </small>
                                 )}
-                            </div>
+                            </button>
                           );
                         }
                       )}
@@ -938,6 +1080,130 @@ function Participant() {
               pending={!hasAvailability}
               showCounts={acceptedCount > 0}
             />
+
+            {/* ================= BEST DATE ================= */}
+
+            <section className="best-date-section">
+              <div className="best-date-header">
+                <div>
+                  <h2>{t("bestDate")}</h2>
+                  <p>{t(activeFilter.labelKey)}</p>
+                </div>
+
+                <div className="filter-wrapper">
+                  <button
+                    type="button"
+                    className="filter-button"
+                    onClick={() =>
+                      setShowFilterMenu((current) => !current)
+                    }
+                    aria-expanded={showFilterMenu}
+                  >
+                    {t("filter")}
+                  </button>
+
+                  {showFilterMenu && (
+                    <div className="quick-select-menu filter-menu">
+                      {BEST_DATE_FILTERS.map((filter) => (
+                        <button
+                          type="button"
+                          key={filter.value}
+                          className={`quick-select-option ${
+                            filter.value === bestDateFilter
+                              ? "active"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            handleFilterChange(filter.value)
+                          }
+                        >
+                          {t(filter.labelKey)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {pickedSummary ? (
+                <div className="selected-date-detail">
+                  <button
+                    type="button"
+                    className={`best-date-card ${pickedSummary.status}`}
+                    onClick={() => setPickedDates([])}
+                  >
+                    <div className="best-date-top">
+                      <strong>{datesLabel(pickedDates)}</strong>
+                      <strong>
+                        {pickedSummary.available}/
+                        {pickedSummary.total}
+                      </strong>
+                    </div>
+
+                    <span className="best-date-day">
+                      {weekdaysLabel(pickedDates)}
+                    </span>
+                  </button>
+
+                  <div className="availability-breakdown">
+                    <section className="respondent-group">
+                      <h3>
+                        <span className="status-dot available-dot" />
+                        {t("available")}
+                      </h3>
+
+                      {renderPeople(
+                        pickedSummary.availablePeople,
+                        "noOneYet"
+                      )}
+                    </section>
+
+                    <section className="respondent-group">
+                      <h3>
+                        <span className="status-dot unavailable-dot" />
+                        {t("unavailable")}
+                      </h3>
+
+                      {renderPeople(
+                        pickedSummary.unavailablePeople,
+                        "noOne"
+                      )}
+                    </section>
+                  </div>
+                </div>
+              ) : (
+                <div className="best-date-list">
+                  {bestOptions.length > 0 ? (
+                    bestOptions.map((option) => (
+                      <button
+                        type="button"
+                        key={option.dates.join()}
+                        className={`best-date-card ${option.status}`}
+                        onClick={() => {
+                          setPickedDates(option.dates);
+                          setMonthIndex(
+                            findMonthIndex(months, option.dates[0])
+                          );
+                        }}
+                      >
+                        <div className="best-date-top">
+                          <strong>{datesLabel(option.dates)}</strong>
+                          <strong>
+                            {option.available}/{option.total}
+                          </strong>
+                        </div>
+
+                        <span className="best-date-day">
+                          {weekdaysLabel(option.dates)}
+                        </span>
+                      </button>
+                    ))
+                  ) : (
+                    <p>{t("noAvailableDate")}</p>
+                  )}
+                </div>
+              )}
+            </section>
           </section>
         )}
 
@@ -1015,6 +1281,12 @@ function Participant() {
                 {t("acceptFirstHint")}
               </p>
             )}
+
+            {/* Picked days are shown by name in Best Date
+                (privacy policy v3). */}
+            <p className="availability-visible-note">
+              {t("availabilityVisibleNote")}
+            </p>
 
             <MonthNav
               months={months}

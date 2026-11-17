@@ -150,7 +150,7 @@ const messages = {
     close: "Close",
     noticeTitle: "Your privacy",
     noticeBody:
-      "Singto uses your LINE name, profile picture and LINE ID, and the days you pick, only to find a date for your group. Everyone in an event can see who joins and who declined. Events are deleted automatically 30 days after they end, and you can delete your data at any time from the profile menu.",
+      "Singto uses your LINE name, profile picture and LINE ID, and the days you pick, only to find a date for your group. Everyone in an event can see who joins, who declined and who is free on which day. Events are deleted automatically 30 days after they end, and you can delete your data at any time from the profile menu.",
     noticeReadPolicy: "Read the privacy policy",
     noticeAcknowledge: "Got it",
     deleteAccountIntro:
@@ -210,6 +210,8 @@ const messages = {
     failedLoadResponses: "Failed to load who is joining.",
     answerVisibleNote:
       "Everyone in this event can see whether you join or decline.",
+    availabilityVisibleNote:
+      "Everyone in this event can see which days you pick.",
   },
 
   th: {
@@ -352,7 +354,7 @@ const messages = {
     close: "ปิด",
     noticeTitle: "ความเป็นส่วนตัวของคุณ",
     noticeBody:
-      "สิงโตใช้ชื่อ รูปโปรไฟล์ และ LINE ID ของคุณ รวมถึงวันที่คุณเลือก เพื่อหาวันนัดของกลุ่มเท่านั้น ทุกคนในนัดจะเห็นว่าใครเข้าร่วมหรือไม่เข้าร่วม นัดจะถูกลบอัตโนมัติ 30 วันหลังจบ และคุณลบข้อมูลของคุณได้ทุกเมื่อจากเมนูรูปโปรไฟล์",
+      "สิงโตใช้ชื่อ รูปโปรไฟล์ และ LINE ID ของคุณ รวมถึงวันที่คุณเลือก เพื่อหาวันนัดของกลุ่มเท่านั้น ทุกคนในนัดจะเห็นว่าใครเข้าร่วม ใครไม่เข้าร่วม และใครว่างวันไหน นัดจะถูกลบอัตโนมัติ 30 วันหลังจบ และคุณลบข้อมูลของคุณได้ทุกเมื่อจากเมนูรูปโปรไฟล์",
     noticeReadPolicy: "อ่านนโยบายฉบับเต็ม",
     noticeAcknowledge: "รับทราบ",
     deleteAccountIntro:
@@ -410,6 +412,8 @@ const messages = {
     failedLoadResponses: "โหลดรายชื่อไม่สำเร็จ",
     answerVisibleNote:
       "ทุกคนในนัดนี้จะเห็นว่าคุณเข้าร่วมหรือไม่เข้าร่วม",
+    availabilityVisibleNote:
+      "ทุกคนในนัดนี้จะเห็นว่าคุณว่างวันไหน",
   },
 };
 
