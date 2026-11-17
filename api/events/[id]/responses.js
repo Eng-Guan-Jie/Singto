@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
     );
 
     // Throws 404 for an unknown event.
-    const { event, role } = await getEventRole(
+    const { event, participant, role } = await getEventRole(
       eventId,
       lineUser.sub
     );
@@ -60,6 +60,7 @@ module.exports = async function handler(req, res) {
     if (role === "guest") {
       res.status(200).json({
         role,
+        myStatus: null,
         organizer,
         accepted: [],
         declined: [],
@@ -82,6 +83,8 @@ module.exports = async function handler(req, res) {
 
     res.status(200).json({
       role,
+      // The caller's own answer: accepted / declined.
+      myStatus: participant?.status || null,
       organizer,
       accepted: rows
         .filter((row) => row.status === "accepted")

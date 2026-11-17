@@ -217,6 +217,15 @@ function Participant() {
           );
         }
 
+        // Once the date is confirmed, every link to the
+        // event opens its details page instead.
+        if (data.event.confirmed_dates?.length > 0) {
+          navigate(`/event-details?eventId=${eventId}`, {
+            replace: true,
+          });
+          return;
+        }
+
         setEvent(data.event);
       } catch (error) {
         console.error(

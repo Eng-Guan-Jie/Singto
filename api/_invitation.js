@@ -376,7 +376,8 @@ async function sendInvitation(
       start_date,
       end_date,
       line_chat_id,
-      organizer_line_user_id
+      organizer_line_user_id,
+      finalized_date
     FROM events
     WHERE id = ${eventId}
     LIMIT 1
@@ -386,6 +387,13 @@ async function sendInvitation(
 
   if (!event) {
     throw new AuthError(404, "Event not found");
+  }
+
+  // Once the date is confirmed, a new answer no longer
+  // posts a "pick your date" card (it would only use up
+  // the LINE message quota). "Notify Again" still can.
+  if (untilComplete && event.finalized_date) {
+    return { sent: false };
   }
 
   if (!event.line_chat_id) {

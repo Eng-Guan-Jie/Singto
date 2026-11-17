@@ -256,7 +256,9 @@ function CreateEvent() {
         );
       }
 
-      navigate(`/overview?eventId=${eventId}`, {
+      // Back to managing the event (a confirmed event would
+      // otherwise open its details page).
+      navigate(`/overview?eventId=${eventId}&manage=1`, {
         state: {
           lineChatId,
           organizerLineUserId,

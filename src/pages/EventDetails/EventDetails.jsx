@@ -54,6 +54,9 @@ function EventDetails() {
   const [event, setEvent] = useState(null);
   const [responses, setResponses] = useState(null);
   const [error, setError] = useState("");
+  const [isAnswering, setIsAnswering] = useState(false);
+  // Bumped after answering to reload the lists.
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -106,9 +109,49 @@ function EventDetails() {
     };
 
     load();
-    // Load once per event.
+    // Load per event, and again after answering.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventId]);
+  }, [eventId, reloadKey]);
+
+  // Join / decline from this page: once the date is
+  // confirmed, every link to the event lands here, so this
+  // is where people answer (or change their answer).
+  const handleAnswer = async (status) => {
+    setIsAnswering(true);
+
+    try {
+      await initLiff();
+
+      const idToken = getFreshIdToken();
+
+      // Redirecting to LINE Login.
+      if (!idToken) return;
+
+      const response = await fetch(
+        `${API_BASE}/api/events/${eventId}/participants`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken, status }),
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          apiErrorMessage(t, response, data, "failedUpdateParticipation")
+        );
+      }
+
+      setReloadKey((key) => key + 1);
+    } catch (answerError) {
+      console.error("Answer failed:", answerError);
+      alert(answerError.message || t("failedUpdateParticipation"));
+    } finally {
+      setIsAnswering(false);
+    }
+  };
 
   const header = (
     <header className="details-header">
@@ -129,6 +172,7 @@ function EventDetails() {
   }
 
   const isGuest = responses.role === "guest";
+  const isOrganizer = responses.role === "organizer";
   const people =
     activeTab === "accepted" ? responses.accepted : responses.declined;
 
@@ -174,21 +218,50 @@ function EventDetails() {
               </p>
             </div>
           )}
+          {isOrganizer ? (
+            <button
+              type="button"
+              className="details-manage-button"
+              onClick={() =>
+                navigate(`/overview?eventId=${eventId}&manage=1`)
+              }
+            >
+              {t("manageEvent")}
+            </button>
+          ) : (
+            <div className="details-answer">
+              <p className="details-question">{t("joinQuestion")}</p>
+
+              <div className="details-answer-buttons">
+                <button
+                  type="button"
+                  className={responses.myStatus === "declined" ? "active" : ""}
+                  disabled={isAnswering}
+                  onClick={() => handleAnswer("declined")}
+                >
+                  {t("decline")}
+                </button>
+
+                <button
+                  type="button"
+                  className={responses.myStatus === "accepted" ? "active" : ""}
+                  disabled={isAnswering}
+                  onClick={() => handleAnswer("accepted")}
+                >
+                  {t("accept")}
+                </button>
+              </div>
+
+              <p className="details-answer-note">
+                {t("answerVisibleNote")}
+              </p>
+            </div>
+          )}
         </section>
 
         {isGuest ? (
           <section className="details-panel">
             <p className="details-note">{t("answerToSeeList")}</p>
-
-            <button
-              type="button"
-              className="details-answer-button"
-              onClick={() =>
-                navigate(`/participant?eventId=${eventId}`)
-              }
-            >
-              {t("answerInvitation")}
-            </button>
           </section>
         ) : (
           <>

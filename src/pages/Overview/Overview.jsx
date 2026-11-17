@@ -218,6 +218,18 @@ function Overview() {
           );
         }
 
+        // A confirmed event opens its details page, unless
+        // the organizer came from "Manage event" there.
+        if (
+          eventData.event.confirmed_dates?.length > 0 &&
+          searchParams.get("manage") !== "1"
+        ) {
+          navigate(`/event-details?eventId=${eventId}`, {
+            replace: true,
+          });
+          return;
+        }
+
         setEvent(eventData.event);
 
         // Pre-select the organizer's own saved dates.
