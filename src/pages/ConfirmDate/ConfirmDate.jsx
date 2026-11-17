@@ -134,6 +134,15 @@ function ConfirmDate() {
 
         const loadedEvent = eventData.event;
 
+        // A date can be confirmed only once; show the
+        // confirmed event instead (the API refuses too).
+        if (loadedEvent.confirmed_dates?.length > 0) {
+          navigate(`/event-details?eventId=${eventId}`, {
+            replace: true,
+          });
+          return;
+        }
+
         setEvent(loadedEvent);
         setCounts(availabilityData.counts || {});
         setAcceptedCount(availabilityData.acceptedCount || 0);

@@ -31,6 +31,11 @@ function CreateEvent() {
   const existingEvent = location.state?.eventData;
   const isEditMode = location.state?.editMode === true;
 
+  // Once the date is confirmed only the description can be
+  // edited (the API refuses other changes too).
+  const isConfirmed =
+    isEditMode && existingEvent?.confirmedDates?.length > 0;
+
   const lineChatId = searchParams.get("lineChatId");
 
   const [organizerLineUserId, setOrganizerLineUserId] =
@@ -339,6 +344,12 @@ function CreateEvent() {
 
       {/* Main Content */}
       <main className="form-container">
+        {isConfirmed && (
+          <p className="locked-note">
+            {t("onlyDescriptionEditable")}
+          </p>
+        )}
+
         {/* Event Name */}
         <div className="form-group">
           <label htmlFor="eventName">
@@ -349,6 +360,7 @@ function CreateEvent() {
             id="eventName"
             type="text"
             maxLength={100}
+            disabled={isConfirmed}
             placeholder={t("eventNamePlaceholder")}
             value={eventName}
             onChange={(e) =>
@@ -389,6 +401,7 @@ function CreateEvent() {
               <input
                 id="startDate"
                 type="date"
+                disabled={isConfirmed}
                 value={startDate}
                 onChange={(e) =>
                   setStartDate(e.target.value)
@@ -412,6 +425,7 @@ function CreateEvent() {
               <input
                 id="endDate"
                 type="date"
+                disabled={isConfirmed}
                 value={endDate}
                 onChange={(e) =>
                   setEndDate(e.target.value)

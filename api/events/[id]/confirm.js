@@ -40,7 +40,7 @@ module.exports = async function handler(req, res) {
   try {
     const lineUser = await verifyLineIdToken(idToken);
 
-    const { event, role } = await getEventRole(
+    const { event, role, isConfirmed } = await getEventRole(
       eventId,
       lineUser.sub
     );
@@ -50,6 +50,10 @@ module.exports = async function handler(req, res) {
         403,
         "Only the organizer can confirm the date."
       );
+    }
+
+    if (isConfirmed) {
+      throw new AuthError(409, "The date is already confirmed.");
     }
 
     const startDate = toDateKey(event.start_date);

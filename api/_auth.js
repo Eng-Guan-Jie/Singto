@@ -97,7 +97,8 @@ async function getEventRole(eventId, lineUserId) {
       start_date,
       end_date,
       line_chat_id,
-      organizer_line_user_id
+      organizer_line_user_id,
+      finalized_date
     FROM events
     WHERE id = ${eventId}
     LIMIT 1
@@ -130,7 +131,12 @@ async function getEventRole(eventId, lineUserId) {
     role = "participant";
   }
 
-  return { event, participant, role };
+  // Once the organizer confirms a date the event is locked:
+  // no new confirmation, no availability changes, no answer
+  // changes, and only the description can be edited.
+  const isConfirmed = Boolean(event.finalized_date);
+
+  return { event, participant, role, isConfirmed };
 }
 
 /*

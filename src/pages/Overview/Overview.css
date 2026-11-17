@@ -740,3 +740,23 @@
   font-size: 10px;
   font-weight: 500;
 }
+
+/* Shown on MY AVAILABILITY once the date is confirmed. */
+.overview-page .availability-locked-note {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: #f5f8fb;
+  color: #404040;
+  font-size: 14px;
+}
+
+.overview-page .finalize-button:disabled {
+  background: #a8a8a8;
+  cursor: default;
+}
+
+.overview-page .availability-date:disabled:not(.muted) {
+  cursor: default;
+}

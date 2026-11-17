@@ -108,13 +108,54 @@ module.exports = async function handler(req, res) {
 
       const lineUser = await verifyLineIdToken(idToken);
 
-      const { role } = await getEventRole(id, lineUser.sub);
+      const { event, role, isConfirmed } = await getEventRole(
+        id,
+        lineUser.sub
+      );
 
       if (role !== "organizer") {
         throw new AuthError(
           403,
           "Only the organizer can edit this event."
         );
+      }
+
+      // After the date is confirmed only the description can
+      // change: the name and period stay as everyone agreed.
+      if (isConfirmed) {
+        const [current] = await sql`
+          SELECT event_name
+          FROM events
+          WHERE id = ${id}
+        `;
+
+        if (
+          eventName !== current.event_name ||
+          startDate !== toDateKey(event.start_date) ||
+          endDate !== toDateKey(event.end_date)
+        ) {
+          res.status(409).json({
+            message:
+              "Only the description can be edited after the date is confirmed.",
+          });
+          return;
+        }
+
+        const [updated] = await sql`
+          UPDATE events
+          SET description = ${description}
+          WHERE id = ${id}
+          RETURNING
+            id,
+            event_name,
+            description,
+            start_date,
+            end_date,
+            status
+        `;
+
+        res.status(200).json({ event: updated });
+        return;
       }
 
       // Availability outside a shortened period no longer

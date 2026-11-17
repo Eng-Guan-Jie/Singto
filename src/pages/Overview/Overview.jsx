@@ -762,6 +762,11 @@ function Overview() {
     eventData.startDate
   )} - ${formatDate(eventData.endDate)}`;
 
+  // After the organizer confirms a date, the event is
+  // locked: no second confirmation and no availability
+  // changes (the API refuses them too).
+  const isConfirmed = eventData.confirmedDates.length > 0;
+
   return (
     <div className="overview-page">
       {/* ================= HEADER ================= */}
@@ -1240,8 +1245,11 @@ function Overview() {
               <button
                 className="finalize-button"
                 onClick={handleFinalize}
+                disabled={isConfirmed}
               >
-                {t("finalizeDate")}
+                {isConfirmed
+                  ? t("dateConfirmedButton")
+                  : t("finalizeDate")}
               </button>
             </div>
           </section>
@@ -1261,6 +1269,7 @@ function Overview() {
                   </p>
                 </div>
 
+                {!isConfirmed && (
                 <div className="quick-select-wrapper">
                   <button
                     className="quick-select-button"
@@ -1294,7 +1303,14 @@ function Overview() {
                     </div>
                   )}
                 </div>
+                )}
               </div>
+
+              {isConfirmed && (
+                <p className="availability-locked-note">
+                  {t("availabilityLocked")}
+                </p>
+              )}
 
               <MonthNav
                 months={months}
@@ -1345,7 +1361,7 @@ function Overview() {
                                   }
                                 `}
                                 disabled={
-                                  date.muted
+                                  date.muted || isConfirmed
                                 }
                                 onClick={() =>
                                   toggleAvailabilityDate(
@@ -1374,19 +1390,21 @@ function Overview() {
               </div>
             </section>
 
-            <div className="overview-bottom-bar">
-              <button
-                className="save-availability-button"
-                onClick={
-                  handleSaveAvailability
-                }
-                disabled={isSavingAvailability}
-              >
-                {isSavingAvailability
-                  ? t("saving")
-                  : t("save")}
-              </button>
-            </div>
+            {!isConfirmed && (
+              <div className="overview-bottom-bar">
+                <button
+                  className="save-availability-button"
+                  onClick={
+                    handleSaveAvailability
+                  }
+                  disabled={isSavingAvailability}
+                >
+                  {isSavingAvailability
+                    ? t("saving")
+                    : t("save")}
+                </button>
+              </div>
+            )}
           </section>
         )}
       </main>

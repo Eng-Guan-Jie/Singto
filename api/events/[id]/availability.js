@@ -145,8 +145,16 @@ module.exports = async function handler(req, res) {
 
       const lineUser = await verifyLineIdToken(idToken);
 
-      const { event, participant, role } =
+      const { event, participant, role, isConfirmed } =
         await getEventRole(eventId, lineUser.sub);
+
+      if (isConfirmed) {
+        res.status(409).json({
+          message:
+            "Available days are locked because the date is confirmed.",
+        });
+        return;
+      }
 
       const startDate = toDateKey(event.start_date);
       const endDate = toDateKey(event.end_date);

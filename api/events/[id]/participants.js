@@ -116,8 +116,16 @@ module.exports = async function handler(req, res) {
       const lineUser = await verifyLineIdToken(idToken);
 
       // Throws 404 if the event does not exist.
-      const { participant: previous } =
+      const { participant: previous, isConfirmed } =
         await getEventRole(eventId, lineUser.sub);
+
+      if (isConfirmed) {
+        res.status(409).json({
+          message:
+            "Answers are locked because the date is confirmed.",
+        });
+        return;
+      }
 
       // Prefer the values LINE verified over values
       // the client sent.

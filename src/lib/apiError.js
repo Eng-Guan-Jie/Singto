@@ -25,6 +25,12 @@ const SERVER_MESSAGES = {
   "Choose at least one date within the scheduling period.":
     "datesOutOfRange",
   "This event was not created from a LINE chat.": "notFromLineChat",
+  "The date is already confirmed.": "alreadyConfirmed",
+  "Available days are locked because the date is confirmed.":
+    "availabilityLocked",
+  "Answers are locked because the date is confirmed.": "answersLocked",
+  "Only the description can be edited after the date is confirmed.":
+    "onlyDescriptionEditable",
 };
 
 /*
