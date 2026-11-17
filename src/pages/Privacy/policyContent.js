@@ -10,7 +10,7 @@
  * api/_deleteData.js.
  */
 
-export const POLICY_VERSION = 1;
+export const POLICY_VERSION = 2;
 
 // Shown as the policy date.
 export const POLICY_DATE = "2026-11-17";
@@ -49,8 +49,8 @@ export const policy = {
         heading: "ใครเห็นข้อมูลของคุณบ้าง",
         items: [
           "ผู้จัดนัด: เห็นชื่อ รูป และวันที่แต่ละคนว่าง เพื่อเลือกวันนัด",
-          "ผู้เข้าร่วมคนอื่น: เห็นแค่จำนวนคนที่ว่างในแต่ละวัน และชื่อกับรูปของผู้จัด ไม่เห็นว่าใครว่างวันไหน",
-          "สมาชิกในกลุ่ม LINE: เห็นการ์ดที่สิงโตส่ง ซึ่งมีชื่อนัด ชื่อและรูปผู้จัด รูปของคนที่ตอบแล้ว จำนวนคนที่ตอบ และวันนัดที่ยืนยัน",
+          "ผู้เข้าร่วมคนอื่น: เห็นชื่อและรูปของคนที่ตอบเข้าร่วมและไม่เข้าร่วม จำนวนคนที่ว่างในแต่ละวัน และชื่อกับรูปของผู้จัด แต่ไม่เห็นว่าใครว่างวันไหน",
+          "สมาชิกในกลุ่ม LINE: เห็นการ์ดที่สิงโตส่ง ซึ่งมีชื่อนัด ชื่อและรูปผู้จัด รูปของคนที่ตอบแล้ว จำนวนคนที่ตอบ และเมื่อยืนยันวันนัดแล้ว จะแยกรูปคนที่เข้าร่วมกับไม่เข้าร่วมให้เห็น",
         ],
       },
       {
@@ -116,8 +116,8 @@ export const policy = {
         heading: "Who can see your data",
         items: [
           "The organizer: names, pictures and the days each person is free, to choose a date",
-          "Other participants: only how many people are free on each day, plus the organizer's name and picture — not who is free when",
-          "LINE group members: Singto's cards, which show the event name, the organizer's name and picture, pictures of people who answered, the answer count and the confirmed date",
+          "Other participants: the names and pictures of who joins and who declined, how many people are free on each day, and the organizer's name and picture — but not who is free when",
+          "LINE group members: Singto's cards, which show the event name, the organizer's name and picture, pictures of people who answered and the answer count; once the date is confirmed, the card shows pictures of who joins and who declined separately",
         ],
       },
       {

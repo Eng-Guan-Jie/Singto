@@ -1,0 +1,212 @@
+/*
+ * Figma frames "accepted" / "declined" (event details).
+ * Card and tabs match the Participant page.
+ */
+
+.details-page {
+  min-height: 100vh;
+  background: #f5f8fb;
+  color: #222222;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+}
+
+.details-page .details-header {
+  position: relative;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: #2a1e16;
+  border-bottom: 1.5px solid #dddddd;
+  color: #ffffff;
+}
+
+.details-page .details-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.details-page .details-container {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 520px);
+  min-height: calc(100vh - 56px);
+  margin: 0 auto;
+  padding: 8px 0 0;
+}
+
+.details-page .details-message {
+  margin: 16px;
+}
+
+/* ================= EVENT CARD ================= */
+
+.details-page .details-event-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 17px;
+  padding: 16px;
+  border: 1px solid #a8a8a8;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.details-page .details-event-card h2 {
+  margin: 0;
+  color: #000000;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 22px;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.details-page .details-description {
+  margin: 0;
+  color: #606060;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.details-page .details-confirmed,
+.details-page .details-pending {
+  align-self: flex-start;
+  margin: 0;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.details-page .details-confirmed {
+  background: #74ce86;
+  color: #14532d;
+}
+
+.details-page .details-pending {
+  background: #eeeeee;
+  color: #808080;
+}
+
+.details-page .details-created-by {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.details-page .details-created-by p {
+  margin: 0;
+  color: #606060;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.details-page .details-avatar {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2a1e16;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  object-fit: cover;
+}
+
+/* ================= TABS ================= */
+
+.details-page .details-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 16px;
+}
+
+.details-page .details-tab {
+  height: 52px;
+  padding: 8px;
+  border: none;
+  background: #dfdfdf;
+  color: #a8a8a8;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.details-page .details-tab.active {
+  background: #ffffff;
+  color: #000000;
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+.details-page .details-tab.active:first-child {
+  border-top-right-radius: 8px;
+}
+
+.details-page .details-tab.active:last-child {
+  border-top-left-radius: 8px;
+}
+
+/* ================= LIST ================= */
+
+.details-page .details-panel {
+  flex: 1;
+  padding: 20px 24px 32px;
+  background: #ffffff;
+}
+
+.details-page .details-note {
+  margin: 0 0 16px;
+  color: #404040;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.details-page .details-empty {
+  margin: 24px 0;
+  color: #808080;
+  text-align: center;
+}
+
+.details-page .details-people {
+  margin: 0;
+  padding: 0 8px;
+  list-style: none;
+}
+
+.details-page .details-people li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  color: #000000;
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.details-page .details-answer-button {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: 14px;
+  background: #2a1e16;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}

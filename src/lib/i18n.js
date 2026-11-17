@@ -150,7 +150,7 @@ const messages = {
     close: "Close",
     noticeTitle: "Your privacy",
     noticeBody:
-      "Singto uses your LINE name, profile picture and LINE ID, and the days you pick, only to find a date for your group. Events are deleted automatically 30 days after they end, and you can delete your data at any time from the profile menu.",
+      "Singto uses your LINE name, profile picture and LINE ID, and the days you pick, only to find a date for your group. Everyone in an event can see who joins and who declined. Events are deleted automatically 30 days after they end, and you can delete your data at any time from the profile menu.",
     noticeReadPolicy: "Read the privacy policy",
     noticeAcknowledge: "Got it",
     deleteAccountIntro:
@@ -195,6 +195,21 @@ const messages = {
     statusDeclined: "Not joining",
     notConfirmedYet: "Date not confirmed yet",
     failedLoadMyEvents: "Failed to load your events.",
+
+    // ---------- event details (who joins) ----------
+    tabAccepted: "Accepted ({count})",
+    tabDeclined: "Declined ({count})",
+    acceptedListNote:
+      "These people have accepted the invitation and will be joining the event.",
+    declinedListNote:
+      "These people have declined the invitation and will not be joining the event.",
+    noAcceptedYet: "No one has accepted yet.",
+    noDeclinedYet: "No one has declined.",
+    answerToSeeList: "Answer the invitation to see who is joining.",
+    answerInvitation: "ANSWER THE INVITATION",
+    failedLoadResponses: "Failed to load who is joining.",
+    answerVisibleNote:
+      "Everyone in this event can see whether you join or decline.",
   },
 
   th: {
@@ -337,7 +352,7 @@ const messages = {
     close: "ปิด",
     noticeTitle: "ความเป็นส่วนตัวของคุณ",
     noticeBody:
-      "สิงโตใช้ชื่อ รูปโปรไฟล์ และ LINE ID ของคุณ รวมถึงวันที่คุณเลือก เพื่อหาวันนัดของกลุ่มเท่านั้น นัดจะถูกลบอัตโนมัติ 30 วันหลังจบ และคุณลบข้อมูลของคุณได้ทุกเมื่อจากเมนูรูปโปรไฟล์",
+      "สิงโตใช้ชื่อ รูปโปรไฟล์ และ LINE ID ของคุณ รวมถึงวันที่คุณเลือก เพื่อหาวันนัดของกลุ่มเท่านั้น ทุกคนในนัดจะเห็นว่าใครเข้าร่วมหรือไม่เข้าร่วม นัดจะถูกลบอัตโนมัติ 30 วันหลังจบ และคุณลบข้อมูลของคุณได้ทุกเมื่อจากเมนูรูปโปรไฟล์",
     noticeReadPolicy: "อ่านนโยบายฉบับเต็ม",
     noticeAcknowledge: "รับทราบ",
     deleteAccountIntro:
@@ -382,6 +397,19 @@ const messages = {
     statusDeclined: "ไม่เข้าร่วม",
     notConfirmedYet: "ยังไม่ได้ยืนยันวัน",
     failedLoadMyEvents: "โหลดรายการนัดไม่สำเร็จ",
+
+    // ---------- event details (who joins) ----------
+    tabAccepted: "เข้าร่วม ({count})",
+    tabDeclined: "ไม่เข้าร่วม ({count})",
+    acceptedListNote: "คนเหล่านี้ตอบรับและยืนยันว่าจะมาร่วมนัด",
+    declinedListNote: "คนเหล่านี้ตอบว่าจะไม่มาร่วมนัด",
+    noAcceptedYet: "ยังไม่มีใครตอบรับ",
+    noDeclinedYet: "ไม่มีใครตอบปฏิเสธ",
+    answerToSeeList: "ตอบนัดก่อน ถึงจะเห็นว่าใครมาบ้าง",
+    answerInvitation: "ไปตอบนัด",
+    failedLoadResponses: "โหลดรายชื่อไม่สำเร็จ",
+    answerVisibleNote:
+      "ทุกคนในนัดนี้จะเห็นว่าคุณเข้าร่วมหรือไม่เข้าร่วม",
   },
 };
 

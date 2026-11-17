@@ -808,6 +808,12 @@ function Participant() {
               {t("accept")}
             </button>
           </div>
+
+          {/* Answers are shown to everyone in the event
+              (event details page, privacy policy v2). */}
+          <p className="participant-answer-note">
+            {t("answerVisibleNote")}
+          </p>
         </section>
 
         <div className="participant-tabs">

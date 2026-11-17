@@ -467,11 +467,141 @@ function formatLongDate(dateValue) {
   return `${parts.weekday}ที่ ${parts.day} ${parts.month} ${parts.year}`;
 }
 
-function createConfirmationBubble(data) {
-  const badgeText = data.memberCount
-    ? `เข้าร่วม ${data.acceptedCount}/${data.memberCount} คน`
-    : `เข้าร่วม ${data.acceptedCount} คน`;
+// Pictures shown per group on the "date confirmed" card;
+// the rest are counted in a "+N" circle.
+const MAX_CONFIRMED_PICTURES = 3;
 
+/*
+ * Event details page: who joins and who declined
+ * (src/pages/EventDetails). Opened from the confirmed card.
+ */
+function buildDetailsUrl(eventId) {
+  const liffId = process.env.LIFF_ID;
+
+  if (!liffId) {
+    throw new Error("Missing LIFF_ID");
+  }
+
+  const url = new URL(
+    `https://liff.line.me/${liffId}/event-details`
+  );
+  url.searchParams.set("eventId", eventId);
+
+  return url.toString();
+}
+
+// Round label, e.g. the green "เข้าร่วม" pill.
+function createPill(text, backgroundColor, color) {
+  return {
+    type: "box",
+    layout: "horizontal",
+    contents: [
+      {
+        type: "box",
+        layout: "vertical",
+        flex: 0,
+        width: "150px",
+        backgroundColor,
+        cornerRadius: "12px",
+        paddingTop: "3px",
+        paddingBottom: "3px",
+        contents: [
+          {
+            type: "text",
+            text,
+            size: "md",
+            color,
+            align: "center",
+          },
+        ],
+      },
+    ],
+  };
+}
+
+// Grey circle with a number, e.g. "+1".
+function createCountCircle(text) {
+  return {
+    type: "box",
+    layout: "vertical",
+    width: "28px",
+    height: "28px",
+    cornerRadius: "14px",
+    flex: 0,
+    backgroundColor: "#B5B5B5",
+    justifyContent: "center",
+    contents: [
+      {
+        type: "text",
+        text,
+        size: "xs",
+        color: "#222222",
+        align: "center",
+      },
+    ],
+  };
+}
+
+function createPictureCircle(pictureUrl) {
+  return {
+    type: "box",
+    layout: "vertical",
+    width: "28px",
+    height: "28px",
+    cornerRadius: "14px",
+    flex: 0,
+    contents: [
+      {
+        type: "image",
+        url: pictureUrl,
+        size: "full",
+        aspectMode: "cover",
+        aspectRatio: "1:1",
+      },
+    ],
+  };
+}
+
+/*
+ * Up to MAX_CONFIRMED_PICTURES pictures, then "+N" for
+ * everyone else (including people without a picture).
+ */
+function createPeopleRow(people) {
+  if (people.length === 0) {
+    return {
+      type: "text",
+      text: "ยังไม่มี",
+      size: "sm",
+      color: "#999999",
+    };
+  }
+
+  const pictures = people
+    .map((person) => person.picture_url)
+    .filter(Boolean)
+    .slice(0, MAX_CONFIRMED_PICTURES);
+
+  const rest = people.length - pictures.length;
+
+  const contents = pictures.map(createPictureCircle);
+
+  if (rest > 0) {
+    contents.push(
+      createCountCircle(
+        pictures.length > 0 ? `+${rest}` : String(rest)
+      )
+    );
+  }
+
+  return {
+    type: "box",
+    layout: "horizontal",
+    spacing: "xs",
+    contents,
+  };
+}
+
+function createConfirmationBubble(data) {
   const bodyContents = [
     {
       type: "text",
@@ -511,34 +641,46 @@ function createConfirmationBubble(data) {
     });
   }
 
-  bodyContents.push({
-    type: "box",
-    layout: "horizontal",
-    margin: "md",
-    contents: [
-      {
-        type: "box",
-        layout: "vertical",
-        flex: 0,
-        backgroundColor: "#FDE7CC",
-        borderColor: "#F5C99B",
-        borderWidth: "1px",
-        cornerRadius: "8px",
-        paddingStart: "8px",
-        paddingEnd: "8px",
-        paddingTop: "2px",
-        paddingBottom: "2px",
-        contents: [
-          {
-            type: "text",
-            text: badgeText,
-            size: "xs",
-            color: "#222222",
-          },
-        ],
+  // Who joins and who declined. Everyone in the group sees
+  // this card; the team chose to show both (privacy policy
+  // v2, "Who can see your data").
+  bodyContents.push(
+    {
+      type: "box",
+      layout: "vertical",
+      spacing: "sm",
+      margin: "md",
+      contents: [
+        createPill("เข้าร่วม", "#8EDBA2", "#1E6B30"),
+        createPeopleRow(data.accepted),
+      ],
+    },
+    {
+      type: "box",
+      layout: "vertical",
+      spacing: "sm",
+      margin: "md",
+      contents: [
+        createPill("ไม่เข้าร่วม", "#F58A86", "#7A1414"),
+        createPeopleRow(data.declined),
+      ],
+    },
+    {
+      type: "text",
+      text: "ดูรายละเอียดเพิ่มเติม →",
+      weight: "bold",
+      size: "md",
+      color: "#2a1e16",
+      align: "end",
+      decoration: "underline",
+      margin: "lg",
+      action: {
+        type: "uri",
+        label: "ดูรายละเอียดเพิ่มเติม",
+        uri: data.detailsUrl,
       },
-    ],
-  });
+    }
+  );
 
   return {
     type: "flex",
@@ -578,12 +720,13 @@ function createConfirmationBubble(data) {
 }
 
 /*
- * Post the "IT'S A DATE!" card announcing the confirmed
+ * Post the "date confirmed" card announcing the confirmed
  * date(s) to the event's LINE chat.
  */
 async function sendConfirmation(eventId) {
   const eventRows = await sql`
     SELECT
+      id,
       event_name,
       description,
       line_chat_id,
@@ -604,11 +747,12 @@ async function sendConfirmation(eventId) {
     );
   }
 
-  const acceptedRows = await sql`
-    SELECT COUNT(*)::int AS count
+  const responderRows = await sql`
+    SELECT picture_url, status
     FROM participants
     WHERE event_id = ${eventId}
-      AND status = 'accepted'
+      AND status IN ('accepted', 'declined')
+    ORDER BY submitted_at ASC
   `;
 
   await pushToChat(event.line_chat_id, [
@@ -619,10 +763,13 @@ async function sendConfirmation(eventId) {
       dates: event.finalized_dates?.length
         ? event.finalized_dates.map(toDateKey)
         : [event.finalized_date].filter(Boolean).map(toDateKey),
-      acceptedCount: acceptedRows[0].count,
-      memberCount: await getChatMemberCount(
-        event.line_chat_id
+      accepted: responderRows.filter(
+        (row) => row.status === "accepted"
       ),
+      declined: responderRows.filter(
+        (row) => row.status === "declined"
+      ),
+      detailsUrl: buildDetailsUrl(event.id),
     }),
   ]);
 }
