@@ -28,8 +28,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Uncomment once the project has lint / test scripts in package.json.
+      # Own tests (test/*.test.mjs): Best Date, input checks,
+      # access control, locks after confirmation, webhook and
+      # cron. They use a fake database and fake LINE, so CI
+      # needs no secrets.
+      - name: Test
+        run: npm test
+
+      # Uncomment once the project has a lint script.
       # - name: Lint
       #   run: npm run lint
-      # - name: Test
-      #   run: npm test

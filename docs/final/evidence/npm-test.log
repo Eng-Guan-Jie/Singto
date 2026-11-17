@@ -1,0 +1,66 @@
+# Full automated test run (npm test)
+# Date: 2026-11-18 01:19 +07  Node: v20.19.6
+
+✔ §4.2 Single Date counts and recommendation (AI-01) (1.751792ms)
+✔ §4.2 Two Days counts and recommendation (AI-02) (0.403292ms)
+✔ §4.2 Three Days counts and recommendation (AI-03) (0.251292ms)
+✔ §4.2 Holiday filter: only the weekend is considered (AI-04) (1.6465ms)
+✔ AI-05 equal highest counts: every tied candidate is returned (0.295791ms)
+✔ AI-06 no available participants: empty recommendation list (0.121375ms)
+✔ AI-07 accepted participant without submitted days stays in the total (0.146834ms)
+✔ processing time: 30 people × 1 year, all four filters (10.091958ms)
+ℹ all four filters, 30 people x 366 days: 5.5 ms
+✔ no LINE token: 401 and no data (9.001917ms)
+✔ a participant sees who is free by name, but never other people's LINE IDs (2.457791ms)
+✔ someone who has not answered (guest) gets no names or counts (2.569583ms)
+✔ who joins / declined lists carry names only, no LINE IDs (0.427375ms)
+✔ only the organizer can edit, delete or confirm (1.803375ms)
+✔ the organizer deletes an event with everyone's data, children first (1.075416ms)
+✔ delete my account removes only the caller's own rows (0.655584ms)
+✔ a date cannot be confirmed twice (6.1475ms)
+✔ available days are locked for everyone (2.049875ms)
+✔ join / decline answers are locked (0.936916ms)
+✔ name and dates cannot be edited (6.434375ms)
+✔ the description can still be edited, and only the description (2.351542ms)
+✔ before confirmation the organizer can still change name and dates (0.84625ms)
+✔ before confirmation participants can still save their days (0.796292ms)
+✔ days outside the scheduling period are rejected (0.633791ms)
+✔ single day: every day where everyone is free, in date order (2.018334ms)
+✔ two consecutive days: only people free on BOTH days count (0.736542ms)
+✔ three consecutive days (0.207917ms)
+✔ holidays only: weekends and Thai holidays (1.930458ms)
+✔ names: who is and is not free on the picked days (0.370791ms)
+✔ nobody has picked days yet: no suggestion (0.125ms)
+✔ a period shorter than the filter gives no suggestion (0.1005ms)
+✔ people who accepted but picked no days count as not free (0.18725ms)
+✔ everyone free is green (free) (0.974292ms)
+✔ some people free is yellow (partial) (0.130917ms)
+✔ nobody free is red (busy) (0.106792ms)
+✔ no accepted participants yet has no colour (0.126458ms)
+✔ weekends and fixed Thai holidays count as holidays (0.925209ms)
+✔ accepts a normal event and trims text (2.161791ms)
+✔ an empty description is saved as null (0.120416ms)
+✔ rejects missing fields (0.149125ms)
+✔ rejects a name over 100 characters and a 10,000-character name (0.082208ms)
+✔ rejects a description over 500 characters (0.058125ms)
+✔ rejects dates that do not exist or are badly formatted (0.054541ms)
+✔ rejects an end date before the start date (0.109959ms)
+✔ allows up to one year, rejects longer periods (0.060583ms)
+✔ rejects text fields that are not text (0.136958ms)
+  type: 'message',
+  sourceType: 'group',
+  hasReplyToken: true,
+  messageType: 'text'
+}
+✔ webhook rejects missing or wrong signatures (3.7295ms)
+✔ webhook replies with the Create event card when someone types สิงโต (0.856417ms)
+✔ clean-up refuses to run without CRON_SECRET or with a wrong one (0.739917ms)
+✔ clean-up deletes events that ended more than 30 days ago (0.820375ms)
+ℹ tests 49
+ℹ suites 0
+ℹ pass 49
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 76.580792
