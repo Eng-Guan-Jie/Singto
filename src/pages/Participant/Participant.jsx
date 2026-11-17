@@ -13,7 +13,7 @@ import {
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
 import ColorLegend from "../../components/ColorLegend";
-import LanguageToggle from "../../components/LanguageToggle";
+import HeaderActions from "../../components/HeaderActions";
 import "./Participant.css";
 
 const API_BASE = import.meta.env.DEV
@@ -707,7 +707,7 @@ function Participant() {
     <div className="participant-page">
       <header className="participant-header">
         <h1>Singto</h1>
-        <LanguageToggle />
+        <HeaderActions />
       </header>
 
       <main className="participant-container">

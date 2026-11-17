@@ -21,7 +21,7 @@ import {
 import MonthNav from "../../components/MonthNav";
 import { useI18n } from "../../lib/i18n";
 import ColorLegend from "../../components/ColorLegend";
-import LanguageToggle from "../../components/LanguageToggle";
+import HeaderActions from "../../components/HeaderActions";
 import "./Overview.css";
 
 const API_BASE = import.meta.env.DEV
@@ -755,7 +755,7 @@ function Overview() {
 
       <div className="overview-header">
         <h1>Singto</h1>
-        <LanguageToggle />
+        <HeaderActions />
       </div>
 
       <main className="overview-container">

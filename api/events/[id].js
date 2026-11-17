@@ -3,10 +3,12 @@ const {
   AuthError,
   isEventId,
   verifyLineIdToken,
+  getBearerToken,
   getEventRole,
   sendError,
   setCorsHeaders,
 } = require("../_auth");
+const { deleteEvents } = require("../_deleteData");
 
 // DATE values come back as Date objects at UTC midnight.
 const toDateKey = (value) =>
@@ -27,7 +29,7 @@ const getFinalizedDates = (event) => {
 };
 
 module.exports = async function handler(req, res) {
-  setCorsHeaders(res, "GET, PATCH, OPTIONS");
+  setCorsHeaders(res, "GET, PATCH, DELETE, OPTIONS");
 
   if (req.method === "OPTIONS") {
     res.status(204).end();
@@ -158,7 +160,32 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    res.setHeader("Allow", "GET, PATCH, OPTIONS");
+    /*
+     * ================= DELETE =================
+     * Organizer deletes the event with everyone's
+     * responses and available days (AGENTS.md 5.1).
+     */
+    if (req.method === "DELETE") {
+      const lineUser = await verifyLineIdToken(
+        getBearerToken(req)
+      );
+
+      const { role } = await getEventRole(id, lineUser.sub);
+
+      if (role !== "organizer") {
+        throw new AuthError(
+          403,
+          "Only the organizer can delete this event."
+        );
+      }
+
+      await deleteEvents([id]);
+
+      res.status(200).json({ deleted: true });
+      return;
+    }
+
+    res.setHeader("Allow", "GET, PATCH, DELETE, OPTIONS");
     res.status(405).json({ message: "Method not allowed" });
   } catch (error) {
     sendError(res, error, "Event request failed");
