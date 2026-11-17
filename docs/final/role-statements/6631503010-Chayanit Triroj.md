@@ -1,20 +1,19 @@
-# UX/UI – Role Statement
+# UXUI Design - Role Statement
 
-**Student ID:** 6631503010  
 **Name:** Chayanit Triroj  
-**Role:** UX/UI Designer
+**Student ID:** 6631503010  
+**Role:** UI/UX Designer
 
-As the UX/UI Designer of Singto, I was responsible for designing an accessible and intuitive user experience for both organizers and participants. My primary objective was to simplify group scheduling by presenting the necessary actions and information in a clear, structured, and consistent interface.
+## Responsibilities
 
-I contributed to designing the user flows for event creation, participant access, availability submission, organizer overview, Best Date recommendations, and final date confirmation. Particular attention was given to reducing unnecessary steps and making the scheduling process understandable for users accessing the system through mobile devices.
+I was primarily responsible for the UI/UX design of the Singto project. My responsibilities included designing the user interface, creating user flows, and developing interactive prototypes using Figma.
 
-I also worked on the visual presentation of participant availability, including the use of distinct calendar colors to communicate free, partially available, busy, and selected dates. The interface was designed to maintain consistency across the organizer and participant experiences while supporting the project's mobile-first direction.
+I also participated in user testing to evaluate the usability of the system and gather feedback from participants. After testing, I analyzed the feedback, identified areas that needed improvement, and redesigned several UI elements to make the interface clearer and easier to use. Once the updated designs were completed, I handed them over to my teammates for implementation.
 
-**Evidence:**
-- Page components: `src/pages/`
-- Shared interface components: `src/components/`
-- Global styling: `src/index.css`
-- Design files and wireframes: [Insert Figma link or design evidence]
-- Usability testing feedback: [Insert UAT evidence]
+## Evidence
 
-**AI Disclosure:** AI tools may have been used to support design brainstorming, interface refinement, and documentation. Final design decisions and usability considerations were reviewed by the project team.
+- **Figma Design & Prototype:** [Figma Link](https://www.figma.com/design/V6SsCpvzP8oHiIMLUymboC/Sync-Solution?node-id=0-1&t=bVzoFPkRzM8neuLv-1)
+
+## AI Disclosure
+
+I used Stitch during the initial stage to explore the overall concept and visualize the system's workflow. I then redesigned and modified the initial ideas to better fit the project's requirements. I also used ChatGPT to brainstorm ideas and help formulate possible solutions to design problems. However, all final UI designs, design decisions, and prototyping work were created by me.
