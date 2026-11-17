@@ -1,7 +1,7 @@
 # Quality Assurance (QA) – Role Statement
 
-**Student ID:** [Student ID]  
-**Name:** [Full Name]  
+**Student ID:** 6631503006  
+**Name:** Didwarin Densupphakul  
 **Role:** Quality Assurance (QA)
 
 As the QA member of Singto, I was responsible for ensuring the system's reliability and verifying that its core functionalities behaved as expected. My contributions included preparing and maintaining automated test cases, defining expected outcomes, and checking the application's scheduling logic, API behavior, input validation, and access control.
