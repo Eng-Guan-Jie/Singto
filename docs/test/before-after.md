@@ -1,132 +1,266 @@
-# Before / After – MUST Tasks
+# Before / After – MUST Tasks Usability Evaluation
 
-- **Before** = scheduling the same meetup **manually** in a LINE group chat (messages, LINE Poll, Notes)
-- **After** = scheduling it **with Singto**
+## Evaluation Conditions
 
-| Condition | Who was measured | Label |
+This evaluation compares two ways of organizing the same meetup:
+
+- **Before (Manual):** Organizing a meetup manually through a LINE group chat using messages, LINE Poll, and Notes.
+- **After (Singto):** Organizing the same meetup using Singto.
+
+| Condition | Evaluation basis | Data label |
 |---|---|---|
+| Before (Manual) | Analytical reconstruction of the scripted manual workflow (§2) | ESTIMATED |
 | After (Singto) | 10 real users, U01–U10, during UAT (7–17 Nov 2026) | REAL |
-| Before (Manual) | Analytical estimate of the scripted manual scenario (§2) | **ESTIMATED – not measured** |
 
-> **Why the Before baseline is estimated:** The UAT sessions recorded only the Singto condition. The requirement for a manual comparison was confirmed after the sessions had finished, so no manual times were measured. The manual times in §2 are an **analytical estimate**: each manual task is broken into steps and given standard step timings, based on the Keystroke-Level Model (Card, Moran & Newell, 1980). They are not observations of users. §2b (team-measured) and §4 (real users) describe how to replace the estimate with measurements.
+**Methodological note:** The Before condition is an analytical estimate based on the steps required to complete the manual workflow. Task durations are calculated using the Keystroke-Level Model (KLM; Card, Moran & Newell, 1980), with additional estimated reading and information-search times. These figures represent a modeled baseline rather than direct user observations. The After condition uses actual observations from 10 Singto UAT participants.
 
-## 1. After: Singto results per MUST task (n = 10, REAL)
+---
+
+## 1. After: Singto Results per MUST Task (n = 10, REAL)
 
 | Task | Success | Partial | Failed | Median time (s) | Mean time (s) | Range (s) | Median discovery (s) | Errors | Help requests |
-|---|---|---|---|---|---|---|---|---|---|
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | T1 Create Event | 10/10 | 0 | 0 | 51 | 53.2 | 23–90 | 2 | 0 | 3 |
 | T2 Access Event | 10/10 | 0 | 0 | 3 | 4.3 | 2–11 | 1 | 0 | 1 |
 | T3 Submit Availability | 9/10 | 1 | 0 | 10.5 | 17.1 | 5–42 | 3 | 1* | 3 |
 | T4 View Overview | 8/10 | 2 | 0 | 5 | 15.2 | 3–100 | 2.5 | 0 | 4 |
 | T5 Find Best Date | 10/10 | 0 | 0 | 5 | 13.3 | 2–40 | 3 | 0 | 0 |
 | T6 Finalize Date | 10/10 | 0 | 0 | 17.5 | 22.0 | 5–61 | 2 | 0 | 1 |
-| **All tasks** | **57/60 (95%)** | **3** | **0** | **≈ 93 per user** | **≈ 124 per user** | 70–250 | — | **1** | **12** |
+| **All tasks** | **57/60 (95%)** | **3** | **0** | **≈93 per user** | **≈124 per user** | **70–250** | — | **1** | **12** |
 
-\* The single error came from a Quick Select bug (selected dates outside the organizer's range). See ISS-01 in [issue-log.md](issue-log.md).
+\* The single error came from a Quick Select bug that selected dates outside the organizer's available range. See ISS-01 in `issue-log.md`.
 
-**Notes on the data**
-- `<5 s` and `<10 s` entries (U08–U10) are counted at their upper bound (5 or 10 s), so these figures are slightly pessimistic.
-- U05's View Overview time was not recorded. The T4 statistics use n = 9, and U05's per-user total excludes T4.
-- Discovery time is missing for T5 in 3 sessions, so T5 discovery uses n = 7.
-- Medians are the headline figure because one outlier (U06, T4 = 100 s) skews the mean.
-- Raw data: [data/task-observations.csv](data/task-observations.csv).
+### Notes on the data
 
-## 2. Before (Manual): analytical estimate – ESTIMATED, not measured
+- Entries recorded as `<5 s` and `<10 s` (U08–U10) are counted at their upper bounds (5 or 10 seconds), making the results slightly conservative.
+- U05's View Overview time was not recorded. T4 statistics therefore use n = 9, and U05's per-user total excludes T4.
+- Discovery time is missing for T5 in three sessions, so T5 discovery statistics use n = 7.
+- Medians are used as the primary comparison because one outlier (U06, T4 = 100 seconds) substantially increases the mean.
+- Raw observations: `data/task-observations.csv`.
 
-These estimates are for the scripted manual scenario in §3 (organizer on a phone, 4 friends, 4 candidate dates, everyone's replies already in the chat).
+---
 
-**Step timings used**
+## 2. Before (Manual): Analytical Baseline (ESTIMATED)
 
-| Operator | Meaning | Time |
-|---|---|---|
-| K | Typing one character on a phone keyboard (Thai) | 0.35 s |
-| P | One tap (open chat, tap input, send) | 0.5 s |
-| M | Mental preparation (deciding what to do or write) | 1.35 s (KLM standard) |
-| Read | Reading one chat message | ≈ 4 s |
-| Check | Looking up one friend × date cell in the chat | M + 1.2 s ≈ 2.55 s |
+The manual baseline represents a typical scenario in which an organizer coordinates a trip through a LINE group chat.
 
-**Estimate per task**
+**Scenario assumptions:**
 
-| Task (manual equivalent) | Steps | Estimated time (s) |
-|---|---|---|
-| T1 Post the plan in chat | 2 taps, 2 M, type ≈ 40 characters, send | ≈ 18 |
-| T2+T3 Reply with own availability | Read question, M, type ≈ 13 characters, 2 taps | ≈ 10 |
-| T4 Build the overview (who is free on which date) | Read 5 messages, check 16 friend × date cells, notice Friend C's correction (≈ 5 s), write a 4-line list (≈ 60 characters) | ≈ 87 |
-| T5 Find the best date | Scan the list, 2 M | ≈ 7 |
-| T6 Announce the final date | Tap, M, type ≈ 30 characters, send | ≈ 13 |
-| **End-to-end** | | **≈ 134** |
+- One organizer uses a smartphone.
+- Four friends participate in the group.
+- Four candidate dates are considered.
+- All participants' availability replies are already present in the chat.
+- The organizer must manually read, interpret, organize, and compare the replies.
+- The organizer uses LINE messages, Poll, and Notes where appropriate.
 
-**What the estimate leaves out (so it favours manual)**
-- **Waiting time.** In the script, all replies are already in the chat. In real life, the organizer waits hours or days and chases people who haven't replied. Singto removes the need to compile the replies, but not the wait.
-- **Scaling.** T4 grows with *friends × dates*. With 8 friends and a 14-day period (112 cells), the same model gives **≈ 6 min** for T4 alone. Singto's Overview takes the same few seconds regardless of group size.
-- **Errors.** The model assumes no mistakes. Friend C's late correction ("19 and 20 are fine too") is easy to miss. Missing it removes the only 4/4 date, so the organizer would pick a 3/4 date instead.
+The estimated durations are based on individual interaction steps rather than observed participant performance.
 
-## 2b. Before (Manual) results – TEAM-measured (optional, replaces §2 when collected)
+### 2.1 Step timings used
 
-Fill in one row per team member after running the scenario in §3. Record the time in seconds. Completion is S (Success), P (Partial) or F (Failed).
+| Operator | Meaning | Estimated time |
+|---|---|---:|
+| K | Typing one character on a Thai phone keyboard | 0.35 s |
+| P | One tap (open chat, select input, send, etc.) | 0.5 s |
+| M | Mental preparation or decision-making (KLM standard) | 1.35 s |
+| Read | Reading one chat message | ≈4 s |
+| Check | Checking one friend × date availability cell | ≈2.55 s |
 
-| Tester | Date | T1 Post plan | T2+T3 Reply availability | T4 Build overview | T5 Find best date | T6 Announce final | Total (s) | Errors | Correct best date? |
-|---|---|---|---|---|---|---|---|---|---|
-| TEAM-01 | | s / S | s / S | s / S | s / S | s / S | | | Y / N |
-| TEAM-02 | | | | | | | | | |
-| TEAM-03 | | | | | | | | | |
-| TEAM-04 | | | | | | | | | |
+### 2.2 Estimated time per task
 
-## 2c. Before vs After comparison
+| Task (manual equivalent) | Main activities | Estimated time (s) |
+|---|---|---:|
+| T1 Post the plan | Open chat, prepare message, type approximately 40 characters, send | ≈18 |
+| T2 + T3 Reply with availability | Read the question, prepare response, type approximately 13 characters, send | ≈10 |
+| T4 Build the overview | Read 5 messages, check 16 friend × date cells, notice Friend C's correction, write a 4-line summary | ≈87 |
+| T5 Find the best date | Compare the availability summary and identify the date with the highest attendance | ≈7 |
+| T6 Announce the final date | Prepare and send a final message of approximately 30 characters | ≈13 |
+| **End-to-end total** | **All six MUST tasks** | **≈135** |
 
-| Task | Before (Manual, **ESTIMATED**) | After (Singto, REAL median) | Change |
-|---|---|---|---|
-| T1 Create Event | ≈ 18 s | 51 s | **+183%** (slower) |
-| T2 + T3 Access & submit availability | ≈ 10 s | 13.5 s (3 + 10.5) | +35% (slower) |
-| T4 View Overview | ≈ 87 s | 5 s | **−94%** |
-| T5 Find Best Date | ≈ 7 s | 5 s | −29% |
-| T6 Finalize Date | ≈ 13 s | 17.5 s | +35% (slower) |
-| **End-to-end** | **≈ 134 s** | **≈ 93 s** | **≈ −31%** |
-| T4 at 8 friends × 14 days | ≈ 6 min | ≈ 5 s (independent of group size) | ≈ −99% |
+### 2.3 Limitations of the manual baseline
 
-*Change* = (After − Before) / Before × 100%. A negative change means Singto is faster.
+The estimates are based on a controlled scenario and do not include all difficulties that may occur during real-world coordination.
 
-**Reading the comparison.** Singto is *slower* to set up (T1), because filling in a form takes longer than typing one chat message. Its gain is in the work that grows with group size: compiling everyone's availability and finding the common date (T4 + T5 ≈ 94 s → ≈ 10 s). The comparison mixes an estimate with measurements, so treat the percentages as indicative, not exact.
+**Waiting time**
 
-## 3. Manual scenario script (TEAM baseline)
+The scenario assumes that all participants have already replied. In actual group coordination, organizers may need to wait hours or days for responses and send reminders to participants who have not replied.
 
-About 10 minutes per tester. You need one facilitator with a stopwatch and one tester. The tester must not be the person who wrote this script.
+**Increasing group size**
 
-**Setup.** Create a LINE group containing the tester and the facilitator. Before starting, the facilitator pastes the four "friend" messages below into the group, **in this order**. These are the same as the Singto scenario: a trip within **Mon 7 – Sun 20 Dec 2026**, and the organizer is free every day.
+The time required to compile availability increases with the number of participants and candidate dates.
 
-> **Friend A:** I'm free 8, 9, 12, 13, 19 and 20 Dec
-> **Friend B:** weekdays only 15–16 work for me, plus the 12th and 19th
-> **Friend C:** free 9, 12, 13 👍
-> **Friend D:** 10, 13, 14, 19, 20 ok
-> **Friend C:** oh wait, 19 and 20 are fine too
+For example, with 8 friends and a 14-day availability period, the organizer may need to inspect 112 friend × date combinations.
 
-**Answer key (for the facilitator only):**
+Using the same estimated checking time:
 
-| Date | A | B | C | D | Free |
+112 × 2.55 seconds = 285.6 seconds.
+
+This is approximately 5 minutes of checking alone, excluding reading, correcting, and summarizing information. A practical rounded estimate is approximately 5–6 minutes for the overview task.
+
+By comparison, Singto automatically organizes submitted availability into an overview, so the viewing task does not require manually checking each individual response.
+
+**Potential errors**
+
+The manual workflow relies on the organizer correctly interpreting and remembering messages. Late corrections may be overlooked.
+
+For example, Friend C initially reports availability for 9, 12, and 13 December, then later adds 19 and 20 December. Missing this correction could cause the organizer to select a date with fewer available participants.
+
+---
+
+## 3. Before vs After Comparison
+
+The following comparison uses the analytical manual baseline and the actual Singto UAT median times.
+
+| Task | Before (Manual, ESTIMATED) | After (Singto, REAL median) | Change |
+|---|---:|---:|---:|
+| T1 Create Event / Post plan | ≈18 s | 51 s | +183% (slower) |
+| T2 + T3 Access and submit availability | ≈10 s | 13.5 s | +35% (slower) |
+| T4 View Overview / Build overview | ≈87 s | 5 s | −94% |
+| T5 Find Best Date | ≈7 s | 5 s | −29% |
+| T6 Finalize Date | ≈13 s | 17.5 s | +35% (slower) |
+| **End-to-end** | **≈135 s** | **≈93 s** | **≈−31%** |
+| T4 at 8 friends × 14 days | ≈5–6 min | ≈5 s | Approximately −98% to −99% |
+
+*Percentage change = (After − Before) / Before × 100%. A negative percentage indicates that Singto is faster.*
+
+### 3.1 Interpretation
+
+The comparison indicates that Singto's primary benefit is reducing the effort required to organize and interpret participants' availability.
+
+**Tasks where manual coordination is faster**
+
+- **T1 Create Event:** The estimated manual process takes approximately 18 seconds, while creating an event in Singto takes a median of 51 seconds. This suggests that completing an event form introduces additional setup time compared with sending a simple chat message.
+- **T2 + T3 Access and submit availability:** The combined Singto median is approximately 13.5 seconds, compared with the estimated 10 seconds for the manual equivalent.
+- **T6 Finalize Date:** Sending a final message manually is estimated to take 13 seconds, compared with 17.5 seconds in Singto.
+
+**Tasks where Singto provides the greatest benefit**
+
+- **T4 View Overview:** Manual coordination requires reading messages, checking individual availability, and compiling the results. This is estimated to take approximately 87 seconds, compared with a 5-second Singto median.
+- **T5 Find Best Date:** Singto presents the availability information in an organized format, reducing the effort needed to identify the date with the highest attendance.
+
+Combined, T4 and T5 take approximately 94 seconds in the estimated manual workflow, compared with approximately 10 seconds in Singto.
+
+**Overall result**
+
+The estimated manual workflow takes approximately 135 seconds, while the Singto workflow takes approximately 93 seconds based on the sum of the task medians.
+
+This represents an estimated reduction of approximately 31% in end-to-end task time.
+
+However, the results should be interpreted as indicative rather than definitive because the Before and After conditions use different evidence sources: an analytical estimate for manual coordination and real-user observations for Singto.
+
+---
+
+## 4. Manual Scenario Script and Baseline Assumptions
+
+This section defines the manual workflow used to construct the estimated baseline.
+
+### 4.1 Scenario setup
+
+The scenario represents a trip planned between **Monday 7 December and Sunday 20 December 2026**.
+
+The organizer is available every day and must identify the date when the greatest number of friends can attend.
+
+The LINE group contains the organizer and four friends.
+
+The following messages represent the availability information available to the organizer:
+
+**Friend A:**
+
+"I'm free 8, 9, 12, 13, 19 and 20 Dec"
+
+**Friend B:**
+
+"Weekdays only 15–16 work for me, plus the 12th and 19th"
+
+**Friend C:**
+
+"Free 9, 12, 13 👍"
+
+**Friend D:**
+
+"10, 13, 14, 19, 20 ok"
+
+**Friend C (later correction):**
+
+"Oh wait, 19 and 20 are fine too"
+
+### 4.2 Answer key
+
+| Date | Friend A | Friend B | Friend C | Friend D | Available |
 |---|---|---|---|---|---|
 | Sat 12 Dec | ✓ | ✓ | ✓ | – | 3/4 |
 | Sun 13 Dec | ✓ | – | ✓ | ✓ | 3/4 |
-| **Sat 19 Dec** | ✓ | ✓ | ✓ | ✓ | **4/4 ← best date** |
+| Sat 19 Dec | ✓ | ✓ | ✓ | ✓ | **4/4 – Best date** |
 | Sun 20 Dec | ✓ | – | ✓ | ✓ | 3/4 |
-| Other dates | | | | | ≤ 2/4 |
+| Other dates | | | | | ≤2/4 |
 
-**Tasks.** Give the tester one task at a time. Start the timer when the task is given and stop it when the "done" condition is met.
+**Correct answer: Saturday, 19 December 2026.**
 
-| Task | Prompt to the tester | Done when |
+### 4.3 Manual tasks
+
+| Task | Activity | Completion criteria |
 |---|---|---|
-| T1 | "Post a message asking the group which days they're free between 7 and 20 Dec." | Message is sent |
-| T2+T3 | "Reply with your own availability. You are free every day." | Reply is sent |
-| T4 | "Write down which friends are free on 12, 13, 19 and 20 Dec." | List is complete. Each wrong ✓/– cell counts as 1 error |
-| T5 | "Which day should the trip be?" | Tester names a date. **Success = 19 Dec**, any other date = Failed |
-| T6 | "Announce the final date to the group." | Announcement is sent |
+| T1 Post the plan | Send a message asking the group which dates they are available between 7 and 20 December. | Message is sent |
+| T2 + T3 Reply with availability | Read the request and respond with personal availability. | Reply is sent |
+| T4 Build the overview | Identify which friends are available on 12, 13, 19, and 20 December. | Availability summary is complete |
+| T5 Find the best date | Compare the four candidate dates and select the date with the highest attendance. | Correct date identified |
+| T6 Announce the final date | Send a message announcing the selected date. | Announcement is sent |
 
-**Recording rules.** Use the same rules as UAT: give no hints, count every help request, and record a task as Failed (with its time) if the tester gives up.
+### 4.4 Baseline calculation rules
 
-## 4. Ready-to-run plan: manual baseline with real users
+The estimated manual task times follow these assumptions:
 
-Before the final presentation, rerun §3 with real users so the comparison is REAL vs REAL.
+1. Each interaction is divided into smaller actions, including tapping, typing, reading, and mental preparation.
+2. Typing time is calculated using the estimated time per character.
+3. Reading time is estimated based on the number of messages.
+4. Availability-checking time is calculated using the number of friend × date combinations.
+5. The final date is selected by comparing the number of available participants.
+6. Waiting time for responses is excluded from the controlled scenario.
 
-1. Invite 3–5 of U01–U10 (or new participants coded U11+). Each session is a 10-minute LINE call.
-2. Run the same script and answer key as §3.
-3. Because these users have already used Singto, record the order as *Singto → Manual*. New participants should alternate the order.
-4. Add the rows to [data/task-observations.csv](data/task-observations.csv) with a `condition` column (`manual` / `singto`), then replace the TEAM column in §2 with these results.
+These assumptions provide a consistent basis for comparing the manual coordination workflow with Singto.
+
+---
+
+## 5. Recommendations and Future Evaluation
+
+The results suggest that Singto's strongest usability advantage is its ability to reduce the manual work involved in collecting, organizing, and comparing availability.
+
+The following improvements are recommended:
+
+| Area | Observation | Recommendation |
+|---|---|---|
+| Event creation | Setup takes longer than sending a simple LINE message. | Simplify the event creation form and reduce unnecessary input. |
+| Availability submission | One error occurred due to Quick Select selecting dates outside the organizer's range. | Fix the date-selection validation issue (ISS-01). |
+| Overview | Singto substantially reduces the time required to compile availability. | Preserve the current overview design and improve its clarity. |
+| Date selection | Users can identify the best date quickly. | Maintain clear visual indicators for the date with the highest attendance. |
+| Finalization | Sending the final date is slightly slower than manual messaging. | Consider making the final announcement process more direct. |
+
+### Future validation
+
+To strengthen the comparison, the analytical manual baseline can be validated through additional usability sessions.
+
+A future evaluation should:
+
+1. Recruit 3–5 participants from the existing UAT group or recruit new participants.
+2. Use the same manual scenario and answer key described in Section 4.
+3. Record completion times, task success, errors, and requests for assistance.
+4. For existing Singto participants, account for the order effect by conducting the manual condition after the Singto condition.
+5. For new participants, alternate the order of the two conditions.
+6. Compare the resulting manual observations with the existing Singto UAT dataset.
+
+Once direct manual observations are available, the estimated baseline can be replaced with measured results.
+
+---
+
+## 6. Overall Conclusion
+
+The usability evaluation indicates that Singto can make group meetup scheduling more efficient, particularly when multiple participants and candidate dates are involved.
+
+Although the initial event creation and final announcement steps take slightly longer in Singto than their estimated manual equivalents, Singto significantly reduces the effort involved in organizing participants' availability and identifying the best date.
+
+The estimated end-to-end comparison shows a reduction from approximately 135 seconds in the manual workflow to approximately 93 seconds in Singto, representing an indicative improvement of around 31%.
+
+The most significant improvement is observed in the overview task, where Singto reduces the need for manually reading messages, checking individual availability, and compiling results.
+
+**In conclusion, Singto's main value is not necessarily making every individual action faster, but reducing the coordination and information-processing effort required to organize a group meetup.**
+
+*Evaluation limitation: The manual baseline is estimated, while Singto results are based on real-user UAT observations. Therefore, the comparison demonstrates an indicative usability advantage and should not be interpreted as a controlled experimental measurement of improvement.*
