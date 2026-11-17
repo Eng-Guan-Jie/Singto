@@ -8,7 +8,6 @@ import {
 import { useI18n } from "../../lib/i18n";
 import { apiErrorMessage } from "../../lib/apiError";
 import HeaderActions from "../../components/HeaderActions";
-import { goBack } from "../Privacy/Privacy";
 import "./EventDetails.css";
 
 const API_BASE = import.meta.env.DEV
@@ -54,9 +53,6 @@ function EventDetails() {
   const [event, setEvent] = useState(null);
   const [responses, setResponses] = useState(null);
   const [error, setError] = useState("");
-  const [isAnswering, setIsAnswering] = useState(false);
-  // Bumped after answering to reload the lists.
-  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -109,49 +105,22 @@ function EventDetails() {
     };
 
     load();
-    // Load per event, and again after answering.
+    // Load once per event.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventId, reloadKey]);
+  }, [eventId]);
 
-  // Join / decline from this page: once the date is
-  // confirmed, every link to the event lands here, so this
-  // is where people answer (or change their answer).
-  const handleAnswer = async (status) => {
-    setIsAnswering(true);
-
-    try {
-      await initLiff();
-
-      const idToken = getFreshIdToken();
-
-      // Redirecting to LINE Login.
-      if (!idToken) return;
-
-      const response = await fetch(
-        `${API_BASE}/api/events/${eventId}/participants`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken, status }),
-        }
-      );
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(
-          apiErrorMessage(t, response, data, "failedUpdateParticipation")
-        );
-      }
-
-      setReloadKey((key) => key + 1);
-    } catch (answerError) {
-      console.error("Answer failed:", answerError);
-      alert(answerError.message || t("failedUpdateParticipation"));
-    } finally {
-      setIsAnswering(false);
-    }
-  };
+  // A fixed place to go back to. Going back in history
+  // could land on Overview or Participant, which send a
+  // confirmed event straight back here.
+  const backButton = (
+    <button
+      type="button"
+      className="details-back"
+      onClick={() => navigate("/my-events", { replace: true })}
+    >
+      ← {t("myEventsBack")}
+    </button>
+  );
 
   const header = (
     <header className="details-header">
@@ -165,6 +134,7 @@ function EventDetails() {
       <div className="details-page">
         {header}
         <main className="details-container">
+          {backButton}
           <p className="details-message">{error || t("loading")}</p>
         </main>
       </div>
@@ -173,6 +143,7 @@ function EventDetails() {
 
   const isGuest = responses.role === "guest";
   const isOrganizer = responses.role === "organizer";
+  const isConfirmed = event.confirmed_dates?.length > 0;
   const people =
     activeTab === "accepted" ? responses.accepted : responses.declined;
 
@@ -181,13 +152,7 @@ function EventDetails() {
       {header}
 
       <main className="details-container">
-        <button
-          type="button"
-          className="details-back"
-          onClick={() => goBack(navigate)}
-        >
-          ← {t("back")}
-        </button>
+        {backButton}
 
         <section className="details-event-card">
           <h2>{event.event_name}</h2>
@@ -229,39 +194,41 @@ function EventDetails() {
               {t("manageEvent")}
             </button>
           ) : (
-            <div className="details-answer">
-              <p className="details-question">{t("joinQuestion")}</p>
-
-              <div className="details-answer-buttons">
-                <button
-                  type="button"
-                  className={responses.myStatus === "declined" ? "active" : ""}
-                  disabled={isAnswering}
-                  onClick={() => handleAnswer("declined")}
-                >
-                  {t("decline")}
-                </button>
-
-                <button
-                  type="button"
-                  className={responses.myStatus === "accepted" ? "active" : ""}
-                  disabled={isAnswering}
-                  onClick={() => handleAnswer("accepted")}
-                >
-                  {t("accept")}
-                </button>
-              </div>
-
-              <p className="details-answer-note">
-                {t("answerVisibleNote")}
+            responses.myStatus && (
+              // Answers can't be changed here: once the date
+              // is confirmed, Participant redirects here too.
+              <p className={`details-my-answer ${responses.myStatus}`}>
+                {t("yourAnswer", {
+                  answer: t(
+                    responses.myStatus === "accepted"
+                      ? "statusAccepted"
+                      : "statusDeclined"
+                  ),
+                })}
               </p>
-            </div>
+            )
           )}
         </section>
 
         {isGuest ? (
           <section className="details-panel">
-            <p className="details-note">{t("answerToSeeList")}</p>
+            {isConfirmed ? (
+              <p className="details-note">{t("confirmedGuestNote")}</p>
+            ) : (
+              <>
+                <p className="details-note">{t("answerToSeeList")}</p>
+
+                <button
+                  type="button"
+                  className="details-manage-button"
+                  onClick={() =>
+                    navigate(`/participant?eventId=${eventId}`)
+                  }
+                >
+                  {t("answerInvitation")}
+                </button>
+              </>
+            )}
           </section>
         ) : (
           <>
