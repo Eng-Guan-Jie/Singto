@@ -20,3 +20,19 @@ The test suite is also integrated into the project's GitHub Actions workflow to 
 - CI workflow: `.github/workflows/ci.yml`
 
 **AI Disclosure:** AI tools may have been used to assist with test development, debugging, and documentation. Test scenarios, expected outcomes, and final test results were reviewed by the project team.
+
+**Reflection**
+1. Lessons learned
+Building Singto with AI affected every stage. Requirements and design moved faster because ideas could become a working version quickly. Coding took less effort, so more of our time went into checking the result. Our suite of 49 automated tests covers Best Date logic, input validation, API access control, event locking and LINE webhook signature checks, and runs in GitHub Actions on every push and pull request. Mocked database and LINE services let us test without touching real user data.
+
+Better: testing became part of the workflow instead of a last step. Because the tests run automatically, we could change code and quickly see whether the scheduling logic and access rules still worked.
+
+Worse: AI output looks finished even when it is not fully checked. A passing test only proves what we thought to test, so cases like ties, holidays and "no one available" had to be defined by people before they could be tested. Fast code can create false confidence if nobody reviews the expected results.
+
+2. Where I stand today
+I am a student at the start of my career, with experience reviewing software tests. AI can now produce a lot of routine code, so I think the valuable skills are defining what correct behaviour is, checking results, and caring about security and privacy.
+
+3. My plan
+Next year: keep building my testing skills, and try other areas of software work to see which one I enjoy.
+
+In five years: I do not know exactly which role I will have. I want to keep looking for work that fits me and that I genuinely like, and to use AI well while still checking its output.
